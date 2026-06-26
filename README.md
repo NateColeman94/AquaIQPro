@@ -1,14 +1,10 @@
-# AquaIQPro Stable Advancements v1
+# AquaIQPro Reports + Chat v2
 
-Built on the stable AquaIQPro line.
-
-## Added
-- Better visual Reports section
-- Manager-ready report summaries
-- AI Operations Center
-- AI explainability panel
-- Scenario Planner
-- Cleaner report layout with Print / Save PDF workflow
+## Updates
+- Restored floating AI Assistant chat pop-up
+- Simplified reports into visual KPI cards and short manager bullets
+- Reduced clutter and long paragraphs
+- Kept stable AquaIQPro foundation
 
 ## Deploy
 Upload `index.html` to the root of your AquaIQPro GitHub repository.
