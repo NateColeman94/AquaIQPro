@@ -1,10 +1,5 @@
-# AquaIQPro Reports + Chat v2
+# AquaIQPro v3.0 Master
 
-## Updates
-- Restored floating AI Assistant chat pop-up
-- Simplified reports into visual KPI cards and short manager bullets
-- Reduced clutter and long paragraphs
-- Kept stable AquaIQPro foundation
+Merged stable master build with clean reports, working floating chat, Data Center, auto-save, import/export, reset demo data, scenario planner, AI Ops, maintenance, tasks, and decision workflow.
 
-## Deploy
-Upload `index.html` to the root of your AquaIQPro GitHub repository.
+Deploy: upload `index.html` to the root of your AquaIQPro GitHub repository.
