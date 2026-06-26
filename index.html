@@ -2,119 +2,400 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AquaIQ v2.2 | Reporting & Explainability Upgrade</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AquaIQPro Stable Build</title>
 <style>
-:root{--bg:#f4f7fb;--panel:#ffffff;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0;--brand:#0f766e;--brand2:#0ea5e9;--good:#16a34a;--warn:#d97706;--bad:#dc2626;--soft:#ecfeff;--shadow:0 16px 40px rgba(15,23,42,.08)}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{display:grid;grid-template-columns:275px 1fr;min-height:100vh}.sidebar{background:#071723;color:white;padding:24px 18px;position:sticky;top:0;height:100vh;overflow:auto}.logo{display:flex;gap:12px;align-items:center;margin-bottom:24px}.mark{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--brand2),#67e8f9);display:grid;place-items:center;font-size:24px}.logo h1{font-size:24px;margin:0}.logo span{font-size:12px;color:#b6c2cf}.nav button{width:100%;display:flex;gap:10px;align-items:center;background:transparent;color:#cbd5e1;padding:12px 14px;border-radius:12px;margin:4px 0;text-align:left}.nav button.active,.nav button:hover{background:rgba(255,255,255,.11);color:#fff}.sidebar .status{margin-top:24px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);padding:14px;border-radius:16px}.main{padding:24px 30px 40px}.topbar{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:22px}.topbar h2{margin:0;font-size:30px}.sub{color:var(--muted);margin:5px 0 0}.pill{display:inline-flex;align-items:center;gap:8px;background:#e0f2fe;color:#075985;padding:8px 12px;border-radius:999px;font-size:13px;font-weight:700}.grid{display:grid;gap:16px}.kpis{grid-template-columns:repeat(4,minmax(160px,1fr))}.card{background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:18px}.card h3{margin:0 0 10px;font-size:16px}.metric{font-size:34px;font-weight:800;letter-spacing:-1px}.label{font-size:13px;color:var(--muted)}.trend{margin-top:8px;font-size:13px;font-weight:700}.good{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}.two{grid-template-columns:1.2fr .8fr}.three{grid-template-columns:repeat(3,1fr)}.section{display:none}.section.active{display:block}.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.primary{background:linear-gradient(135deg,var(--brand),var(--brand2));color:white;padding:10px 14px;border-radius:12px;font-weight:800}.secondary{background:#f1f5f9;color:#0f172a;padding:10px 14px;border-radius:12px;font-weight:700}.danger{background:#fee2e2;color:#991b1b;padding:8px 10px;border-radius:10px}.approve{background:#dcfce7;color:#166534;padding:8px 10px;border-radius:10px}.defer{background:#fef3c7;color:#92400e;padding:8px 10px;border-radius:10px}.override{background:#e0e7ff;color:#3730a3;padding:8px 10px;border-radius:10px}.priority{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;padding:4px 8px;border-radius:999px;display:inline-block}.p-high{background:#fee2e2;color:#991b1b}.p-med{background:#fef3c7;color:#92400e}.p-low{background:#dcfce7;color:#166534}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:16px}table{width:100%;border-collapse:collapse;background:white}th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}th{background:#f8fafc;color:#475569;font-size:12px;text-transform:uppercase;letter-spacing:.04em}td input,td select,.form input,.form select,.form textarea{width:100%;border:1px solid var(--line);padding:9px;border-radius:10px;background:white}.form{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.form label{font-size:12px;font-weight:800;color:#475569}.alert{display:flex;gap:12px;padding:14px;border-radius:16px;margin:10px 0;border:1px solid var(--line);background:#fff}.alert strong{display:block}.dot{width:11px;height:11px;border-radius:999px;margin-top:4px}.dot.good{background:var(--good)}.dot.warn{background:var(--warn)}.dot.bad{background:var(--bad)}.explain{background:#f8fafc;border:1px dashed #cbd5e1;padding:14px;border-radius:16px;margin-top:12px}.chat{position:fixed;right:24px;bottom:24px;width:360px;max-width:calc(100vw - 48px);background:white;border:1px solid var(--line);border-radius:22px;box-shadow:0 28px 70px rgba(15,23,42,.2);overflow:hidden;z-index:20}.chat header{background:#071723;color:white;padding:14px 16px;font-weight:800;display:flex;justify-content:space-between}.chat .body{padding:14px;max-height:310px;overflow:auto}.chat textarea{width:100%;height:70px;border:1px solid var(--line);border-radius:14px;padding:10px}.chat .quick{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.chat .quick button{background:#f1f5f9;padding:7px 9px;border-radius:999px;font-size:12px}.bar{height:10px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin:10px 0}.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand2));border-radius:999px}.mini{font-size:12px;color:var(--muted)}.hidden{display:none!important}@media(max-width:1000px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.kpis,.two,.three,.form{grid-template-columns:1fr}.chat{position:static;width:auto;margin:20px 0}.main{padding:18px}}
+:root{
+  --bg:#f3f8fb;--panel:#fff;--ink:#102331;--muted:#647888;--line:#d9e7ee;
+  --brand:#076b8f;--brand2:#00a7b5;--good:#10b981;--warn:#f59e0b;--bad:#ef4444;
+  --shadow:0 12px 30px rgba(7,35,53,.10);--radius:18px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+aside{background:#082f49;color:#fff;padding:22px 18px;position:sticky;top:0;height:100vh}
+.logo{display:flex;gap:10px;align-items:center;margin-bottom:22px}
+.mark{width:44px;height:44px;border-radius:15px;background:linear-gradient(135deg,#22d3ee,#7dd3fc);display:grid;place-items:center;font-weight:900;color:#063347}
+.logo h1{font-size:22px;margin:0}.logo span{display:block;color:#a7d8e4;font-size:12px;margin-top:2px}
+nav button{width:100%;border:0;background:transparent;color:#d6edf4;text-align:left;padding:12px;border-radius:12px;margin:3px 0;cursor:pointer;font-size:14px}
+nav button:hover,nav button.active{background:rgba(255,255,255,.14);color:#fff}
+.side-card{margin-top:20px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:14px;color:#d6edf4;font-size:13px}
+main{padding:24px 28px 42px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:20px}
+h2{font-size:28px;margin:0}.sub{color:var(--muted);margin-top:4px}.pill{background:#fff;border:1px solid var(--line);border-radius:999px;padding:9px 12px;font-size:13px}
+.grid{display:grid;gap:18px}.kpis{grid-template-columns:repeat(4,minmax(160px,1fr))}.two{grid-template-columns:1.1fr .9fr}.three{grid-template-columns:repeat(3,1fr)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+.card h3{margin:0 0 12px;font-size:16px}.label{color:var(--muted);font-size:13px}.metric{font-size:34px;font-weight:850;margin:8px 0}.trend,.small{font-size:13px;color:var(--muted)}
+.good{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+.bar{height:9px;background:#e6f1f4;border-radius:99px;overflow:hidden;margin-top:12px}.bar span{display:block;height:100%;background:linear-gradient(90deg,var(--brand2),var(--brand))}
+.section{display:none}.section.active{display:block}.ai-card{border-left:5px solid var(--brand2)}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:12px;color:#516571;text-transform:uppercase;letter-spacing:.04em}
+input,select,textarea{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:10px;background:white;color:var(--ink)}textarea{min-height:90px;resize:vertical}
+.form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.form-grid.three{grid-template-columns:repeat(3,1fr)}
+.btn{border:0;border-radius:11px;padding:10px 13px;background:var(--brand);color:#fff;cursor:pointer;font-weight:750}.btn.secondary{background:#e7f3f7;color:#095772}.btn.good{background:var(--good)}.btn.warn{background:var(--warn)}.btn.bad{background:var(--bad)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.tag{display:inline-block;border-radius:999px;padding:4px 8px;font-size:12px;font-weight:750}.tag.high{background:#fee2e2;color:#991b1b}.tag.med{background:#fef3c7;color:#92400e}.tag.low{background:#dcfce7;color:#166534}.tag.info{background:#e0f2fe;color:#075985}
+.notice{background:#ecfeff;border:1px solid #b6f0f5;color:#0e5662;border-radius:14px;padding:12px;margin-bottom:14px}
+.reportbox{white-space:pre-wrap;background:#f8fbfd;border:1px solid var(--line);border-radius:14px;padding:16px;min-height:300px;line-height:1.45}
+.chart{height:190px;display:flex;align-items:end;gap:9px;padding:12px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(#fbfdfe,#f2f8fb)}
+.chart div{flex:1;background:linear-gradient(180deg,var(--brand2),var(--brand));border-radius:9px 9px 3px 3px;position:relative;min-height:20px}.chart div span{position:absolute;bottom:-22px;font-size:11px;color:var(--muted);left:50%;transform:translateX(-50%)}.chart div b{position:absolute;top:-20px;font-size:11px;left:50%;transform:translateX(-50%);color:#254555}
+.rowbox{border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0;background:#fbfdfe}.rowflex{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.done{opacity:.6;text-decoration:line-through}
+.quickchips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.quickchips button{border:1px solid var(--line);background:#f1fbfd;color:#0b5d7a;border-radius:999px;padding:8px 10px;cursor:pointer;font-weight:700}
+
+.report-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.report-shell{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+.report-header{background:linear-gradient(135deg,#082f49,#076b8f);color:#fff;padding:22px}
+.report-header h3{margin:0;font-size:24px}.report-header p{margin:6px 0 0;color:#d9f5fb}
+.report-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px;background:#f8fbfd;border-bottom:1px solid var(--line)}
+.report-stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
+.report-stat b{font-size:24px;display:block;margin-top:5px}.report-body{padding:18px}
+.report-section{border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0;background:#fbfdfe}
+.report-section h4{margin:0 0 10px;font-size:15px}.report-section ul{margin:8px 0 0 20px;padding:0}.report-section li{margin:6px 0}
+.ai-explain{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.explain-card{background:#f1fbfd;border:1px solid #c8edf4;border-radius:12px;padding:10px}
+.explain-card b{display:block;color:#075985;margin-bottom:4px}
+.scenario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.scenario-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fbfdfe}
+.scenario-value{font-size:28px;font-weight:850;margin:6px 0}
+.print-note{font-size:12px;color:var(--muted);margin-top:8px}
+@media(max-width:980px){.report-summary-grid,.ai-explain,.scenario-grid{grid-template-columns:1fr}}
+
+@media(max-width:980px){.app{grid-template-columns:1fr}aside{position:relative;height:auto}.kpis,.two,.three,.form-grid,.form-grid.three{grid-template-columns:1fr}nav{display:grid;grid-template-columns:repeat(2,1fr);gap:4px}}
+@media print{aside,.topbar,.actions,button{display:none!important}.app{display:block}main{padding:0}.card{box-shadow:none;border:1px solid #bbb}.section{display:block}}
 </style>
 </head>
 <body>
 <div class="app">
-<aside class="sidebar">
-  <div class="logo"><div class="mark">≈</div><div><h1>AquaIQ</h1><span>Municipal Aquatic Operations Platform</span></div></div>
-  <div class="nav" id="nav"></div>
-  <div class="status"><div class="mini">Pilot Facility</div><strong>Gandy Pool</strong><br><span class="mini">Commercial demo configuration</span><div class="bar"><span id="sideHealth" style="width:94%"></span></div><span id="sideHealthText">Operational Health 94%</span></div>
+<aside>
+  <div class="logo"><div class="mark">AQ</div><div><h1>AquaIQPro</h1><span>AI Aquatics Operations</span></div></div>
+  <nav id="nav">
+    <button class="active" data-page="dashboard">Dashboard</button>
+    <button data-page="aiops">AI Operations Center</button>
+    <button data-page="operations">Operations Center</button>
+    <button data-page="forecasting">Forecasting</button>
+    <button data-page="scenario">Scenario Planner</button>
+    <button data-page="water">Water Quality</button>
+    <button data-page="staffing">Staffing</button>
+    <button data-page="programs">Programs</button>
+    <button data-page="inventory">Inventory</button>
+    <button data-page="maintenance">Maintenance</button>
+    <button data-page="tasks">Daily Tasks</button>
+    <button data-page="decisions">AI Decisions</button>
+    <button data-page="reports">Reports</button>
+    <button data-page="assistant">AI Assistant</button>
+  </nav>
+  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">Stable single-file GitHub build. All data is editable in-browser for demo.</span></div>
 </aside>
-<main class="main">
-  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><p class="sub" id="pageSub">AI-powered daily aquatic operations command center.</p></div><div class="toolbar"><span class="pill">Live v2.2 Prototype</span><button class="secondary" onclick="resetData()">Reset Demo Data</button></div></div>
+<main>
+  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A polished, stable AI operations platform for public pool managers.</div></div><div class="pill">Build: <b>Stable Recovery</b> • <span class="good">AI Ready</span></div></div>
 
-<section id="dashboard" class="section active">
-  <div class="grid kpis" id="kpiGrid"></div>
-  <div class="grid two" style="margin-top:16px"><div class="card"><h3>AI Operations Center</h3><div id="aiSummary"></div><div class="explain" id="explainBox"></div></div><div class="card"><h3>Today’s Demand Mix</h3><canvas id="demandCanvas" width="420" height="220"></canvas><p class="mini">Forecast recalculates from weather, programs, staffing disruptions, and manager inputs.</p></div></div>
-  <div class="grid three" style="margin-top:16px"><div class="card"><h3>Open Swim Forecast</h3><div class="metric" id="openSwimMetric"></div><div class="label" id="openSwimLabel"></div></div><div class="card"><h3>Swim Lessons</h3><div class="metric" id="lessonMetric"></div><div class="label">Projected participants today</div></div><div class="card"><h3>Pool Parties</h3><div class="metric" id="partyMetric"></div><div class="label">Booked guests today</div></div></div>
-</section>
+  <section id="dashboard" class="section active">
+    <div class="grid kpis">
+      <div class="card"><div class="label">Operational Health</div><div class="metric" id="healthMetric"></div><div class="trend" id="healthTrend"></div><div class="bar"><span id="healthBar"></span></div></div>
+      <div class="card"><div class="label">Weather-Adjusted Demand</div><div class="metric" id="demandMetric"></div><div class="trend" id="demandTrend"></div></div>
+      <div class="card"><div class="label">Staffing Coverage</div><div class="metric" id="staffMetric"></div><div class="trend" id="staffTrend"></div></div>
+      <div class="card"><div class="label">Water Quality</div><div class="metric" id="waterMetric"></div><div class="trend" id="waterTrend"></div></div>
+    </div>
+    <div class="grid two" style="margin-top:18px"><div class="card ai-card"><h3>AI Operations Summary</h3><div id="aiSummary"></div></div><div class="card"><h3>Priority Actions</h3><div id="priorityActions"></div></div></div>
+    <div class="grid three" style="margin-top:18px"><div class="card"><h3>Program Load</h3><div id="programLoad"></div></div><div class="card"><h3>Inventory Risk</h3><div id="inventoryRisk"></div></div><div class="card"><h3>Manager Decision Status</h3><div id="decisionStatus"></div></div></div>
+  </section>
 
-<section id="manager" class="section">
-  <div class="card"><h3>Manager Control Panel</h3><p class="sub">Edit operating assumptions. Changes are saved in this browser and immediately update forecasts and recommendations.</p><div class="form" id="managerForm"></div><div style="margin-top:14px" class="toolbar"><button class="primary" onclick="saveManagerInputs()">Apply Manager Inputs</button><button class="secondary" onclick="simulateNoShow()">Simulate Lifeguard No-Show</button></div></div>
-</section>
 
-<section id="staffing" class="section"><div class="card"><div class="toolbar" style="justify-content:space-between"><h3>Lifeguard Schedule</h3><button class="primary" onclick="addStaff()">Add Lifeguard</button></div><div class="tablewrap"><table id="staffTable"></table></div></div></section>
-<section id="programs" class="section"><div class="grid two"><div class="card"><div class="toolbar" style="justify-content:space-between"><h3>Swim Lessons</h3><button class="primary" onclick="addLesson()">Add Lesson</button></div><div class="tablewrap"><table id="lessonTable"></table></div></div><div class="card"><div class="toolbar" style="justify-content:space-between"><h3>Pool Parties & Rentals</h3><button class="primary" onclick="addParty()">Add Party</button></div><div class="tablewrap"><table id="partyTable"></table></div></div></div><div class="card" style="margin-top:16px"><div class="toolbar" style="justify-content:space-between"><h3>Swim Team Schedule</h3><button class="primary" onclick="addTeam()">Add Team Block</button></div><div class="tablewrap"><table id="teamTable"></table></div></div></section>
-<section id="water" class="section"><div class="card"><h3>Water Quality Entry</h3><div class="form" id="waterForm"></div><div class="toolbar" style="margin-top:14px"><button class="primary" onclick="saveWater()">Save Readings</button></div></div></section>
-<section id="forecasting" class="section"><div class="grid two"><div class="card"><h3>7-Day Weather-Adjusted Demand Forecast</h3><div id="forecastList"></div></div><div class="card"><h3>Forecast Logic</h3><p>AquaIQ uses a decision-support model that combines baseline demand, temperature lift, rain penalty, programs, parties, swim team lane reservations, staffing shortages, and water-quality status.</p><div class="explain" id="forecastExplain"></div></div></div></section>
-<section id="maintenance" class="section"><div class="card"><div class="toolbar" style="justify-content:space-between"><h3>Maintenance</h3><button class="primary" onclick="addMaintenance()">Add Work Item</button></div><div class="tablewrap"><table id="maintenanceTable"></table></div></div></section>
-<section id="inventory" class="section"><div class="card"><div class="toolbar" style="justify-content:space-between"><h3>Chemical & Supply Inventory</h3><button class="primary" onclick="addInventory()">Add Item</button></div><div class="tablewrap"><table id="inventoryTable"></table></div></div></section>
-
-<section id="incidents" class="section"><div class="card"><div class="toolbar" style="justify-content:space-between"><h3>Incident Log</h3><button class="primary" onclick="addIncident()">Add Incident</button></div><p class="sub">Editable log for first aid, rule enforcement, weather delays, contamination events, and customer service issues.</p><div class="tablewrap"><table id="incidentTable"></table></div></div></section>
-<section id="ai-review" class="section"><div class="grid two"><div class="card"><h3>AI Recommendation Review</h3><p class="sub">Approve, defer, or override recommendations. These decisions create an audit trail for the capstone workflow.</p><div id="reviewList"></div></div><div class="card"><h3>Decision Audit Trail</h3><div id="auditList"></div></div></div></section>
-<section id="reports" class="section">
-  <div class="grid two">
-    <div class="card">
-      <h3>Report Center</h3>
-      <p class="sub">Generate manager-ready reports from the current editable inputs, AI recommendations, incident log, staffing schedule, program schedule, inventory, and audit trail.</p>
-      <div class="toolbar" style="margin-top:12px">
-        <button class="primary" onclick="generateReport('daily')">Daily Operations</button>
-        <button class="secondary" onclick="generateReport('executive')">Executive Summary</button>
-        <button class="secondary" onclick="generateReport('water')">Water Quality</button>
-        <button class="secondary" onclick="generateReport('staffing')">Staffing & Programs</button>
-        <button class="secondary" onclick="generateReport('risk')">Risk & Decisions</button>
+  <section id="aiops" class="section">
+    <div class="notice"><b>AI Operations Center:</b> this page explains why AquaIQPro is making each recommendation and shows the operational drivers behind the daily score.</div>
+    <div class="grid two">
+      <div class="card ai-card">
+        <h3>Today’s AI Briefing</h3>
+        <div id="aiOpsBriefing"></div>
       </div>
-      <div class="explain">
-        <strong>What “swim team lane capacity pressure” means:</strong><br>
-        Swim team practices reserve a number of lap lanes for a scheduled block. Those swimmers are not counted the same as open swim visitors because they mainly affect lane availability, deck supervision, and lap-swim capacity. AquaIQ uses the swimmers and reserved lanes to estimate whether normal lap/open swim access will be constrained.
+      <div class="card">
+        <h3>AI Confidence & Reasoning</h3>
+        <div id="aiExplainPanel"></div>
       </div>
     </div>
-    <div class="card">
-      <h3>Report Preview</h3>
-      <textarea id="reportText" style="width:100%;height:520px;border:1px solid var(--line);border-radius:16px;padding:14px"></textarea>
-      <div class="toolbar" style="margin-top:12px"><button class="primary" onclick="generateReport('daily')">Refresh Report</button><button class="secondary" onclick="copyReport()">Copy Report</button></div>
+    <div class="card" style="margin-top:18px">
+      <h3>Recommendation Explainability</h3>
+      <div id="explainabilityList"></div>
     </div>
-  </div>
-</section>
+  </section>
 
-<div class="chat"><header><span>Ask AquaIQ</span><button style="background:transparent;color:white" onclick="document.querySelector('.chat').classList.toggle('hidden')">×</button></header><div class="body"><div id="chatAnswer" class="alert"><div class="dot good"></div><div><strong>AI Assistant Ready</strong><span class="mini">Ask about staffing, chemicals, demand, incidents, approvals, or today's report.</span></div></div><div class="quick"><button onclick="ask('How many lifeguards do I need today?')">Staffing</button><button onclick="ask('Explain today demand')">Demand</button><button onclick="ask('Should I reorder chlorine?')">Inventory</button><button onclick="ask('Generate todays report')">Report</button></div><textarea id="chatInput" placeholder="Ask AquaIQ..."></textarea><button class="primary" style="width:100%;margin-top:8px" onclick="ask(document.getElementById('chatInput').value)">Ask</button></div></div>
+
+  <section id="scenario" class="section">
+    <div class="notice"><b>Scenario Planner:</b> test what happens if weather, staffing, or demand changes. This supports manager planning without changing the live operating inputs.</div>
+    <div class="card">
+      <h3>What-If Inputs</h3>
+      <div class="form-grid">
+        <label>Scenario Temperature °F<input id="scenarioTemp" type="number"></label>
+        <label>Scenario Rain %<input id="scenarioRain" type="number"></label>
+        <label>Extra Attendance<input id="scenarioExtraDemand" type="number"></label>
+        <label>Extra Staff Call-Outs<input id="scenarioCallouts" type="number"></label>
+      </div>
+      <button class="btn" style="margin-top:14px" onclick="runScenario()">Run Scenario</button>
+    </div>
+    <div class="scenario-grid" style="margin-top:18px">
+      <div class="scenario-card"><div class="label">Scenario Demand</div><div class="scenario-value" id="scenarioDemand">--</div><div class="small" id="scenarioDemandNote"></div></div>
+      <div class="scenario-card"><div class="label">Scenario Staffing Gap</div><div class="scenario-value" id="scenarioStaffGap">--</div><div class="small" id="scenarioStaffNote"></div></div>
+      <div class="scenario-card"><div class="label">Scenario Risk Level</div><div class="scenario-value" id="scenarioRisk">--</div><div class="small" id="scenarioRiskNote"></div></div>
+    </div>
+  </section>
+
+  <section id="operations" class="section">
+    <div class="notice"><b>Manager Control Panel:</b> update operating assumptions. AquaIQPro recalculates demand, staffing, inventory, water quality, reports, and recommendations.</div>
+    <div class="card"><h3>Operating Inputs</h3><div class="form-grid"><label>Temperature °F<input id="tempInput" type="number"></label><label>Rain Probability %<input id="rainInput" type="number"></label><label>Base Attendance<input id="baseDemandInput" type="number"></label><label>Staff Call-Outs<input id="calloutInput" type="number"></label></div><button class="btn" style="margin-top:14px" onclick="updateInputs('Manager updated operating inputs')">Recalculate AI Plan</button></div>
+    <div class="grid two" style="margin-top:18px"><div class="card"><h3>Readiness Checklist</h3><div id="checklist"></div></div><div class="card"><h3>Incident Log</h3><textarea id="incidentInput" placeholder="Enter incident note..."></textarea><button class="btn" style="margin-top:10px" onclick="addIncident()">Add Incident</button><div id="incidents" style="margin-top:12px"></div></div></div>
+  </section>
+
+  <section id="forecasting" class="section">
+    <div class="grid two"><div class="card"><h3>7-Day Demand Forecast</h3><div id="demandChart" class="chart"></div><p class="small">Forecast combines base demand, weather, programs, and lane usage.</p></div><div class="card"><h3>Forecast Explanation</h3><div id="forecastExplanation"></div></div></div>
+    <div class="card" style="margin-top:18px"><h3>Forecast Table</h3><table><thead><tr><th>Day</th><th>Temp</th><th>Rain</th><th>Program Load</th><th>Forecast Demand</th><th>Staff Needed</th></tr></thead><tbody id="forecastTable"></tbody></table></div>
+  </section>
+
+  <section id="water" class="section">
+    <div class="grid two"><div class="card"><h3>Editable Water Test Readings</h3><div class="form-grid three"><label>Free Chlorine ppm<input id="chlorineInput" type="number" step=".1"></label><label>pH<input id="phInput" type="number" step=".1"></label><label>Alkalinity ppm<input id="alkInput" type="number"></label></div><button class="btn" style="margin-top:14px" onclick="updateInputs('Manager updated water chemistry')">Update Water Quality</button></div><div class="card"><h3>Target Chemical Ranges</h3><table><thead><tr><th>Chemical</th><th>Target</th><th>Current</th><th>Status</th></tr></thead><tbody id="chemicalRanges"></tbody></table><p class="small">Targets are demo values and should be verified against local policy and certified pool operator guidance.</p></div></div>
+    <div class="card" style="margin-top:18px"><h3>AI Water Quality Guidance</h3><div id="waterGuidance"></div></div>
+  </section>
+
+  <section id="staffing" class="section">
+    <div class="card"><h3>Editable Lifeguard Schedule</h3><table><thead><tr><th>Name</th><th>Shift</th><th>Area</th><th>Status</th><th>Action</th></tr></thead><tbody id="staffTable"></tbody></table></div>
+    <div class="card" style="margin-top:18px"><h3>Add Lifeguard / Shift</h3><div class="form-grid three"><input id="newStaffName" placeholder="Name"><input id="newStaffShift" placeholder="Shift"><select id="newStaffArea"><option>Lap Pool</option><option>Recreation Pool</option><option>Lessons</option><option>Deck Supervisor</option></select></div><button class="btn" style="margin-top:12px" onclick="addStaff()">Add Staff Member</button></div>
+  </section>
+
+  <section id="programs" class="section">
+    <div class="grid three"><div class="card"><h3>Swim Lessons</h3><div id="lessonList"></div><button class="btn secondary" onclick="addProgram('lessons')">Add Lesson Block</button></div><div class="card"><h3>Pool Parties</h3><div id="partyList"></div><button class="btn secondary" onclick="addProgram('parties')">Add Pool Party</button></div><div class="card"><h3>Swim Team</h3><div id="teamList"></div><button class="btn secondary" onclick="addProgram('team')">Add Practice</button></div></div>
+    <div class="card" style="margin-top:18px"><h3>Lane Capacity Explanation</h3><p><b>Swim team lane capacity pressure</b> means swim team practice is reserving lanes, reducing lane availability for lap swim, lessons, open swim, and party use.</p><div id="lanePressure"></div></div>
+  </section>
+
+  <section id="inventory" class="section">
+    <div class="card"><h3>Inventory + AI Purchase Recommendations</h3><table><thead><tr><th>Item</th><th>On Hand</th><th>Minimum</th><th>Days Left</th><th>AI Recommendation</th></tr></thead><tbody id="inventoryTable"></tbody></table></div>
+  </section>
+
+  <section id="maintenance" class="section">
+    <div class="notice"><b>Maintenance Center:</b> create work orders and let AquaIQPro prioritize safety-sensitive maintenance.</div>
+    <div class="grid two"><div class="card"><h3>Work Orders</h3><div id="workOrders"></div></div><div class="card"><h3>Create Work Order</h3><div class="form-grid three"><input id="woAsset" placeholder="Asset"><select id="woPriority"><option>Low</option><option selected>Medium</option><option>High</option></select><select id="woStatus"><option selected>Open</option><option>In Progress</option><option>Completed</option></select></div><textarea id="woDesc" placeholder="Description" style="margin-top:10px"></textarea><button class="btn" style="margin-top:10px" onclick="addWorkOrder()">Add Work Order</button></div></div>
+    <div class="card" style="margin-top:18px"><h3>AI Maintenance Prioritization</h3><div id="maintenanceAI"></div></div>
+  </section>
+
+  <section id="tasks" class="section">
+    <div class="notice"><b>Daily Task Board:</b> complete high-priority tasks before opening and peak periods.</div>
+    <div class="grid two"><div class="card"><h3>Today’s Task Board</h3><div id="taskBoard"></div></div><div class="card"><h3>Add Manager Task</h3><div class="form-grid three"><input id="taskName" placeholder="Task name"><select id="taskPriority"><option>Low</option><option selected>Medium</option><option>High</option></select><select id="taskOwner"><option>Pool Manager</option><option>Lifeguard Supervisor</option><option>Maintenance</option><option>Front Desk</option></select></div><button class="btn" style="margin-top:12px" onclick="addTask()">Add Task</button></div></div>
+  </section>
+
+  <section id="decisions" class="section">
+    <div class="notice"><b>Human-in-the-loop workflow:</b> managers approve, defer, or override AI recommendations.</div>
+    <div class="card"><h3>AI Recommendation Review Queue</h3><div id="approvalQueue"></div></div><div class="card" style="margin-top:18px"><h3>Decision Audit Trail</h3><div id="auditTrail"></div></div>
+  </section>
+
+  <section id="reports" class="section">
+    <div class="card">
+      <h3>Professional Report Generator</h3>
+      <p class="small">Reports now read like manager-ready summaries instead of raw system output. Use Print / Save PDF for submission or daily records.</p>
+      <div class="report-toolbar">
+        <button class="btn" onclick="generateReport('Daily Operations Report')">Daily Operations</button>
+        <button class="btn secondary" onclick="generateReport('Executive Summary')">Executive Summary</button>
+        <button class="btn secondary" onclick="generateReport('Water Quality Report')">Water Quality</button>
+        <button class="btn secondary" onclick="generateReport('Staffing & Programs Report')">Staffing & Programs</button>
+        <button class="btn secondary" onclick="generateReport('Risk & AI Decisions Report')">Risk & AI Decisions</button>
+        <button class="btn warn" onclick="window.print()">Print / Save PDF</button>
+      </div>
+      <div class="print-note">Tip: use your browser’s Print option and choose “Save as PDF.”</div>
+    </div>
+    <div id="reportVisual" class="report-shell" style="margin-top:18px"></div>
+    <textarea id="reportBox" class="reportbox" style="display:none"></textarea>
+  </section>
+
+  <section id="assistant" class="section">
+    <div class="grid two"><div class="card"><h3>Ask AquaIQPro</h3><textarea id="askInput" placeholder="Try: Should I add another lifeguard? What chemicals should I buy? Is water quality safe?"></textarea><div class="quickchips"><button onclick="quickAsk('Should I add another lifeguard today?')">Staffing</button><button onclick="quickAsk('What chemicals should I buy?')">Purchasing</button><button onclick="quickAsk('Is water quality safe?')">Water Safety</button><button onclick="quickAsk('What maintenance should I prioritize?')">Maintenance</button><button onclick="quickAsk('Generate an executive summary.')">Executive Summary</button></div><button class="btn" style="margin-top:10px" onclick="askAI()">Ask AI Assistant</button></div><div class="card ai-card"><h3>AI Assistant Response</h3><div id="assistantAnswer">Ask a question to get a decision-support answer based on current inputs.</div></div></div>
+  </section>
 </main>
 </div>
-<script>
-const pages={dashboard:['Dashboard','AI-powered daily aquatic operations command center.'],manager:['Manager Controls','Editable assumptions for daily operations.'],staffing:['Staffing','Editable lifeguard schedule and coverage analysis.'],programs:['Programs','Swim lessons, pool parties, and swim team schedule.'],water:['Water Quality','Manager-entered chemical readings and compliance status.'],forecasting:['Forecasting','Weather-adjusted demand outlook and explainability.'],maintenance:['Maintenance','Work orders and asset risk tracking.'],inventory:['Inventory','Chemical and supply levels.'],incidents:['Incidents','Editable incident log and operational disruptions.'],'ai-review':['AI Review','Recommendation approval, deferral, override, and audit trail.'],reports:['Reports','Daily operations report generator.']};
-const nav=document.getElementById('nav');Object.keys(pages).forEach(k=>{let b=document.createElement('button');b.textContent=({dashboard:'🏠 ',manager:'🧭 ',staffing:'👥 ',programs:'📅 ',water:'💧 ',forecasting:'📈 ',maintenance:'🛠 ',inventory:'📦 ',incidents:'🚨 ','ai-review':'✅ ',reports:'📄 '})[k]+pages[k][0];b.onclick=()=>show(k);if(k==='dashboard')b.className='active';nav.appendChild(b)});
-function show(id){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));[...document.querySelectorAll('.nav button')][Object.keys(pages).indexOf(id)].classList.add('active');pageTitle.textContent=pages[id][0];pageSub.textContent=pages[id][1];if(id==='reports')generateReport()}
-const defaultData={manager:{date:'Today',temp:93,rain:18,uv:9,baseAttendance:210,staffCallouts:0,capacity:375,holiday:'No',notes:'Summer operating day with afternoon program activity.'},water:{chlorine:2.3,ph:7.4,alkalinity:95,waterTemp:82,lastTest:'08:00'},staff:[['Maya','Head Guard','05:30','13:30','Lap Pool','Active'],['Jordan','Lifeguard','09:00','17:00','Recreation Pool','Active'],['Sam','Lifeguard','10:00','18:00','Slide / Deck','Active'],['Taylor','Lifeguard','11:00','19:00','Open Swim','Active'],['Chris','Lifeguard','12:00','17:00','Lessons','Active'],['Riley','Lifeguard','12:00','19:00','Relief','Active']],lessons:[['Beginner 1','09:00','10:00',14,'Pool A','Scheduled'],['Beginner 2','10:15','11:15',16,'Pool A','Scheduled'],['Intermediate','17:00','18:00',12,'Lap Lanes','Scheduled']],parties:[['Birthday Rental','12:30','14:30',28,'Recreation Pool','Confirmed'],['Team Celebration','15:00','17:00',35,'Shelter + Pool','Confirmed']],team:[['Lakeland Swim Club','06:00','08:00',42,6,'Practice'],['Evening Team Block','18:00','19:00',28,4,'Practice']],maintenance:[['Main Pump','Operational','Medium','2026-06-20','Monitor pressure'],['Diving Board','Inspection Due','High','2026-06-18','Inspect before peak swim'],['Deck Shower','Open Work Order','Low','2026-06-22','Replace handle']],inventory:[['Liquid Chlorine',45,20,'gallons'],['pH Reducer',12,8,'bottles'],['Test Strips',6,4,'kits'],['First Aid Kits',5,3,'kits']],incidents:[['08:45','Weather','Lightning watch reviewed','Resolved','Monitor afternoon radar'],['11:10','First Aid','Minor scrape near deck','Closed','Bandage applied']],audit:[]};
-let data=JSON.parse(localStorage.getItem('aquaiqv21')||localStorage.getItem('aquaiqv2')||'null')||defaultData;function normalize(){for(const k in defaultData){if(data[k]===undefined)data[k]=JSON.parse(JSON.stringify(defaultData[k]));}}normalize();
-function save(){localStorage.setItem('aquaiqv21',JSON.stringify(data));render()}
-function resetData(){if(confirm('Reset demo data?')){data=JSON.parse(JSON.stringify(defaultData));save()}}
-function compute(){let m=data.manager,w=data.water;let weather=(m.temp-84)*7 - m.rain*1.3 + (m.uv>8?15:0)+(m.holiday==='Yes'?45:0);let lessons=data.lessons.filter(r=>r[5]!=='Cancelled').reduce((a,r)=>a+Number(r[3]),0);let parties=data.parties.filter(r=>r[5]!=='Cancelled').reduce((a,r)=>a+Number(r[3]),0);let teamPeople=data.team.filter(r=>r[5]!=='Cancelled').reduce((a,r)=>a+Number(r[3]),0);let staffActive=data.staff.filter(r=>r[5]==='Active').length-Number(m.staffCallouts||0);let open=Math.max(40,Math.round(Number(m.baseAttendance)+weather));let total=open+lessons+parties+Math.round(teamPeople*.35);let required=Math.max(4,Math.ceil(total/45)+Math.ceil(data.team.reduce((a,r)=>a+Number(r[4]||0),0)/4));let waterScore=(w.chlorine>=1.5&&w.chlorine<=4?35:18)+(w.ph>=7.2&&w.ph<=7.8?35:18)+(w.alkalinity>=80&&w.alkalinity<=120?15:8)+15;let staffScore=Math.min(100,Math.round(staffActive/required*100));let demandRisk=total>m.capacity?70:total>m.capacity*.85?86:96;let health=Math.round((waterScore*.35)+(staffScore*.30)+(demandRisk*.20)+(90*.15));let chemLift=total>280?18:total>220?10:4;return{weather,open,lessons,parties,teamPeople,total,required,staffActive,waterScore,staffScore,health,chemLift}}
-function recs(){let c=compute(),r=[];if(c.staffActive<c.required)r.push(['bad','Staffing shortage','Schedule '+(c.required-c.staffActive)+' additional lifeguard(s) or reduce capacity.','High','staffing']);else r.push(['good','Staffing coverage sufficient','Current active staff meets the forecasted coverage requirement.','Low','staffing']);if(data.water.chlorine<1.5)r.push(['bad','Low chlorine','Increase chlorine treatment and retest before peak attendance.','High','chlorine']);else if(data.water.chlorine>4)r.push(['warn','High chlorine','Retest and consider delaying entry until within target range.','Medium','chlorine']);else r.push(['good','Chlorine in target range','Continue normal testing cadence.','Low','chlorine']);if(c.total>data.manager.capacity*.85)r.push(['warn','High demand outlook','Prepare crowd-control plan, restroom checks, and extra water-quality testing.','Medium','demand']);if(data.parties.filter(p=>p[5]!=='Cancelled').length>0)r.push(['warn','Pool party activity','Confirm check-in process and assign deck coverage.','Medium','parties']);if(data.team.filter(t=>t[5]!=='Cancelled').length>0)r.push(['warn','Swim team lane capacity pressure','Reserved swim team lanes may reduce lap/open swim capacity. Communicate lane limits and adjust open swim expectations.','Medium','team']);let lowInv=data.inventory.filter(i=>Number(i[1])<=Number(i[2]));lowInv.forEach(i=>r.push(['bad','Inventory reorder needed',i[0]+' is at or below minimum level.','High','inventory-'+i[0]]));let openInc=data.incidents.filter(i=>i[3]!=='Closed'&&i[3]!=='Resolved').length;if(openInc)r.push(['warn','Open incidents','Review '+openInc+' unresolved incident(s) before peak activity.','Medium','incidents']);return r}
-function render(){let c=compute();sideHealth.style.width=c.health+'%';sideHealthText.textContent='Operational Health '+c.health+'%';kpiGrid.innerHTML=[['Operational Health',c.health+'%',c.health>85?'good':'warn','Composite score'],['Forecast Demand',c.total,'warn','Weather-adjusted visitors'],['Required Guards',c.required,c.staffActive>=c.required?'good':'bad',c.staffActive+' active scheduled'],['Water Quality',c.waterScore+'%',c.waterScore>85?'good':'bad','Based on latest readings']].map(x=>`<div class="card"><h3>${x[0]}</h3><div class="metric ${x[2]}">${x[1]}</div><div class="label">${x[3]}</div></div>`).join('');
-openSwimMetric.textContent=c.open;openSwimLabel.textContent=`Base ${data.manager.baseAttendance}; weather adjustment ${Math.round(c.weather)>0?'+':''}${Math.round(c.weather)}`;lessonMetric.textContent=c.lessons;partyMetric.textContent=c.parties;
-aiSummary.innerHTML=recs().map(a=>`<div class="alert"><div class="dot ${a[0]}"></div><div><strong>${a[1]}</strong><span class="mini">${a[2]}</span></div></div>`).join('');explainBox.innerHTML=`<strong>Why AquaIQ predicted this:</strong><br>Temperature ${data.manager.temp}°F, rain risk ${data.manager.rain}%, UV ${data.manager.uv}, ${c.lessons} lesson participants, ${c.parties} party guests, ${c.teamPeople} swim team participants, and ${c.staffActive} active lifeguards.`;drawDemand(c);renderManager();renderWater();renderTables();renderForecast(c);renderReview();}
-function renderManager(){managerForm.innerHTML=['temp','rain','uv','baseAttendance','staffCallouts','capacity','holiday','notes'].map(k=>`<label>${k.replace(/([A-Z])/g,' $1')}<${k==='notes'?'textarea':'input'} data-m="${k}" value="${data.manager[k]}">${k==='notes'?data.manager[k]+'</textarea>':''}</label>`).join('')}
-function saveManagerInputs(){document.querySelectorAll('[data-m]').forEach(el=>data.manager[el.dataset.m]=isNaN(el.value)||el.dataset.m==='holiday'||el.dataset.m==='notes'?el.value:Number(el.value));save()}
-function renderWater(){waterForm.innerHTML=['chlorine','ph','alkalinity','waterTemp','lastTest'].map(k=>`<label>${k}<input data-w="${k}" value="${data.water[k]}"></label>`).join('')}
-function saveWater(){document.querySelectorAll('[data-w]').forEach(el=>data.water[el.dataset.w]=isNaN(el.value)||el.dataset.w==='lastTest'?el.value:Number(el.value));save()}
-function table(id,headers,rows,key){document.getElementById(id).innerHTML='<tr>'+headers.map(h=>`<th>${h}</th>`).join('')+'<th>Action</th></tr>'+rows.map((r,i)=>'<tr>'+r.map((v,j)=>`<td><input onchange="editCell('${key}',${i},${j},this.value)" value="${v}"></td>`).join('')+`<td><button class="danger" onclick="delRow('${key}',${i})">Delete</button></td></tr>`).join('')}
-function renderTables(){table('staffTable',['Name','Role','Start','End','Area','Status'],data.staff,'staff');table('lessonTable',['Class','Start','End','Enrollment','Area','Status'],data.lessons,'lessons');table('partyTable',['Event','Start','End','Guests','Area','Status'],data.parties,'parties');table('teamTable',['Team','Start','End','Swimmers','Lanes','Status'],data.team,'team');table('maintenanceTable',['Asset','Status','Priority','Last Check','Notes'],data.maintenance,'maintenance');table('inventoryTable',['Item','On Hand','Minimum','Unit'],data.inventory,'inventory');table('incidentTable',['Time','Type','Description','Status','Follow-up'],data.incidents,'incidents')}
-function editCell(k,i,j,v){data[k][i][j]=isNaN(v)?v:Number(v);save()}function delRow(k,i){data[k].splice(i,1);save()}
-function addStaff(){data.staff.push(['New Guard','Lifeguard','12:00','18:00','Unassigned','Active']);save()}function addLesson(){data.lessons.push(['New Lesson','13:00','14:00',10,'Pool A','Scheduled']);save()}function addParty(){data.parties.push(['New Rental','14:00','16:00',25,'Recreation Pool','Confirmed']);save()}function addTeam(){data.team.push(['Team Block','18:00','19:00',20,3,'Practice']);save()}function addMaintenance(){data.maintenance.push(['New Asset','Open','Medium','Today','']);save()}function addInventory(){data.inventory.push(['New Item',10,5,'units']);save()}function addIncident(){data.incidents.push(['Now','Operational','New incident note','Open','Assign follow-up']);save()}function simulateNoShow(){let active=data.staff.find(r=>r[5]==='Active');if(active)active[5]='No Show';save()}
 
-function decisionKey(id){return 'rec-'+id}
-function setDecision(id,action){data.audit.unshift([new Date().toLocaleString(),id,action,'Manager review recorded']);save()}
-function renderReview(){let list=recs();reviewList.innerHTML=list.map(a=>`<div class="alert"><div class="dot ${a[0]}"></div><div style="flex:1"><strong>${a[1]} <span class="priority p-${a[3].toLowerCase()==='high'?'high':a[3].toLowerCase()==='medium'?'med':'low'}">${a[3]}</span></strong><span class="mini">${a[2]}</span><div class="toolbar" style="margin-top:8px"><button class="approve" onclick="setDecision('${a[4]}','Approved')">Approve</button><button class="defer" onclick="setDecision('${a[4]}','Deferred')">Defer</button><button class="override" onclick="setDecision('${a[4]}','Override')">Override</button></div></div></div>`).join('');auditList.innerHTML=(data.audit.length?data.audit:[['No decisions yet','—','—','Use approve/defer/override to create an audit trail']]).map(a=>`<div class="alert"><div class="dot good"></div><div><strong>${a[2]} — ${a[1]}</strong><span class="mini">${a[0]} · ${a[3]}</span></div></div>`).join('')}
-function renderForecast(c){let days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];forecastList.innerHTML=days.map((d,i)=>{let t=86+i+(i>4?4:0),rain=[20,15,35,22,18,12,45][i],base=190+(i>4?70:0),adj=Math.round(base+(t-84)*7-rain*1.2);return `<div class="alert"><div class="dot ${adj>280?'warn':'good'}"></div><div><strong>${d}: ${adj} expected visitors</strong><span class="mini">${t}°F, ${rain}% rain probability; staffing target ${Math.ceil(adj/45)+4}</span></div></div>`}).join('');forecastExplain.innerHTML=`Demand forecast currently uses weather adjustment (${Math.round(c.weather)}), program load (${c.lessons+c.parties+c.teamPeople}), and staffing capacity (${c.staffActive}/${c.required}).`}
-function drawDemand(c){let cv=document.getElementById('demandCanvas'),ctx=cv.getContext('2d');ctx.clearRect(0,0,cv.width,cv.height);let vals=[['Open',c.open],['Lessons',c.lessons],['Parties',c.parties],['Team',Math.round(c.teamPeople*.35)]],max=Math.max(...vals.map(v=>v[1]));vals.forEach((v,i)=>{let w=v[1]/max*300;ctx.fillStyle=['#0f766e','#0ea5e9','#6366f1','#f59e0b'][i];ctx.fillRect(90,25+i*45,w,26);ctx.fillStyle='#334155';ctx.font='14px Segoe UI';ctx.fillText(v[0],12,43+i*45);ctx.fillText(v[1],100+w,43+i*45)})}
-function programSummary(){return `Swim lessons: ${data.lessons.filter(x=>x[5]!=='Cancelled').length} active class(es), ${data.lessons.filter(x=>x[5]!=='Cancelled').reduce((a,b)=>a+Number(b[3]||0),0)} participants
-Pool parties: ${data.parties.filter(x=>x[5]!=='Cancelled').length} active booking(s), ${data.parties.filter(x=>x[5]!=='Cancelled').reduce((a,b)=>a+Number(b[3]||0),0)} guests
-Swim team: ${data.team.filter(x=>x[5]!=='Cancelled').length} active block(s), ${data.team.filter(x=>x[5]!=='Cancelled').reduce((a,b)=>a+Number(b[3]||0),0)} swimmers, ${data.team.filter(x=>x[5]!=='Cancelled').reduce((a,b)=>a+Number(b[4]||0),0)} reserved lanes`}
-function statusLine(c){if(c.health>=90)return 'Green: operations are well controlled with routine manager review.'; if(c.health>=75)return 'Yellow: operations are acceptable but require manager attention before peak periods.'; return 'Red: operations require intervention before full-capacity service.'}
-function generateReport(type='daily'){
-let c=compute(), recommendations=recs();
-let header=`AquaIQ ${type.charAt(0).toUpperCase()+type.slice(1)} Report\nFacility: Gandy Pool pilot profile\nGenerated: ${new Date().toLocaleString()}\nOperational Status: ${statusLine(c)}\n`;
-let scorecard=`\n1. Operating Scorecard\n- Operational Health: ${c.health}%\n- Forecast Demand: ${c.total} total demand units\n- Open Swim Forecast: ${c.open}\n- Swim Lesson Participants: ${c.lessons}\n- Pool Party Guests: ${c.parties}\n- Swim Team Participants: ${c.teamPeople}\n- Swim Team Reserved Lanes: ${data.team.filter(t=>t[5]!=='Cancelled').reduce((a,b)=>a+Number(b[4]||0),0)}\n- Active Lifeguards: ${c.staffActive}\n- Required Lifeguards: ${c.required}\n- Water Quality Score: ${c.waterScore}%\n- Estimated Chemical Usage Lift: ${c.chemLift}% above normal\n`;
-let assumptions=`\n2. Forecast Assumptions\n- Temperature: ${data.manager.temp}°F\n- Rain Probability: ${data.manager.rain}%\n- UV Index: ${data.manager.uv}\n- Base Attendance: ${data.manager.baseAttendance}\n- Capacity Assumption: ${data.manager.capacity}\n- Staff Call-Outs Entered: ${data.manager.staffCallouts}\n- Holiday Flag: ${data.manager.holiday}\n- Manager Notes: ${data.manager.notes}\n`;
-let programs=`\n3. Programs and Lane Availability\n${programSummary()}\n\nSwim Team Lane Capacity Pressure Explanation:\nSwim team lane pressure means scheduled team practices are reserving lanes that would otherwise be available for lap swim, lessons, or open swim. The forecast treats this as a capacity and supervision constraint, not simply as extra attendance.\n`;
-let water=`\n4. Water Quality and Chemical Readings\n- Chlorine: ${data.water.chlorine} ppm\n- pH: ${data.water.ph}\n- Alkalinity: ${data.water.alkalinity}\n- Water Temperature: ${data.water.waterTemp}°F\n- Last Test: ${data.water.lastTest}\n- AI Assessment: ${c.waterScore>=90?'Within target range. Continue normal testing cadence.':c.waterScore>=75?'Monitor and retest before peak demand.':'Manager action required before peak demand.'}\n`;
-let staffing=`\n5. Staffing Coverage\n${data.staff.map(s=>`- ${s[0]} | ${s[1]} | ${s[2]}-${s[3]} | ${s[4]} | ${s[5]}`).join('\n')}\n\nCoverage Finding: ${c.staffActive>=c.required?'Scheduled active staffing meets forecasted requirement.':'Coverage is short by '+(c.required-c.staffActive)+' lifeguard(s).'}\n`;
-let inventory=`\n6. Inventory and Maintenance\nInventory:\n${data.inventory.map(i=>`- ${i[0]}: ${i[1]} ${i[3]} on hand; minimum ${i[2]} ${i[3]}`).join('\n')}\n\nMaintenance:\n${data.maintenance.map(m=>`- ${m[0]} | ${m[1]} | ${m[2]} priority | Last check: ${m[3]} | ${m[4]}`).join('\n')}\n`;
-let ai=`\n7. AI Recommendations\n${recommendations.map(r=>`- [${r[3]}] ${r[1]}: ${r[2]}`).join('\n')}\n\nExplainability Summary:\nAquaIQ based these recommendations on weather-adjusted demand, program load, reserved swim team lanes, lifeguard coverage, water chemistry readings, inventory thresholds, maintenance status, and incident records.\n`;
-let incidents=`\n8. Incidents and Manager Decision Trail\nIncidents:\n${data.incidents.map(i=>`- ${i[0]} | ${i[1]} | ${i[2]} | ${i[3]} | ${i[4]}`).join('\n')}\n\nDecision Audit Trail:\n${(data.audit.length?data.audit:['No approval decisions recorded yet']).map(a=>Array.isArray(a)?`- ${a[0]} | ${a[1]} | ${a[2]} | ${a[3]}`:`- ${a}`).join('\n')}\n`;
-let next=`\n9. Recommended Manager Actions\n- Review all High priority recommendations before opening or peak swim.\n- Confirm lifeguard coverage against demand forecast and program schedule.\n- Recheck water chemistry before peak demand if forecast demand exceeds 85% of capacity.\n- Communicate lane restrictions when swim team lanes are reserved.\n- Copy this report into the daily operating log after manager review.\n`;
-let map={daily:header+scorecard+assumptions+programs+water+staffing+inventory+ai+incidents+next,executive:header+scorecard+ai+next,water:header+water+assumptions+ai,staffing:header+staffing+programs+scorecard,risk:header+ai+incidents+inventory+next};
-reportText.value=map[type]||map.daily;
+<script>
+var state = {
+  facility:"Gandy Pool Demo",
+  weather:{temp:94,rain:18},
+  demand:{base:230,adjusted:0},
+  water:{chlorine:2.1,ph:7.4,alk:95},
+  callouts:1,
+  staff:[
+    {name:"Alex",shift:"6 AM–2 PM",area:"Lap Pool",status:"Scheduled"},
+    {name:"Brianna",shift:"8 AM–4 PM",area:"Recreation Pool",status:"Scheduled"},
+    {name:"Carlos",shift:"10 AM–6 PM",area:"Deck Supervisor",status:"Scheduled"},
+    {name:"Dana",shift:"11 AM–5 PM",area:"Lessons",status:"Scheduled"},
+    {name:"Eli",shift:"12 PM–6 PM",area:"Recreation Pool",status:"Scheduled"}
+  ],
+  programs:{
+    lessons:[{name:"Beginner Lessons",time:"9:00 AM",count:18},{name:"Intermediate Lessons",time:"10:30 AM",count:14}],
+    parties:[{name:"Birthday Party A",time:"1:00 PM",count:25}],
+    team:[{name:"Swim Team Practice",time:"4:00 PM",lanes:5}]
+  },
+  inventory:[
+    {item:"Liquid Chlorine",onHand:42,min:25,unit:"gal",dailyUse:4.5},
+    {item:"Muriatic Acid",onHand:9,min:10,unit:"gal",dailyUse:1.2},
+    {item:"Test Reagents",onHand:6,min:4,unit:"kits",dailyUse:.35},
+    {item:"Rescue Tubes",onHand:11,min:8,unit:"units",dailyUse:.03}
+  ],
+  workOrders:[
+    {asset:"Main Pump",priority:"Medium",status:"Open",desc:"Routine vibration check before weekend peak."},
+    {asset:"Diving Board",priority:"High",status:"Open",desc:"Pre-opening safety inspection required."}
+  ],
+  tasks:[
+    {name:"Opening water test",priority:"High",owner:"Pool Manager",done:false},
+    {name:"Confirm lifeguard coverage",priority:"High",owner:"Lifeguard Supervisor",done:false},
+    {name:"Inspect deck and rescue equipment",priority:"Medium",owner:"Lifeguard Supervisor",done:false}
+  ],
+  incidents:[],
+  decisions:{},
+  audit:["System initialized with stable recovery build."]
+};
+var days=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+var forecastWeather=[{t:92,r:15},{t:94,r:18},{t:91,r:34},{t:88,r:55},{t:93,r:20},{t:96,r:12},{t:95,r:25}];
+function q(id){return document.getElementById(id);}
+function tag(level){var cls=level==="High"?"high":level==="Medium"?"med":level==="Low"?"low":"info";return '<span class="tag '+cls+'">'+level+'</span>';}
+function programDemand(){var l=state.programs.lessons.reduce(function(s,x){return s+x.count;},0)*.35;var p=state.programs.parties.reduce(function(s,x){return s+x.count;},0)*.8;var t=state.programs.team.reduce(function(s,x){return s+x.lanes;},0)*7;return l+p+t;}
+function demandFor(temp,rain){var d=state.demand.base;if(temp>=92)d*=1.28;else if(temp>=86)d*=1.14;if(rain>=60)d*=.58;else if(rain>=35)d*=.78;else if(rain<=20)d*=1.08;return Math.round(d+programDemand());}
+function calcDemand(){state.demand.adjusted=demandFor(state.weather.temp,state.weather.rain);}
+function staffAvailable(){return state.staff.filter(function(s){return s.status==="Scheduled";}).length-state.callouts;}
+function staffNeeded(d){d=d||state.demand.adjusted;return Math.max(4,Math.ceil(d/55)+state.programs.parties.length+Math.ceil(state.programs.lessons.length/2));}
+function waterStatus(){var c=state.water.chlorine,p=state.water.ph;if(c<1||c>4||p<7.2||p>7.8)return"Action";if(c<1.5||c>3.5||p<7.3||p>7.7)return"Watch";return"Good";}
+function inventoryCalculated(){return state.inventory.map(function(i){var daysLeft=Math.round(i.onHand/(i.dailyUse*(state.demand.adjusted/250)));return Object.assign({},i,{days:daysLeft});});}
+function inventoryAlerts(){return inventoryCalculated().filter(function(i){return i.onHand<=i.min||i.days<=7;});}
+function highOpenWorkOrders(){return state.workOrders.filter(function(w){return w.priority==="High"&&w.status!=="Completed";});}
+function incompleteHighTasks(){return state.tasks.filter(function(t){return !t.done&&t.priority==="High";});}
+function healthScore(){var score=100;if(waterStatus()==="Watch")score-=8;if(waterStatus()==="Action")score-=22;var gap=staffNeeded()-staffAvailable();if(gap>0)score-=gap*10;if(state.weather.rain>50)score-=7;score-=inventoryAlerts().length*6;score-=state.incidents.length*3;score-=highOpenWorkOrders().length*7;score-=incompleteHighTasks().length*4;return Math.max(45,Math.min(100,score));}
+function recommendations(){var rec=[];var gap=staffNeeded()-staffAvailable();if(gap>0)rec.push({id:"staff-gap",p:"High",t:"Schedule "+gap+" additional lifeguard(s) for peak demand.",why:"Forecast attendance and program load exceed available coverage."});if(waterStatus()==="Action")rec.push({id:"water-action",p:"High",t:"Correct water chemistry before peak swim periods and document retest.",why:"Current chlorine or pH is outside configured range."});if(waterStatus()==="Watch")rec.push({id:"water-watch",p:"Medium",t:"Increase water chemistry testing frequency during afternoon peak.",why:"Readings are near the edge of target range."});if(state.weather.temp>=92&&state.weather.rain<30)rec.push({id:"heat-demand",p:"Medium",t:"Prepare for high open-swim demand with hydration, shade, and extra deck coverage.",why:"High temperature and low rain probability increase demand."});inventoryAlerts().forEach(function(i){rec.push({id:"buy-"+i.item,p:i.onHand<=i.min?"High":"Medium",t:"Purchase "+i.item+"; projected supply is "+i.days+" day(s).",why:"Inventory is below minimum or projected below safety stock."});});highOpenWorkOrders().forEach(function(w){rec.push({id:"wo-"+w.asset,p:"High",t:"Prioritize "+w.asset+" work order before peak operations.",why:w.desc});});if(incompleteHighTasks().length)rec.push({id:"tasks-high",p:"High",t:"Complete "+incompleteHighTasks().length+" high-priority daily task(s).",why:"Incomplete high-priority tasks reduce readiness."});if(state.programs.team.reduce(function(s,x){return s+x.lanes;},0)>=5)rec.push({id:"lane-pressure",p:"Medium",t:"Manage swim team lane capacity pressure and update public lane messaging.",why:"Swim team reserved five or more lanes."});if(!rec.length)rec.push({id:"normal",p:"Low",t:"No critical issues. Continue routine monitoring.",why:"All major indicators are within configured limits."});return rec;}
+function updateInputs(reason){state.weather.temp=Number(q("tempInput").value||state.weather.temp);state.weather.rain=Number(q("rainInput").value||state.weather.rain);state.demand.base=Number(q("baseDemandInput").value||state.demand.base);state.callouts=Number(q("calloutInput").value||state.callouts);state.water.chlorine=Number(q("chlorineInput").value||state.water.chlorine);state.water.ph=Number(q("phInput").value||state.water.ph);state.water.alk=Number(q("alkInput").value||state.water.alk);state.audit.unshift(new Date().toLocaleString()+": "+reason);render();}
+function render(){calcDemand();var score=healthScore(),needed=staffNeeded(),avail=staffAvailable(),ws=waterStatus(),recs=recommendations();q("healthMetric").textContent=score+"%";q("healthTrend").textContent=score>=90?"Strong operating posture":score>=75?"Manageable with attention":"Needs manager action";q("healthBar").style.width=score+"%";q("demandMetric").textContent=state.demand.adjusted;q("demandTrend").textContent="Base "+state.demand.base+", adjusted for weather and programs.";q("staffMetric").textContent=avail+"/"+needed;q("staffTrend").textContent=avail>=needed?"Coverage meets forecast need":"Coverage gap detected";q("waterMetric").textContent=ws;q("waterTrend").textContent="Chlorine "+state.water.chlorine+" ppm, pH "+state.water.ph;q("aiSummary").innerHTML="<p><b>Today's outlook:</b> "+(score>=85?"Ready with routine monitoring.":"Manager attention recommended.")+"</p><p>Forecast demand is <b>"+state.demand.adjusted+"</b>. Recommended lifeguards: <b>"+needed+"</b>.</p><p><b>Explainability:</b> weather, programs, staffing, water, inventory, maintenance, tasks, and incidents feed the score.</p>";q("priorityActions").innerHTML=recs.map(function(r){return "<p>"+tag(r.p)+" "+r.t+"<br><span class='small'>Why: "+r.why+"</span></p>";}).join("");q("programLoad").innerHTML="<p>Lessons: <b>"+state.programs.lessons.length+"</b></p><p>Pool parties: <b>"+state.programs.parties.length+"</b></p><p>Swim team reserved lanes: <b>"+state.programs.team.reduce(function(s,x){return s+x.lanes;},0)+"</b></p>";q("inventoryRisk").innerHTML=inventoryAlerts().length?inventoryAlerts().map(function(i){return "<p>"+tag("High")+" "+i.item+": "+i.days+" days left</p>";}).join(""):"<p>"+tag("Low")+" No urgent purchase alerts.</p>";q("decisionStatus").innerHTML="<p>Approved: <b>"+Object.values(state.decisions).filter(function(x){return x==="Approved";}).length+"</b></p><p>Deferred: <b>"+Object.values(state.decisions).filter(function(x){return x==="Deferred";}).length+"</b></p><p>Overridden: <b>"+Object.values(state.decisions).filter(function(x){return x==="Overridden";}).length+"</b></p>";renderOperations();renderForecast();renderWater();renderStaff();renderPrograms();renderInventory();renderMaintenance();renderTasks();renderDecisions();renderAIOps();}
+function renderOperations(){q("checklist").innerHTML=["Water chemistry checked","Staffing coverage reviewed","Programs confirmed","Inventory reviewed","Maintenance reviewed"].map(function(x){return "<p>☑ "+x+"</p>";}).join("");q("incidents").innerHTML=state.incidents.length?state.incidents.map(function(i){return "<p>⚠ "+i+"</p>";}).join(""):"<p class='small'>No incidents logged.</p>";}
+function renderForecast(){var vals=forecastWeather.map(function(w,i){var d=demandFor(w.t,w.r);return {day:days[i],temp:w.t,rain:w.r,d:d,staff:staffNeeded(d)};});var max=Math.max.apply(null,vals.map(function(x){return x.d;}));q("demandChart").innerHTML=vals.map(function(x){return "<div style='height:"+Math.max(20,x.d/max*160)+"px'><b>"+x.d+"</b><span>"+x.day+"</span></div>";}).join("");q("forecastTable").innerHTML=vals.map(function(x,i){return "<tr><td>"+x.day+"</td><td>"+x.temp+"°F</td><td>"+x.rain+"%</td><td>"+(i>=4?"Weekend/event load":"Standard")+"</td><td>"+x.d+"</td><td>"+x.staff+"</td></tr>";}).join("");var high=vals.slice().sort(function(a,b){return b.d-a.d;})[0];q("forecastExplanation").innerHTML="<p>AquaIQPro increases demand when heat is high and rain is low. It lowers demand when rain risk is high. Program load adds demand from lessons, parties, and swim team.</p><p><b>Highest projected day:</b> "+high.day+" with "+high.d+" visitors.</p>";}
+function renderWater(){var rows=[["Free Chlorine","1.0–4.0 ppm",state.water.chlorine,state.water.chlorine>=1&&state.water.chlorine<=4?"Low":"High"],["pH","7.2–7.8",state.water.ph,state.water.ph>=7.2&&state.water.ph<=7.8?"Low":"High"],["Alkalinity","80–120 ppm",state.water.alk,state.water.alk>=80&&state.water.alk<=120?"Low":"Medium"]];q("chemicalRanges").innerHTML=rows.map(function(r){return "<tr><td>"+r[0]+"</td><td>"+r[1]+"</td><td>"+r[2]+"</td><td>"+tag(r[3])+"</td></tr>";}).join("");var waterRecs=recommendations().filter(function(r){return r.id.indexOf("water")>=0;});q("waterGuidance").innerHTML=waterRecs.length?waterRecs.map(function(r){return "<p>"+tag(r.p)+" "+r.t+"<br><span class='small'>"+r.why+"</span></p>";}).join(""):"<p>Water readings are within target range. Continue scheduled testing.</p>";}
+function renderStaff(){q("staffTable").innerHTML=state.staff.map(function(s,i){return "<tr><td>"+s.name+"</td><td>"+s.shift+"</td><td>"+s.area+"</td><td><select onchange='state.staff["+i+"].status=this.value;updateInputs(\"Staff status changed\")'><option "+(s.status==="Scheduled"?"selected":"")+">Scheduled</option><option "+(s.status==="No Show"?"selected":"")+">No Show</option><option "+(s.status==="Called Out"?"selected":"")+">Called Out</option></select></td><td><button class='btn bad' onclick='removeStaff("+i+")'>Remove</button></td></tr>";}).join("");}
+function renderPrograms(){q("lessonList").innerHTML=state.programs.lessons.map(function(x,i){return "<p><b>"+x.name+"</b><br>"+x.time+" • "+x.count+" swimmers <button onclick='removeProgram(\"lessons\","+i+")'>Remove</button></p>";}).join("");q("partyList").innerHTML=state.programs.parties.map(function(x,i){return "<p><b>"+x.name+"</b><br>"+x.time+" • "+x.count+" guests <button onclick='removeProgram(\"parties\","+i+")'>Remove</button></p>";}).join("");q("teamList").innerHTML=state.programs.team.map(function(x,i){return "<p><b>"+x.name+"</b><br>"+x.time+" • "+x.lanes+" lanes <button onclick='removeProgram(\"team\","+i+")'>Remove</button></p>";}).join("");var lanes=state.programs.team.reduce(function(s,x){return s+x.lanes;},0);q("lanePressure").innerHTML="Current reserved swim team lanes: <b>"+lanes+"</b>. "+(lanes>=5?"Pressure is high.":"Pressure is manageable.");}
+function renderInventory(){q("inventoryTable").innerHTML=inventoryCalculated().map(function(i){var rec=i.onHand<=i.min?"Order now: below minimum.":i.days<=7?"Order within 48 hours.":"Monitor; no immediate purchase needed.";return "<tr><td>"+i.item+"</td><td>"+i.onHand+" "+i.unit+"</td><td>"+i.min+" "+i.unit+"</td><td>"+i.days+"</td><td>"+rec+"</td></tr>";}).join("");}
+function renderMaintenance(){q("workOrders").innerHTML=state.workOrders.map(function(w,i){return "<div class='rowbox'><b>"+w.asset+"</b> "+tag(w.priority)+"<p>"+w.desc+"</p><select onchange='state.workOrders["+i+"].status=this.value;updateInputs(\"Work order status changed\")'><option "+(w.status==="Open"?"selected":"")+">Open</option><option "+(w.status==="In Progress"?"selected":"")+">In Progress</option><option "+(w.status==="Completed"?"selected":"")+">Completed</option></select></div>";}).join("");q("maintenanceAI").innerHTML=highOpenWorkOrders().length?highOpenWorkOrders().map(function(w){return "<p>"+tag("High")+" "+w.asset+": "+w.desc+"</p>";}).join(""):"<p>"+tag("Low")+" No high-priority maintenance blockers.</p>";}
+function renderTasks(){q("taskBoard").innerHTML=state.tasks.map(function(t,i){return "<div class='rowbox rowflex "+(t.done?"done":"")+"'><div><b>"+t.name+"</b><br><span class='small'>"+t.owner+" • "+t.priority+"</span></div><button class='btn "+(t.done?"secondary":"good")+"' onclick='toggleTask("+i+")'>"+(t.done?"Undo":"Done")+"</button></div>";}).join("");}
+function renderDecisions(){var recs=recommendations();q("approvalQueue").innerHTML=recs.map(function(r){return "<div class='rowbox rowflex'><div><p>"+tag(r.p)+" <b>"+r.t+"</b></p><p class='small'>Why: "+r.why+"</p><p class='small'>Status: "+(state.decisions[r.id]||"Pending")+"</p></div><div class='actions'><button class='btn good' onclick='decide(\""+r.id+"\",\"Approved\")'>Approve</button><button class='btn warn' onclick='decide(\""+r.id+"\",\"Deferred\")'>Defer</button><button class='btn bad' onclick='decide(\""+r.id+"\",\"Overridden\")'>Override</button></div></div>";}).join("");q("auditTrail").innerHTML=state.audit.slice(0,12).map(function(a){return "<p class='small'>"+a+"</p>";}).join("");}
+function addIncident(){if(q("incidentInput").value.trim()){state.incidents.unshift(q("incidentInput").value.trim());q("incidentInput").value="";updateInputs("Incident added");}}
+function addStaff(){if(q("newStaffName").value.trim()){state.staff.push({name:q("newStaffName").value,shift:q("newStaffShift").value||"TBD",area:q("newStaffArea").value,status:"Scheduled"});q("newStaffName").value="";q("newStaffShift").value="";updateInputs("Staff member added");}}
+function removeStaff(i){state.staff.splice(i,1);updateInputs("Staff member removed");}
+function addProgram(type){if(type==="lessons")state.programs.lessons.push({name:"New Lesson Block",time:"2:00 PM",count:12});if(type==="parties")state.programs.parties.push({name:"New Pool Party",time:"3:00 PM",count:20});if(type==="team")state.programs.team.push({name:"Swim Team Practice",time:"5:00 PM",lanes:4});updateInputs("Program schedule updated");}
+function removeProgram(type,i){state.programs[type].splice(i,1);updateInputs("Program removed");}
+function addWorkOrder(){if(q("woAsset").value.trim()){state.workOrders.unshift({asset:q("woAsset").value.trim(),priority:q("woPriority").value,status:q("woStatus").value,desc:q("woDesc").value.trim()||"No description entered."});q("woAsset").value="";q("woDesc").value="";updateInputs("Work order added");}}
+function addTask(){if(q("taskName").value.trim()){state.tasks.unshift({name:q("taskName").value.trim(),priority:q("taskPriority").value,owner:q("taskOwner").value,done:false});q("taskName").value="";updateInputs("Daily task added");}}
+function toggleTask(i){state.tasks[i].done=!state.tasks[i].done;updateInputs("Daily task status changed");}
+function decide(id,status){state.decisions[id]=status;state.audit.unshift(new Date().toLocaleString()+": Recommendation "+id+" "+status);render();}
+function generateReport(title){
+  var visual=q("reportVisual");
+  if(visual){visual.innerHTML=buildReportHTML(title);}
+  var text=q("reportBox");
+  if(text){text.value=visual?visual.innerText:"";}
 }
-function copyReport(){generateReport();navigator.clipboard&&navigator.clipboard.writeText(reportText.value);alert('Report copied.')}
-function ask(q){let c=compute();let ans='';q=(q||'').toLowerCase();if(q.includes('staff')||q.includes('lifeguard'))ans=`AquaIQ recommends ${c.required} lifeguards today. You currently have ${c.staffActive} active, so coverage is ${c.staffActive>=c.required?'sufficient':'short by '+(c.required-c.staffActive)}.`;else if(q.includes('demand'))ans=`Today demand is forecasted at ${c.total}: ${c.open} open swim, ${c.lessons} lessons, ${c.parties} party guests, plus swim team lane reservations. Weather adjustment is ${Math.round(c.weather)}.`;else if(q.includes('chlorine')||q.includes('inventory'))ans=`Chlorine is ${data.water.chlorine} ppm and inventory has ${data.inventory[0][1]} ${data.inventory[0][3]}. Demand suggests chemical usage may be ${c.chemLift}% above normal.`;else if(q.includes('incident'))ans=`There are ${data.incidents.length} incidents in the log. ${data.incidents.filter(i=>i[3]!=='Closed'&&i[3]!=='Resolved').length} remain open or pending.`;else if(q.includes('approval')||q.includes('approve'))ans=`There are ${data.audit.length} manager decisions in the audit trail. Use the AI Review page to approve, defer, or override recommendations.`;else if(q.includes('report')){generateReport();ans='Daily report generated in the Reports section.'}else ans=`AquaIQ sees operational health at ${c.health}%, forecast demand ${c.total}, and ${recs().length} active recommendations.`;chatAnswer.innerHTML=`<div class="dot good"></div><div><strong>AquaIQ Response</strong><span class="mini">${ans}</span></div>`}
-render();
+function quickAsk(txt){q("askInput").value=txt;askAI();}
+function askAI(){var ask=q("askInput").value.toLowerCase();var ans="Based on current inputs, ";if(ask.indexOf("lifeguard")>=0||ask.indexOf("staff")>=0)ans+=staffAvailable()>=staffNeeded()?"staffing appears sufficient with "+staffAvailable()+" available against "+staffNeeded()+" recommended.":"add "+(staffNeeded()-staffAvailable())+" lifeguard(s) for forecast demand and programs.";else if(ask.indexOf("chemical")>=0||ask.indexOf("chlorine")>=0||ask.indexOf("water")>=0)ans+=waterStatus()==="Good"?"water quality is within target range. Continue routine testing.":"water quality needs attention. Chlorine is "+state.water.chlorine+" ppm and pH is "+state.water.ph+".";else if(ask.indexOf("buy")>=0||ask.indexOf("order")>=0||ask.indexOf("inventory")>=0)ans+=inventoryAlerts().length?"purchase "+inventoryAlerts().map(function(i){return i.item;}).join(", ")+" based on current inventory and demand.":"no urgent purchases are required right now.";else if(ask.indexOf("maintenance")>=0)ans+=highOpenWorkOrders().length?"prioritize "+highOpenWorkOrders().map(function(w){return w.asset;}).join(", ")+".":"there are no high-priority maintenance blockers right now.";else if(ask.indexOf("executive")>=0)ans+="operational health is "+healthScore()+"%, forecast demand is "+state.demand.adjusted+", staffing is "+staffAvailable()+" available against "+staffNeeded()+" recommended, and there are "+recommendations().length+" active AI recommendations.";else ans+="the top recommendation is: "+recommendations()[0].t;q("assistantAnswer").innerHTML="<p>"+ans+"</p><p class='small'>Reasoning uses weather, demand, program load, staffing, water quality, inventory, maintenance, tasks, and incidents.</p>";}
+
+function priorityClass(level){return level==="High"?"high":level==="Medium"?"med":"low";}
+function statusLine(c){return c.health>=90?"AquaIQPro views today as stable with routine monitoring.":c.health>=75?"AquaIQPro recommends manager review before peak demand.":"AquaIQPro sees elevated operating risk and recommends immediate manager action.";}
+function recListHTML(items){
+  return items.map(function(r){return "<li><b>"+r.p+" priority:</b> "+r.t+" <span class='small'>Reason: "+r.why+"</span></li>";}).join("");
+}
+function buildReportHTML(title){
+  var c={health:healthScore(), total:state.demand.adjusted, staffActive:staffAvailable(), required:staffNeeded(), water:waterStatus()};
+  var recs=recommendations();
+  var inv=inventoryAlerts();
+  var openWO=state.workOrders.filter(function(w){return w.status!=="Completed";});
+  var openTasks=state.tasks.filter(function(t){return !t.done;});
+  var decisions=Object.keys(state.decisions);
+  var generated=new Date().toLocaleString();
+  var high=recs.filter(function(r){return r.p==="High";});
+  var lanes=state.programs.team.reduce(function(s,x){return s+x.lanes;},0);
+  return `
+  <div class="report-header">
+    <h3>${title}</h3>
+    <p>${state.facility} • Generated ${generated}</p>
+  </div>
+  <div class="report-summary-grid">
+    <div class="report-stat"><span class="label">Health</span><b>${c.health}%</b><span class="small">${c.health>=90?"Strong":"Needs review"}</span></div>
+    <div class="report-stat"><span class="label">Demand</span><b>${c.total}</b><span class="small">Weather adjusted</span></div>
+    <div class="report-stat"><span class="label">Staffing</span><b>${c.staffActive}/${c.required}</b><span class="small">Active / recommended</span></div>
+    <div class="report-stat"><span class="label">Water</span><b>${c.water}</b><span class="small">Chemistry status</span></div>
+  </div>
+  <div class="report-body">
+    <div class="report-section">
+      <h4>Manager Summary</h4>
+      <p>${statusLine(c)} Forecast demand is <b>${c.total}</b>, driven by weather, open swim assumptions, swim lessons, pool parties, and swim team lane usage. Current staffing is <b>${c.staffActive}</b> active lifeguards against <b>${c.required}</b> recommended.</p>
+    </div>
+    <div class="report-section">
+      <h4>Demand & Program Outlook</h4>
+      <ul>
+        <li>Temperature: ${state.weather.temp}°F</li>
+        <li>Rain probability: ${state.weather.rain}%</li>
+        <li>Swim lessons: ${state.programs.lessons.length} scheduled block(s)</li>
+        <li>Pool parties: ${state.programs.parties.length} scheduled event(s)</li>
+        <li>Swim team lane capacity pressure: ${lanes>=5?"High":"Manageable"} (${lanes} reserved lane(s))</li>
+      </ul>
+    </div>
+    <div class="report-section">
+      <h4>Water Quality</h4>
+      <p>Current readings: chlorine <b>${state.water.chlorine} ppm</b>, pH <b>${state.water.ph}</b>, alkalinity <b>${state.water.alk}</b>. Target guide: chlorine 1.0–4.0 ppm, pH 7.2–7.8, alkalinity 80–120 ppm.</p>
+    </div>
+    <div class="report-section">
+      <h4>AI Recommendations</h4>
+      <ul>${recListHTML(recs)}</ul>
+    </div>
+    <div class="report-section">
+      <h4>Inventory & Purchasing</h4>
+      ${inv.length ? "<ul>"+inv.map(function(i){return "<li><b>"+i.item+"</b>: projected "+i.days+" day(s) remaining. Purchase review recommended.</li>";}).join("")+"</ul>" : "<p>No urgent purchasing action is required right now.</p>"}
+    </div>
+    <div class="report-section">
+      <h4>Maintenance & Daily Tasks</h4>
+      <p>Open work orders: <b>${openWO.length}</b>. Incomplete daily tasks: <b>${openTasks.length}</b>.</p>
+      ${openWO.length ? "<ul>"+openWO.map(function(w){return "<li>["+w.priority+"] "+w.asset+" — "+w.status+" — "+w.desc+"</li>";}).join("")+"</ul>" : "<p>No open work orders.</p>"}
+    </div>
+    <div class="report-section">
+      <h4>Manager Decisions</h4>
+      ${decisions.length ? "<ul>"+decisions.map(function(k){return "<li>"+k+": "+state.decisions[k]+"</li>";}).join("")+"</ul>" : "<p>No recommendation decisions recorded yet.</p>"}
+    </div>
+    <div class="report-section">
+      <h4>Recommended Next Actions</h4>
+      <ol>
+        <li>Review all high-priority AI recommendations before peak demand.</li>
+        <li>Confirm lifeguard coverage against the forecast and program schedule.</li>
+        <li>Retest water chemistry before afternoon peak if demand or temperature increases.</li>
+        <li>Review inventory purchase flags and vendor lead time.</li>
+        <li>Use Print / Save PDF for the daily operations record.</li>
+      </ol>
+    </div>
+  </div>`;
+}
+function renderAIOps(){
+  if(!q("aiOpsBriefing")) return;
+  var c={health:healthScore(), total:state.demand.adjusted, staffActive:staffAvailable(), required:staffNeeded(), water:waterStatus()};
+  var recs=recommendations();
+  q("aiOpsBriefing").innerHTML="<p><b>Good morning.</b> AquaIQPro estimates "+c.total+" visitors today and recommends "+c.required+" lifeguards. Current active coverage is "+c.staffActive+".</p><p>"+statusLine(c)+"</p><p><b>Top recommendation:</b> "+recs[0].t+"</p>";
+  q("aiExplainPanel").innerHTML=`<div class="ai-explain">
+    <div class="explain-card"><b>Weather</b>${state.weather.temp}°F and ${state.weather.rain}% rain probability shape demand.</div>
+    <div class="explain-card"><b>Programs</b>${state.programs.lessons.length} lessons, ${state.programs.parties.length} parties, and ${state.programs.team.reduce(function(s,x){return s+x.lanes;},0)} swim team lanes affect capacity.</div>
+    <div class="explain-card"><b>Operations</b>Staffing, water chemistry, inventory, work orders, and tasks affect the health score.</div>
+  </div>`;
+  q("explainabilityList").innerHTML=recs.map(function(r){return "<div class='rowbox'><b>"+r.p+" priority:</b> "+r.t+"<br><span class='small'>Why AquaIQPro recommended this: "+r.why+"</span></div>";}).join("");
+}
+function runScenario(){
+  var temp=Number(q("scenarioTemp").value||state.weather.temp);
+  var rain=Number(q("scenarioRain").value||state.weather.rain);
+  var extra=Number(q("scenarioExtraDemand").value||0);
+  var callouts=Number(q("scenarioCallouts").value||0);
+  var d=demandFor(temp,rain)+extra;
+  var need=staffNeeded(d);
+  var avail=staffAvailable()-callouts;
+  var gap=Math.max(0,need-avail);
+  var risk=gap>1||rain>65?"High":gap===1||temp>=95?"Medium":"Low";
+  q("scenarioDemand").textContent=d;
+  q("scenarioDemandNote").textContent="Based on "+temp+"°F, "+rain+"% rain, and "+extra+" extra visitors.";
+  q("scenarioStaffGap").textContent=gap;
+  q("scenarioStaffNote").textContent=avail+" available vs. "+need+" recommended.";
+  q("scenarioRisk").textContent=risk;
+  q("scenarioRiskNote").textContent=risk==="High"?"Manager action recommended.":risk==="Medium"?"Monitor and prepare backup coverage.":"Scenario appears manageable.";
+}
+
+function init(){q("tempInput").value=state.weather.temp;q("rainInput").value=state.weather.rain;q("baseDemandInput").value=state.demand.base;q("calloutInput").value=state.callouts;q("chlorineInput").value=state.water.chlorine;q("phInput").value=state.water.ph;q("alkInput").value=state.water.alk;if(q("scenarioTemp")){q("scenarioTemp").value=state.weather.temp;q("scenarioRain").value=state.weather.rain;q("scenarioExtraDemand").value=0;q("scenarioCallouts").value=0;}document.querySelectorAll("#nav button").forEach(function(btn){btn.addEventListener("click",function(){document.querySelectorAll("#nav button").forEach(function(b){b.classList.remove("active");});document.querySelectorAll(".section").forEach(function(s){s.classList.remove("active");});btn.classList.add("active");q(btn.dataset.page).classList.add("active");q("pageTitle").textContent=btn.textContent;});});render();generateReport("Daily Operations Report");}
+init();
 </script>
 </body>
 </html>
