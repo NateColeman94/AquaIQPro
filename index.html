@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AquaIQPro v4.2 Full Navigation</title>
+<title>AquaIQPro v4.3 Live Lakeland Weather</title>
 <style>
 :root{--bg:#f3f8fb;--panel:#fff;--ink:#102331;--muted:#647888;--line:#d9e7ee;--brand:#076b8f;--brand2:#00a7b5;--good:#10b981;--warn:#f59e0b;--bad:#ef4444;--shadow:0 12px 30px rgba(7,35,53,.10);--radius:18px}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
@@ -93,6 +93,23 @@ body{
 #nav button[data-page="aiops"]:before,
 #nav button[data-page="data"]:before{content:"";position:absolute;left:5px;top:50%;width:4px;height:4px;border-radius:50%;background:#7dd3fc;transform:translateY(-50%)}
 
+
+/* Sprint 4.3 live weather */
+.weather-live-banner{display:flex;justify-content:space-between;gap:14px;align-items:center;border:1px solid #bde8f0;background:#eefcff;border-radius:14px;padding:12px 14px;margin-bottom:14px}
+.weather-live-banner strong{display:block}
+.weather-live-banner .small{margin-top:3px}
+.weather-live-status{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.weather-dot{width:9px;height:9px;border-radius:50%;background:#94a3b8}
+.weather-dot.live{background:#10b981}.weather-dot.error{background:#ef4444}
+.weather-grid{display:grid;grid-template-columns:repeat(4,minmax(140px,1fr));gap:12px}
+.weather-card{border:1px solid var(--line);border-radius:14px;padding:13px;background:#fbfdfe}
+.weather-card span{display:block;color:var(--muted);font-size:12px}.weather-card b{display:block;font-size:24px;margin-top:4px}
+.weather-week{display:grid;grid-template-columns:repeat(7,minmax(100px,1fr));gap:9px;margin-top:12px}
+.weather-day{border:1px solid var(--line);border-radius:13px;padding:10px;background:#fbfdfe;text-align:center}
+.weather-day b,.weather-day span{display:block}.weather-day span{font-size:12px;color:var(--muted);margin-top:4px}
+.weather-source-note{font-size:12px;color:var(--muted);margin-top:10px}
+@media(max-width:980px){.weather-grid{grid-template-columns:1fr 1fr}.weather-week{grid-template-columns:repeat(2,1fr)}.weather-live-banner{align-items:flex-start;flex-direction:column}}
+
 @media(max-width:980px){.facility-profile,.shift-grid,.report-editor-grid{grid-template-columns:1fr}.report-editor-grid .wide{grid-column:auto}}
 @media print{
   body *{visibility:hidden}
@@ -135,13 +152,26 @@ body{
     <button data-page="reports">Reports</button>
     <button data-page="assistant">Ask AquaIQ</button>
   </nav>
-  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v4.2 Full Navigation merges stable app, clean reports, floating chat, and data persistence.</span></div>
+  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v4.3 Live Lakeland Weather merges stable app, clean reports, floating chat, and data persistence.</span></div>
 </aside>
 <main>
-  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v4.2 Full Navigation</b> • <span class="good">System Ready</span></div></div>
+  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v4.3 Live Lakeland Weather</b> • <span class="good">System Ready</span></div></div>
 
   <section id="dashboard" class="section active">
-    <div class="ops-hero">
+    
+<div class="weather-live-banner">
+  <div>
+    <strong>Live Lakeland Weather</strong>
+    <div id="weatherLiveSummary" class="small">Loading the latest forecast…</div>
+  </div>
+  <div class="weather-live-status">
+    <span id="weatherLiveDot" class="weather-dot"></span>
+    <span id="weatherLiveStatus" class="small">Connecting</span>
+    <button id="refreshWeatherButton" class="btn secondary" type="button">Refresh Weather</button>
+  </div>
+</div>
+
+<div class="ops-hero">
       <div class="ops-hero-grid">
         <div>
           <h3>Good morning</h3>
@@ -235,7 +265,7 @@ body{
   </div>
 </section>
 
-<section id="aiops" class="section"><div class="notice"><b>How AquaIQ works:</b> forecasts and recommendations use manager-entered data, weather assumptions, scheduled programs, staffing rules, water-quality thresholds, inventory levels, maintenance status, and capacity policies. Managers remain responsible for final decisions.</div><div class="notice"><b>Daily Briefing:</b> explains why AquaIQPro is making each recommendation.</div><div class="grid two"><div class="card ai-card"><h3>Today’s Briefing</h3><div id="aiOpsBriefing"></div></div><div class="card"><h3>Forecast Drivers</h3><div id="aiExplainPanel"></div></div></div><div class="card" style="margin-top:18px"><h3>Why This Changed</h3><div id="explainabilityList"></div></div></section>
+<section id="aiops" class="section"><div class="notice"><b>How AquaIQ works:</b> forecasts and recommendations use manager-entered data, live Lakeland weather data or manual fallback values, scheduled programs, staffing rules, water-quality thresholds, inventory levels, maintenance status, and capacity policies. Managers remain responsible for final decisions.</div><div class="notice"><b>Daily Briefing:</b> explains why AquaIQPro is making each recommendation.</div><div class="grid two"><div class="card ai-card"><h3>Today’s Briefing</h3><div id="aiOpsBriefing"></div></div><div class="card"><h3>Forecast Drivers</h3><div id="aiExplainPanel"></div></div></div><div class="card" style="margin-top:18px"><h3>Why This Changed</h3><div id="explainabilityList"></div></div></section>
 
   <section id="operations" class="section">
     <div class="notice"><b>Manager Control Panel:</b> update operating assumptions. AquaIQPro recalculates demand, staffing, inventory, water quality, reports, and recommendations.</div>
@@ -247,9 +277,31 @@ body{
 
   <section id="scenario" class="section"><div class="notice"><b>Scenario Planner:</b> test what happens if weather, staffing, or demand changes.</div><div class="card"><h3>What-If Inputs</h3><div class="form-grid"><label>Scenario Temperature °F<input id="scenarioTemp" type="number"></label><label>Scenario Rain %<input id="scenarioRain" type="number"></label><label>Extra Attendance<input id="scenarioExtraDemand" type="number"></label><label>Extra Staff Call-Outs<input id="scenarioCallouts" type="number"></label></div><button class="btn" style="margin-top:14px" onclick="runScenario()">Run Scenario</button></div><div class="grid three" style="margin-top:18px"><div class="card"><div class="label">Scenario Demand</div><div class="metric" id="scenarioDemand">--</div><div class="small" id="scenarioDemandNote"></div></div><div class="card"><div class="label">Scenario Staffing Gap</div><div class="metric" id="scenarioStaffGap">--</div><div class="small" id="scenarioStaffNote"></div></div><div class="card"><div class="label">Scenario Risk Level</div><div class="metric" id="scenarioRisk">--</div><div class="small" id="scenarioRiskNote"></div></div></div></section>
 
-  <section id="forecasting" class="section"><div class="grid two"><div class="card"><h3>7-Day Demand Forecast</h3><div id="demandChart" class="chart"></div><p class="small">Forecast combines base demand, weather, programs, and lane usage.</p></div><div class="card"><h3>Forecast Explanation</h3><div id="forecastExplanation"></div></div></div><div class="card" style="margin-top:18px"><h3>Forecast Table</h3><table><thead><tr><th>Day</th><th>Temp</th><th>Rain</th><th>Program Load</th><th>Forecast Demand</th><th>Staff Needed</th></tr></thead><tbody id="forecastTable"></tbody></table></div></section>
+  <section id="forecasting" class="section">
+  <div class="notice"><b>Live forecast:</b> AquaIQPro uses the current Lakeland, Florida forecast to update attendance demand and staffing recommendations. Manual Operations Center values remain available as a fallback.</div>
+  <div class="weather-live-banner">
+    <div><strong id="weatherLocationName">Lakeland, Florida</strong><div id="weatherUpdatedAt" class="small">Forecast not loaded yet.</div></div>
+    <div class="weather-live-status"><span id="weatherPageDot" class="weather-dot"></span><span id="weatherPageStatus" class="small">Connecting</span><button id="refreshWeatherPageButton" class="btn secondary" type="button">Refresh</button></div>
+  </div>
+  <div class="weather-grid">
+    <div class="weather-card"><span>Current temperature</span><b id="liveCurrentTemp">--</b><small id="liveWeatherCondition"></small></div>
+    <div class="weather-card"><span>Feels like</span><b id="liveFeelsLike">--</b><small>Apparent temperature</small></div>
+    <div class="weather-card"><span>Rain probability</span><b id="liveRainChance">--</b><small>Current forecast hour</small></div>
+    <div class="weather-card"><span>Today's high / low</span><b id="liveHighLow">--</b><small id="livePrecipTotal"></small></div>
+  </div>
+  <div class="grid two" style="margin-top:18px">
+    <div class="card"><h3>7-Day Demand Forecast</h3><div id="demandChart" class="chart"></div><p class="small">Demand combines live forecast conditions, facility profile, programs, and staffing assumptions.</p></div>
+    <div class="card"><h3>Forecast Explanation</h3><div id="forecastExplanation"></div></div>
+  </div>
+  <div class="card" style="margin-top:18px">
+    <h3>7-Day Weather Outlook</h3>
+    <div id="weatherWeek" class="weather-week"></div>
+    <p class="weather-source-note">Forecast source: Open-Meteo. Weather remains subject to change; managers should follow local emergency and lightning procedures.</p>
+  </div>
+  <div class="card" style="margin-top:18px"><h3>Forecast Table</h3><table><thead><tr><th>Day</th><th>Temp</th><th>Rain</th><th>Program Load</th><th>Forecast Demand</th><th>Staff Needed</th></tr></thead><tbody id="forecastTable"></tbody></table></div>
+</section>
 
-  <section id="water" class="section"><div class="grid two"><div class="card"><h3>Editable Water Test Readings</h3><div class="form-grid three"><label>Free Chlorine ppm<input id="chlorineInput" type="number" step=".1"></label><label>pH<input id="phInput" type="number" step=".1"></label><label>Alkalinity ppm<input id="alkInput" type="number"></label></div><button class="btn" style="margin-top:14px" onclick="updateInputs('Manager updated water chemistry')">Update Water Quality</button></div><div class="card"><h3>Target Chemical Ranges</h3><table><thead><tr><th>Chemical</th><th>Target</th><th>Current</th><th>Status</th></tr></thead><tbody id="chemicalRanges"></tbody></table><p class="small">Targets are demo values and should be verified against local policy and certified pool operator guidance.</p></div></div><div class="card" style="margin-top:18px"><h3>Water Quality Guidance</h3><div id="waterGuidance"></div></div></section>
+<section id="water" class="section"><div class="grid two"><div class="card"><h3>Editable Water Test Readings</h3><div class="form-grid three"><label>Free Chlorine ppm<input id="chlorineInput" type="number" step=".1"></label><label>pH<input id="phInput" type="number" step=".1"></label><label>Alkalinity ppm<input id="alkInput" type="number"></label></div><button class="btn" style="margin-top:14px" onclick="updateInputs('Manager updated water chemistry')">Update Water Quality</button></div><div class="card"><h3>Target Chemical Ranges</h3><table><thead><tr><th>Chemical</th><th>Target</th><th>Current</th><th>Status</th></tr></thead><tbody id="chemicalRanges"></tbody></table><p class="small">Targets are demo values and should be verified against local policy and certified pool operator guidance.</p></div></div><div class="card" style="margin-top:18px"><h3>Water Quality Guidance</h3><div id="waterGuidance"></div></div></section>
 
   <section id="staffing" class="section"><div class="card"><h3>Editable Lifeguard Schedule</h3><table><thead><tr><th>Name</th><th>Shift</th><th>Area</th><th>Status</th><th>Action</th></tr></thead><tbody id="staffTable"></tbody></table></div><div class="card" style="margin-top:18px"><h3>Add Lifeguard / Shift</h3><div class="form-grid three"><input id="newStaffName" placeholder="Name"><input id="newStaffShift" placeholder="Shift"><select id="newStaffArea"><option>Lap Pool</option><option>Recreation Pool</option><option>Lessons</option><option>Deck Supervisor</option></select></div><button class="btn" style="margin-top:12px" onclick="addStaff()">Add Staff Member</button></div></section>
 
@@ -342,7 +394,7 @@ function demandFor(temp,rain){var d=state.demand.base;if(temp>=92)d*=1.28;else i
 function calcDemand(){state.demand.adjusted=demandFor(state.weather.temp,state.weather.rain)}function staffAvailable(){return state.staff.filter(s=>s.status==="Scheduled").length-state.callouts}function staffNeeded(d){d=d||state.demand.adjusted;return Math.max(4,Math.ceil(d/55)+state.programs.parties.length+Math.ceil(state.programs.lessons.length/2))}function waterStatus(){var c=state.water.chlorine,p=state.water.ph;if(c<1||c>4||p<7.2||p>7.8)return"Action";if(c<1.5||c>3.5||p<7.3||p>7.7)return"Watch";return"Good"}function inventoryCalculated(){return state.inventory.map(i=>Object.assign({},i,{days:Math.round(i.onHand/(i.dailyUse*(state.demand.adjusted/250)))}))}function inventoryAlerts(){return inventoryCalculated().filter(i=>i.onHand<=i.min||i.days<=7)}function highOpenWorkOrders(){return state.workOrders.filter(w=>w.priority==="High"&&w.status!=="Completed")}function incompleteHighTasks(){return state.tasks.filter(t=>!t.done&&t.priority==="High")}
 function healthScore(){var score=100;if(waterStatus()==="Watch")score-=8;if(waterStatus()==="Action")score-=22;var gap=staffNeeded()-staffAvailable();if(gap>0)score-=gap*10;if(state.weather.rain>50)score-=7;score-=inventoryAlerts().length*6;score-=state.incidents.length*3;score-=highOpenWorkOrders().length*7;score-=incompleteHighTasks().length*4;return Math.max(45,Math.min(100,score))}
 function recommendations(){var rec=[],gap=staffNeeded()-staffAvailable();if(gap>0)rec.push({id:"staff-gap",p:"High",t:"Schedule "+gap+" additional lifeguard(s) for peak demand.",why:"Forecast attendance and program load exceed available coverage."});if(waterStatus()==="Action")rec.push({id:"water-action",p:"High",t:"Correct water chemistry before peak swim periods and document retest.",why:"Current chlorine or pH is outside configured range."});if(waterStatus()==="Watch")rec.push({id:"water-watch",p:"Medium",t:"Increase water chemistry testing frequency during afternoon peak.",why:"Readings are near the edge of target range."});if(state.weather.temp>=92&&state.weather.rain<30)rec.push({id:"heat-demand",p:"Medium",t:"Prepare for high open-swim demand with hydration, shade, and extra deck coverage.",why:"High temperature and low rain probability increase demand."});inventoryAlerts().forEach(i=>rec.push({id:"buy-"+i.item,p:i.onHand<=i.min?"High":"Medium",t:"Purchase "+i.item+"; projected supply is "+i.days+" day(s).",why:"Inventory is below minimum or projected below safety stock."}));highOpenWorkOrders().forEach(w=>rec.push({id:"wo-"+w.asset,p:"High",t:"Prioritize "+w.asset+" work order before peak operations.",why:w.desc}));if(incompleteHighTasks().length)rec.push({id:"tasks-high",p:"High",t:"Complete "+incompleteHighTasks().length+" high-priority daily task(s).",why:"Incomplete high-priority tasks reduce readiness."});if(state.programs.team.reduce((s,x)=>s+x.lanes,0)>=5)rec.push({id:"lane-pressure",p:"Medium",t:"Manage swim team lane capacity pressure and update public lane messaging.",why:"Swim team reserved five or more lanes."});if(!rec.length)rec.push({id:"normal",p:"Low",t:"No critical issues. Continue routine monitoring.",why:"All major indicators are within configured limits."});return rec}
-function showToast(msg){var t=q("toast");if(!t)return;t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1700)}function updateSaveIndicator(msg){var el=q("saveIndicator");if(el)el.textContent=msg||("Last saved: "+new Date().toLocaleTimeString())}function saveState(show){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));updateSaveIndicator();if(show)showToast("AquaIQPro data saved")}catch(e){showToast("Save failed")}}function loadState(){try{var saved=localStorage.getItem(STORAGE_KEY);if(saved){var parsed=JSON.parse(saved);if(parsed&&parsed.facility)state=parsed}}catch(e){}}function exportData(){saveState(false);var payload=JSON.stringify({exportedAt:new Date().toISOString(),app:"AquaIQPro",version:"v4.2 Full Navigation",state:state},null,2),blob=new Blob([payload],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="AquaIQPro_Backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Backup exported")}function importData(event){var file=event.target.files&&event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var parsed=JSON.parse(e.target.result),imported=parsed.state||parsed;if(!imported.facility)throw new Error("Invalid file");state=imported;saveState(false);hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Backup imported")}catch(err){showToast("Import failed")}};reader.readAsText(file)}function resetDemoData(){if(!confirm("Reset AquaIQPro to default demo data?"))return;state=JSON.parse(DEFAULT_STATE_JSON);localStorage.removeItem(STORAGE_KEY);hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Demo data reset");updateSaveIndicator("Autosave ready")}
+function showToast(msg){var t=q("toast");if(!t)return;t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1700)}function updateSaveIndicator(msg){var el=q("saveIndicator");if(el)el.textContent=msg||("Last saved: "+new Date().toLocaleTimeString())}function saveState(show){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));updateSaveIndicator();if(show)showToast("AquaIQPro data saved")}catch(e){showToast("Save failed")}}function loadState(){try{var saved=localStorage.getItem(STORAGE_KEY);if(saved){var parsed=JSON.parse(saved);if(parsed&&parsed.facility)state=parsed}}catch(e){}}function exportData(){saveState(false);var payload=JSON.stringify({exportedAt:new Date().toISOString(),app:"AquaIQPro",version:"v4.3 Live Lakeland Weather",state:state},null,2),blob=new Blob([payload],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="AquaIQPro_Backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Backup exported")}function importData(event){var file=event.target.files&&event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var parsed=JSON.parse(e.target.result),imported=parsed.state||parsed;if(!imported.facility)throw new Error("Invalid file");state=imported;saveState(false);hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Backup imported")}catch(err){showToast("Import failed")}};reader.readAsText(file)}function resetDemoData(){if(!confirm("Reset AquaIQPro to default demo data?"))return;state=JSON.parse(DEFAULT_STATE_JSON);localStorage.removeItem(STORAGE_KEY);hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Demo data reset");updateSaveIndicator("Autosave ready")}
 function hydrateInputs(){if(q("tempInput"))q("tempInput").value=state.weather.temp;if(q("rainInput"))q("rainInput").value=state.weather.rain;if(q("baseDemandInput"))q("baseDemandInput").value=state.demand.base;if(q("calloutInput"))q("calloutInput").value=state.callouts;if(q("chlorineInput"))q("chlorineInput").value=state.water.chlorine;if(q("phInput"))q("phInput").value=state.water.ph;if(q("alkInput"))q("alkInput").value=state.water.alk;if(q("scenarioTemp")){q("scenarioTemp").value=state.weather.temp;q("scenarioRain").value=state.weather.rain;q("scenarioExtraDemand").value=0;q("scenarioCallouts").value=0}}
 function updateInputs(reason){state.weather.temp=Number(q("tempInput").value||state.weather.temp);state.weather.rain=Number(q("rainInput").value||state.weather.rain);state.demand.base=Number(q("baseDemandInput").value||state.demand.base);state.callouts=Number(q("calloutInput").value||state.callouts);state.water.chlorine=Number(q("chlorineInput").value||state.water.chlorine);state.water.ph=Number(q("phInput").value||state.water.ph);state.water.alk=Number(q("alkInput").value||state.water.alk);state.audit.unshift(new Date().toLocaleString()+": "+reason);render();saveState(false)}
 
@@ -398,7 +450,7 @@ function beginDayReview(){
 
 function render(){calcDemand();var score=healthScore(),needed=staffNeeded(),avail=staffAvailable(),ws=waterStatus(),recs=recommendations();q("healthMetric").textContent=score+"%";q("healthTrend").textContent=score>=90?"Strong operating posture":score>=75?"Manageable with attention":"Needs manager action";q("healthBar").style.width=score+"%";q("demandMetric").textContent=state.demand.adjusted;q("demandTrend").textContent="Base "+state.demand.base+", adjusted for weather and programs.";q("staffMetric").textContent=avail+"/"+needed;q("staffTrend").textContent=avail>=needed?"Coverage meets forecast need":"Coverage gap detected";q("waterMetric").textContent=ws;q("waterTrend").textContent="Chlorine "+state.water.chlorine+" ppm, pH "+state.water.ph;q("aiSummary").innerHTML="<p><b>Today's outlook:</b> "+(score>=85?"Ready with routine monitoring.":"Manager attention recommended.")+"</p><p>Forecast demand is <b>"+state.demand.adjusted+"</b>. Recommended lifeguards: <b>"+needed+"</b>.</p><p><b>Explainability:</b> weather, programs, staffing, water, inventory, maintenance, tasks, and incidents feed the score.</p>";q("priorityActions").innerHTML=recs.map(r=>"<p>"+tag(r.p)+" "+r.t+"<br><span class='small'>Why: "+r.why+"</span></p>").join("");q("programLoad").innerHTML="<p>Lessons: <b>"+state.programs.lessons.length+"</b></p><p>Pool parties: <b>"+state.programs.parties.length+"</b></p><p>Swim team reserved lanes: <b>"+state.programs.team.reduce((s,x)=>s+x.lanes,0)+"</b></p>";q("inventoryRisk").innerHTML=inventoryAlerts().length?inventoryAlerts().map(i=>"<p>"+tag("High")+" "+i.item+": "+i.days+" days left</p>").join(""):"<p>"+tag("Low")+" No urgent purchase alerts.</p>";q("decisionStatus").innerHTML="<p>Approved: <b>"+Object.values(state.decisions).filter(x=>x==="Approved").length+"</b></p><p>Deferred: <b>"+Object.values(state.decisions).filter(x=>x==="Deferred").length+"</b></p><p>Overridden: <b>"+Object.values(state.decisions).filter(x=>x==="Overridden").length+"</b></p>";renderOperations();renderForecast();renderWater();renderStaff();renderPrograms();renderInventory();renderMaintenance();renderTasks();renderDecisions();renderDataSummary();renderAIOps();renderOperationsHome();renderCapacity()}
 function renderOperations(){q("checklist").innerHTML=["Water chemistry checked","Staffing coverage reviewed","Programs confirmed","Inventory reviewed","Maintenance reviewed"].map(x=>"<p>☑ "+x+"</p>").join("");q("incidents").innerHTML=state.incidents.length?state.incidents.map(i=>"<p>⚠ "+i+"</p>").join(""):"<p class='small'>No incidents logged.</p>"}
-function renderForecast(){var vals=forecastWeather.map((w,i)=>{var d=demandFor(w.t,w.r);return{day:days[i],temp:w.t,rain:w.r,d:d,staff:staffNeeded(d)}}),max=Math.max(...vals.map(x=>x.d));q("demandChart").innerHTML=vals.map(x=>"<div style='height:"+Math.max(20,x.d/max*160)+"px'><b>"+x.d+"</b><span>"+x.day+"</span></div>").join("");q("forecastTable").innerHTML=vals.map((x,i)=>"<tr><td>"+x.day+"</td><td>"+x.temp+"°F</td><td>"+x.rain+"%</td><td>"+(i>=4?"Weekend/event load":"Standard")+"</td><td>"+x.d+"</td><td>"+x.staff+"</td></tr>").join("");var high=vals.slice().sort((a,b)=>b.d-a.d)[0];q("forecastExplanation").innerHTML="<p>AquaIQPro increases demand when heat is high and rain is low. It lowers demand when rain risk is high. Program load adds demand from lessons, parties, and swim team.</p><p><b>Highest projected day:</b> "+high.day+" with "+high.d+" visitors.</p>"}
+function renderForecast(){var weatherSource=liveForecastWeatherArray();var vals=weatherSource.map((w,i)=>{var d=demandFor(w.t,w.r);return{day:w.date?weatherDayLabel(w.date):days[i],temp:w.t,rain:w.r,d:d,staff:staffNeeded(d)}}),max=Math.max(...vals.map(x=>x.d));q("demandChart").innerHTML=vals.map(x=>"<div style='height:"+Math.max(20,x.d/max*160)+"px'><b>"+x.d+"</b><span>"+x.day+"</span></div>").join("");q("forecastTable").innerHTML=vals.map((x,i)=>"<tr><td>"+x.day+"</td><td>"+x.temp+"°F</td><td>"+x.rain+"%</td><td>"+(i>=4?"Weekend/event load":"Standard")+"</td><td>"+x.d+"</td><td>"+x.staff+"</td></tr>").join("");var high=vals.slice().sort((a,b)=>b.d-a.d)[0];q("forecastExplanation").innerHTML="<p>AquaIQPro increases demand when heat is high and rain is low. It lowers demand when rain risk is high. Program load adds demand from lessons, parties, and swim team.</p><p><b>Highest projected day:</b> "+high.day+" with "+high.d+" visitors.</p>"}
 function renderWater(){var rows=[["Free Chlorine","1.0–4.0 ppm",state.water.chlorine,state.water.chlorine>=1&&state.water.chlorine<=4?"Low":"High"],["pH","7.2–7.8",state.water.ph,state.water.ph>=7.2&&state.water.ph<=7.8?"Low":"High"],["Alkalinity","80–120 ppm",state.water.alk,state.water.alk>=80&&state.water.alk<=120?"Low":"Medium"]];q("chemicalRanges").innerHTML=rows.map(r=>"<tr><td>"+r[0]+"</td><td>"+r[1]+"</td><td>"+r[2]+"</td><td>"+tag(r[3])+"</td></tr>").join("");var wr=recommendations().filter(r=>r.id.indexOf("water")>=0);q("waterGuidance").innerHTML=wr.length?wr.map(r=>"<p>"+tag(r.p)+" "+r.t+"<br><span class='small'>"+r.why+"</span></p>").join(""):"<p>Water readings are within target range. Continue scheduled testing.</p>"}
 function renderStaff(){q("staffTable").innerHTML=state.staff.map((s,i)=>"<tr><td>"+s.name+"</td><td>"+s.shift+"</td><td>"+s.area+"</td><td><select onchange='state.staff["+i+"].status=this.value;updateInputs(\"Staff status changed\")'><option "+(s.status==="Scheduled"?"selected":"")+">Scheduled</option><option "+(s.status==="No Show"?"selected":"")+">No Show</option><option "+(s.status==="Called Out"?"selected":"")+">Called Out</option></select></td><td><button class='btn bad' onclick='removeStaff("+i+")'>Remove</button></td></tr>").join("")}
 function renderPrograms(){q("lessonList").innerHTML=state.programs.lessons.map((x,i)=>"<p><b>"+x.name+"</b><br>"+x.time+" • "+x.count+" swimmers <button onclick='removeProgram(\"lessons\","+i+")'>Remove</button></p>").join("");q("partyList").innerHTML=state.programs.parties.map((x,i)=>"<p><b>"+x.name+"</b><br>"+x.time+" • "+x.count+" guests <button onclick='removeProgram(\"parties\","+i+")'>Remove</button></p>").join("");q("teamList").innerHTML=state.programs.team.map((x,i)=>"<p><b>"+x.name+"</b><br>"+x.time+" • "+x.lanes+" lanes <button onclick='removeProgram(\"team\","+i+")'>Remove</button></p>").join("");var lanes=state.programs.team.reduce((s,x)=>s+x.lanes,0);q("lanePressure").innerHTML="Current reserved swim team lanes: <b>"+lanes+"</b>. "+(lanes>=5?"Pressure is high.":"Pressure is manageable.")}
@@ -451,6 +503,152 @@ function renderCapacity(){
   q("rotationPlan").innerHTML="<b>30-minute rotation plan:</b> "+m.requiredSurveillance+" active surveillance position(s) are required. Add "+m.requiredRelief+" relief/rotation guard, for <b>"+m.requiredScheduled+" total scheduled lifeguard(s)</b>. Rotate every 30 minutes while preserving continuous zone coverage.";
 }
 
+
+
+var LIVE_WEATHER={
+  latitude:28.0395,
+  longitude:-81.9498,
+  timezone:"America/New_York",
+  loaded:false,
+  lastUpdated:null,
+  current:null,
+  daily:[],
+  hourly:[]
+};
+var WEATHER_REFRESH_MS=30*60*1000;
+var weatherRefreshTimer=null;
+
+function weatherCodeLabel(code){
+  var map={
+    0:"Clear",1:"Mostly clear",2:"Partly cloudy",3:"Overcast",
+    45:"Fog",48:"Rime fog",51:"Light drizzle",53:"Drizzle",55:"Heavy drizzle",
+    61:"Light rain",63:"Rain",65:"Heavy rain",66:"Freezing rain",67:"Heavy freezing rain",
+    71:"Light snow",73:"Snow",75:"Heavy snow",77:"Snow grains",
+    80:"Rain showers",81:"Rain showers",82:"Heavy showers",
+    85:"Snow showers",86:"Heavy snow showers",95:"Thunderstorms",
+    96:"Thunderstorms with hail",99:"Severe thunderstorms with hail"
+  };
+  return map[code]||"Changing conditions";
+}
+function weatherDayLabel(dateString){
+  var date=new Date(dateString+"T12:00:00");
+  return date.toLocaleDateString("en-US",{weekday:"short"});
+}
+function setWeatherStatus(mode,text){
+  ["weatherLiveDot","weatherPageDot"].forEach(function(id){
+    var el=q(id);if(el)el.className="weather-dot "+(mode||"");
+  });
+  ["weatherLiveStatus","weatherPageStatus"].forEach(function(id){
+    var el=q(id);if(el)el.textContent=text;
+  });
+}
+function weatherApiUrl(){
+  var hourly=[
+    "temperature_2m","apparent_temperature","precipitation_probability",
+    "precipitation","weather_code"
+  ].join(",");
+  var daily=[
+    "weather_code","temperature_2m_max","temperature_2m_min",
+    "precipitation_probability_max","precipitation_sum"
+  ].join(",");
+  return "https://api.open-meteo.com/v1/forecast?latitude="+LIVE_WEATHER.latitude+
+    "&longitude="+LIVE_WEATHER.longitude+
+    "&current=temperature_2m,apparent_temperature,precipitation,rain,weather_code"+
+    "&hourly="+encodeURIComponent(hourly)+
+    "&daily="+encodeURIComponent(daily)+
+    "&temperature_unit=fahrenheit&precipitation_unit=inch&timezone="+encodeURIComponent(LIVE_WEATHER.timezone)+
+    "&forecast_days=7";
+}
+async function loadLiveWeather(showNotice){
+  setWeatherStatus("","Loading");
+  if(q("weatherLiveSummary"))q("weatherLiveSummary").textContent="Loading the latest Lakeland forecast…";
+  try{
+    var response=await fetch(weatherApiUrl(),{cache:"no-store"});
+    if(!response.ok)throw new Error("Weather service returned "+response.status);
+    var payload=await response.json();
+    LIVE_WEATHER.current=payload.current||null;
+    LIVE_WEATHER.daily=[];
+    if(payload.daily&&Array.isArray(payload.daily.time)){
+      LIVE_WEATHER.daily=payload.daily.time.map(function(date,i){
+        return {
+          date:date,
+          code:payload.daily.weather_code[i],
+          high:Math.round(payload.daily.temperature_2m_max[i]),
+          low:Math.round(payload.daily.temperature_2m_min[i]),
+          rainChance:Math.round(payload.daily.precipitation_probability_max[i]||0),
+          precipitation:Number(payload.daily.precipitation_sum[i]||0)
+        };
+      });
+    }
+    LIVE_WEATHER.hourly=[];
+    if(payload.hourly&&Array.isArray(payload.hourly.time)){
+      LIVE_WEATHER.hourly=payload.hourly.time.map(function(time,i){
+        return {
+          time:time,
+          temp:Number(payload.hourly.temperature_2m[i]),
+          feels:Number(payload.hourly.apparent_temperature[i]),
+          rainChance:Number(payload.hourly.precipitation_probability[i]||0),
+          precipitation:Number(payload.hourly.precipitation[i]||0),
+          code:payload.hourly.weather_code[i]
+        };
+      });
+    }
+    LIVE_WEATHER.loaded=true;
+    LIVE_WEATHER.lastUpdated=new Date();
+    applyLiveWeatherToOperations();
+    renderLiveWeather();
+    render();
+    saveState(false);
+    if(showNotice)showToast("Lakeland weather refreshed");
+  }catch(err){
+    LIVE_WEATHER.loaded=false;
+    setWeatherStatus("error","Manual fallback");
+    if(q("weatherLiveSummary"))q("weatherLiveSummary").textContent="Live forecast unavailable. AquaIQPro is using the current manual weather inputs.";
+    if(q("weatherUpdatedAt"))q("weatherUpdatedAt").textContent="Live forecast unavailable. Manual values remain active.";
+    if(showNotice)showToast("Weather unavailable; using manual inputs");
+    console.warn("AquaIQPro weather load failed:",err);
+  }
+}
+function applyLiveWeatherToOperations(){
+  if(!LIVE_WEATHER.current)return;
+  state.weather.temp=Math.round(Number(LIVE_WEATHER.current.temperature_2m));
+  var currentHour=LIVE_WEATHER.current.time;
+  var hourlyMatch=LIVE_WEATHER.hourly.find(function(h){return h.time===currentHour});
+  if(!hourlyMatch&&LIVE_WEATHER.hourly.length){
+    hourlyMatch=LIVE_WEATHER.hourly.reduce(function(best,h){
+      return Math.abs(new Date(h.time)-new Date(currentHour))<Math.abs(new Date(best.time)-new Date(currentHour))?h:best;
+    },LIVE_WEATHER.hourly[0]);
+  }
+  state.weather.rain=hourlyMatch?Math.round(hourlyMatch.rainChance):0;
+  hydrateInputs();
+}
+function renderLiveWeather(){
+  if(!LIVE_WEATHER.loaded||!LIVE_WEATHER.current)return;
+  var c=LIVE_WEATHER.current,d=LIVE_WEATHER.daily[0]||null;
+  var condition=weatherCodeLabel(c.weather_code);
+  setWeatherStatus("live","Live");
+  if(q("weatherLiveSummary"))q("weatherLiveSummary").textContent=
+    Math.round(c.temperature_2m)+"°F, "+condition+", "+state.weather.rain+"% rain chance";
+  if(q("weatherUpdatedAt"))q("weatherUpdatedAt").textContent=
+    "Updated "+LIVE_WEATHER.lastUpdated.toLocaleTimeString()+" for Lakeland, Florida";
+  if(q("liveCurrentTemp"))q("liveCurrentTemp").textContent=Math.round(c.temperature_2m)+"°F";
+  if(q("liveFeelsLike"))q("liveFeelsLike").textContent=Math.round(c.apparent_temperature)+"°F";
+  if(q("liveRainChance"))q("liveRainChance").textContent=state.weather.rain+"%";
+  if(q("liveWeatherCondition"))q("liveWeatherCondition").textContent=condition;
+  if(q("liveHighLow")&&d)q("liveHighLow").textContent=d.high+"° / "+d.low+"°";
+  if(q("livePrecipTotal")&&d)q("livePrecipTotal").textContent=d.precipitation.toFixed(2)+'" forecast precipitation';
+  if(q("weatherWeek")){
+    q("weatherWeek").innerHTML=LIVE_WEATHER.daily.map(function(day){
+      return '<div class="weather-day"><b>'+weatherDayLabel(day.date)+'</b><span>'+weatherCodeLabel(day.code)+'</span><b>'+day.high+'° / '+day.low+'°</b><span>'+day.rainChance+'% rain</span></div>';
+    }).join("");
+  }
+}
+function liveForecastWeatherArray(){
+  if(!LIVE_WEATHER.loaded||!LIVE_WEATHER.daily.length)return forecastWeather;
+  return LIVE_WEATHER.daily.map(function(day){
+    return {t:day.high,r:day.rainChance,low:day.low,code:day.code,date:day.date};
+  });
+}
 
 var FACILITY_PROFILES={
   gandy:{
@@ -742,6 +940,10 @@ function downloadReportExcel(){
 function printManagerReport(){updateReportPreview();window.print()}
 
 function init(){loadState();ensureExtendedState();hydrateInputs();document.querySelectorAll("#nav button").forEach(btn=>btn.addEventListener("click",function(){document.querySelectorAll("#nav button").forEach(b=>b.classList.remove("active"));document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));btn.classList.add("active");q(btn.dataset.page).classList.add("active");q("pageTitle").textContent=btn.textContent}));
+
+var refreshWeatherButton=q("refreshWeatherButton");if(refreshWeatherButton)refreshWeatherButton.addEventListener("click",function(){loadLiveWeather(true)});
+var refreshWeatherPageButton=q("refreshWeatherPageButton");if(refreshWeatherPageButton)refreshWeatherPageButton.addEventListener("click",function(){loadLiveWeather(true)});
+
 var facilitySelect=q("facilitySelect");if(facilitySelect)facilitySelect.addEventListener("change",function(){applyFacilityProfile(facilitySelect.value,false)});
 var saveFacility=q("saveFacilityProfile");if(saveFacility)saveFacility.addEventListener("click",saveFacilityAssumptions);
 
@@ -752,7 +954,7 @@ var pdfBtn=q("downloadPdfButton");if(pdfBtn)pdfBtn.addEventListener("click",down
 var excelBtn=q("downloadExcelButton");if(excelBtn)excelBtn.addEventListener("click",downloadReportExcel);
 var printBtn=q("printReportButton");if(printBtn)printBtn.addEventListener("click",printManagerReport);
 
-var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",function(e){e.preventDefault();toggleChat()});var begin=q("beginDayButton");if(begin)begin.addEventListener("click",beginDayReview);applyFacilityProfile(state.activeFacilityId||"gandy",true);renderCapacity();renderFacilityProfile();renderShiftWorkspace();populateReportFields();renderReportHistory();updateReportPreview();runScenario()}init();
+var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",function(e){e.preventDefault();toggleChat()});var begin=q("beginDayButton");if(begin)begin.addEventListener("click",beginDayReview);applyFacilityProfile(state.activeFacilityId||"gandy",true);renderCapacity();renderFacilityProfile();renderShiftWorkspace();populateReportFields();renderReportHistory();updateReportPreview();runScenario();loadLiveWeather(false);weatherRefreshTimer=setInterval(function(){loadLiveWeather(false)},WEATHER_REFRESH_MS)}init();
 </script>
 </body>
 </html>
