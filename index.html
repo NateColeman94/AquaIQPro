@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AquaIQPro v4.3 Live Lakeland Weather</title>
+<title>AquaIQPro v4.4 Personalized Shift Welcome</title>
 <style>
 :root{--bg:#f3f8fb;--panel:#fff;--ink:#102331;--muted:#647888;--line:#d9e7ee;--brand:#076b8f;--brand2:#00a7b5;--good:#10b981;--warn:#f59e0b;--bad:#ef4444;--shadow:0 12px 30px rgba(7,35,53,.10);--radius:18px}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
@@ -81,17 +81,7 @@ body{
 .report-history-item button{padding:7px 9px}
 .export-status{margin-top:9px;font-size:13px;color:var(--muted)}
 
-/* Sprint 4.2 full-navigation refinements */
-#nav{display:flex;flex-direction:column;gap:3px}
-#nav button{position:relative;padding-left:14px}
-#nav button[data-page="scenario"],
-#nav button[data-page="forecasting"],
-#nav button[data-page="aiops"],
-#nav button[data-page="data"]{background:rgba(255,255,255,.045)}
-#nav button[data-page="scenario"]:before,
-#nav button[data-page="forecasting"]:before,
-#nav button[data-page="aiops"]:before,
-#nav button[data-page="data"]:before{content:"";position:absolute;left:5px;top:50%;width:4px;height:4px;border-radius:50%;background:#7dd3fc;transform:translateY(-50%)}
+
 
 
 /* Sprint 4.3 live weather */
@@ -108,6 +98,25 @@ body{
 .weather-day{border:1px solid var(--line);border-radius:13px;padding:10px;background:#fbfdfe;text-align:center}
 .weather-day b,.weather-day span{display:block}.weather-day span{font-size:12px;color:var(--muted);margin-top:4px}
 .weather-source-note{font-size:12px;color:var(--muted);margin-top:10px}
+
+/* Sprint 4.4 personalized shift welcome */
+#nav{display:flex;flex-direction:column;gap:3px}
+#nav button{padding-left:12px}
+#nav button[data-page="scenario"],
+#nav button[data-page="forecasting"],
+#nav button[data-page="aiops"],
+#nav button[data-page="data"]{background:transparent}
+.personal-welcome{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center}
+.personal-welcome-controls{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+.personal-welcome-controls label{min-width:180px;color:#d9f5fb;font-size:12px}
+.personal-welcome-controls input{margin-top:5px}
+.personal-name-line{font-size:14px;color:#d9f5fb;margin-top:6px}
+.shift-date-line{font-size:13px;color:#d9f5fb;margin-top:4px}
+.welcome-badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:12px 14px;text-align:center;min-width:150px}
+.welcome-badge span{display:block;font-size:12px;color:#d9f5fb}
+.welcome-badge b{display:block;font-size:22px;margin-top:4px}
+@media(max-width:980px){.personal-welcome{grid-template-columns:1fr}.personal-welcome-controls{align-items:stretch}.personal-welcome-controls label{min-width:0;flex:1}}
+
 @media(max-width:980px){.weather-grid{grid-template-columns:1fr 1fr}.weather-week{grid-template-columns:repeat(2,1fr)}.weather-live-banner{align-items:flex-start;flex-direction:column}}
 
 @media(max-width:980px){.facility-profile,.shift-grid,.report-editor-grid{grid-template-columns:1fr}.report-editor-grid .wide{grid-column:auto}}
@@ -152,10 +161,10 @@ body{
     <button data-page="reports">Reports</button>
     <button data-page="assistant">Ask AquaIQ</button>
   </nav>
-  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v4.3 Live Lakeland Weather merges stable app, clean reports, floating chat, and data persistence.</span></div>
+  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v4.4 Personalized Shift Welcome merges stable app, clean reports, floating chat, and data persistence.</span></div>
 </aside>
 <main>
-  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v4.3 Live Lakeland Weather</b> • <span class="good">System Ready</span></div></div>
+  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v4.4 Personalized Shift Welcome</b> • <span class="good">System Ready</span></div></div>
 
   <section id="dashboard" class="section active">
     
@@ -173,9 +182,19 @@ body{
 
 <div class="ops-hero">
       <div class="ops-hero-grid">
-        <div>
-          <h3>Good morning</h3>
-          <p id="homeSummaryLine">Your daily operating plan is ready for review.</p>
+        <div class="personal-welcome">
+          <div>
+            <h3 id="personalGreeting">Good morning</h3>
+            <div id="personalNameLine" class="personal-name-line">Welcome to today’s shift.</div>
+            <div id="shiftDateLine" class="shift-date-line"></div>
+            <p id="homeSummaryLine">Your daily operating plan is ready for review.</p>
+            <div class="personal-welcome-controls">
+              <label>Manager name<input id="managerNameInput" placeholder="Enter manager name"></label>
+              <button id="saveManagerNameButton" class="btn secondary" type="button">Save Name</button>
+            </div>
+          </div>
+          <div class="welcome-badge"><span>Selected facility</span><b id="welcomeFacilityName">Gandy Pool</b></div>
+        </div>
           <div class="ops-stat-grid">
             <div class="ops-stat"><span>Forecast attendance</span><b id="demandMetric">--</b><small id="demandTrend"></small></div>
             <div class="ops-stat"><span>Peak period</span><b id="homePeak">2–4 PM</b><small>Highest expected demand</small></div>
@@ -394,9 +413,35 @@ function demandFor(temp,rain){var d=state.demand.base;if(temp>=92)d*=1.28;else i
 function calcDemand(){state.demand.adjusted=demandFor(state.weather.temp,state.weather.rain)}function staffAvailable(){return state.staff.filter(s=>s.status==="Scheduled").length-state.callouts}function staffNeeded(d){d=d||state.demand.adjusted;return Math.max(4,Math.ceil(d/55)+state.programs.parties.length+Math.ceil(state.programs.lessons.length/2))}function waterStatus(){var c=state.water.chlorine,p=state.water.ph;if(c<1||c>4||p<7.2||p>7.8)return"Action";if(c<1.5||c>3.5||p<7.3||p>7.7)return"Watch";return"Good"}function inventoryCalculated(){return state.inventory.map(i=>Object.assign({},i,{days:Math.round(i.onHand/(i.dailyUse*(state.demand.adjusted/250)))}))}function inventoryAlerts(){return inventoryCalculated().filter(i=>i.onHand<=i.min||i.days<=7)}function highOpenWorkOrders(){return state.workOrders.filter(w=>w.priority==="High"&&w.status!=="Completed")}function incompleteHighTasks(){return state.tasks.filter(t=>!t.done&&t.priority==="High")}
 function healthScore(){var score=100;if(waterStatus()==="Watch")score-=8;if(waterStatus()==="Action")score-=22;var gap=staffNeeded()-staffAvailable();if(gap>0)score-=gap*10;if(state.weather.rain>50)score-=7;score-=inventoryAlerts().length*6;score-=state.incidents.length*3;score-=highOpenWorkOrders().length*7;score-=incompleteHighTasks().length*4;return Math.max(45,Math.min(100,score))}
 function recommendations(){var rec=[],gap=staffNeeded()-staffAvailable();if(gap>0)rec.push({id:"staff-gap",p:"High",t:"Schedule "+gap+" additional lifeguard(s) for peak demand.",why:"Forecast attendance and program load exceed available coverage."});if(waterStatus()==="Action")rec.push({id:"water-action",p:"High",t:"Correct water chemistry before peak swim periods and document retest.",why:"Current chlorine or pH is outside configured range."});if(waterStatus()==="Watch")rec.push({id:"water-watch",p:"Medium",t:"Increase water chemistry testing frequency during afternoon peak.",why:"Readings are near the edge of target range."});if(state.weather.temp>=92&&state.weather.rain<30)rec.push({id:"heat-demand",p:"Medium",t:"Prepare for high open-swim demand with hydration, shade, and extra deck coverage.",why:"High temperature and low rain probability increase demand."});inventoryAlerts().forEach(i=>rec.push({id:"buy-"+i.item,p:i.onHand<=i.min?"High":"Medium",t:"Purchase "+i.item+"; projected supply is "+i.days+" day(s).",why:"Inventory is below minimum or projected below safety stock."}));highOpenWorkOrders().forEach(w=>rec.push({id:"wo-"+w.asset,p:"High",t:"Prioritize "+w.asset+" work order before peak operations.",why:w.desc}));if(incompleteHighTasks().length)rec.push({id:"tasks-high",p:"High",t:"Complete "+incompleteHighTasks().length+" high-priority daily task(s).",why:"Incomplete high-priority tasks reduce readiness."});if(state.programs.team.reduce((s,x)=>s+x.lanes,0)>=5)rec.push({id:"lane-pressure",p:"Medium",t:"Manage swim team lane capacity pressure and update public lane messaging.",why:"Swim team reserved five or more lanes."});if(!rec.length)rec.push({id:"normal",p:"Low",t:"No critical issues. Continue routine monitoring.",why:"All major indicators are within configured limits."});return rec}
-function showToast(msg){var t=q("toast");if(!t)return;t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1700)}function updateSaveIndicator(msg){var el=q("saveIndicator");if(el)el.textContent=msg||("Last saved: "+new Date().toLocaleTimeString())}function saveState(show){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));updateSaveIndicator();if(show)showToast("AquaIQPro data saved")}catch(e){showToast("Save failed")}}function loadState(){try{var saved=localStorage.getItem(STORAGE_KEY);if(saved){var parsed=JSON.parse(saved);if(parsed&&parsed.facility)state=parsed}}catch(e){}}function exportData(){saveState(false);var payload=JSON.stringify({exportedAt:new Date().toISOString(),app:"AquaIQPro",version:"v4.3 Live Lakeland Weather",state:state},null,2),blob=new Blob([payload],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="AquaIQPro_Backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Backup exported")}function importData(event){var file=event.target.files&&event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var parsed=JSON.parse(e.target.result),imported=parsed.state||parsed;if(!imported.facility)throw new Error("Invalid file");state=imported;saveState(false);hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Backup imported")}catch(err){showToast("Import failed")}};reader.readAsText(file)}function resetDemoData(){if(!confirm("Reset AquaIQPro to default demo data?"))return;state=JSON.parse(DEFAULT_STATE_JSON);localStorage.removeItem(STORAGE_KEY);hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Demo data reset");updateSaveIndicator("Autosave ready")}
+function showToast(msg){var t=q("toast");if(!t)return;t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1700)}function updateSaveIndicator(msg){var el=q("saveIndicator");if(el)el.textContent=msg||("Last saved: "+new Date().toLocaleTimeString())}function saveState(show){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));updateSaveIndicator();if(show)showToast("AquaIQPro data saved")}catch(e){showToast("Save failed")}}function loadState(){try{var saved=localStorage.getItem(STORAGE_KEY);if(saved){var parsed=JSON.parse(saved);if(parsed&&parsed.facility)state=parsed}}catch(e){}}function exportData(){saveState(false);var payload=JSON.stringify({exportedAt:new Date().toISOString(),app:"AquaIQPro",version:"v4.4 Personalized Shift Welcome",state:state},null,2),blob=new Blob([payload],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="AquaIQPro_Backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Backup exported")}function importData(event){var file=event.target.files&&event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var parsed=JSON.parse(e.target.result),imported=parsed.state||parsed;if(!imported.facility)throw new Error("Invalid file");state=imported;saveState(false);hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Backup imported")}catch(err){showToast("Import failed")}};reader.readAsText(file)}function resetDemoData(){if(!confirm("Reset AquaIQPro to default demo data?"))return;state=JSON.parse(DEFAULT_STATE_JSON);localStorage.removeItem(STORAGE_KEY);hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Demo data reset");updateSaveIndicator("Autosave ready")}
 function hydrateInputs(){if(q("tempInput"))q("tempInput").value=state.weather.temp;if(q("rainInput"))q("rainInput").value=state.weather.rain;if(q("baseDemandInput"))q("baseDemandInput").value=state.demand.base;if(q("calloutInput"))q("calloutInput").value=state.callouts;if(q("chlorineInput"))q("chlorineInput").value=state.water.chlorine;if(q("phInput"))q("phInput").value=state.water.ph;if(q("alkInput"))q("alkInput").value=state.water.alk;if(q("scenarioTemp")){q("scenarioTemp").value=state.weather.temp;q("scenarioRain").value=state.weather.rain;q("scenarioExtraDemand").value=0;q("scenarioCallouts").value=0}}
 function updateInputs(reason){state.weather.temp=Number(q("tempInput").value||state.weather.temp);state.weather.rain=Number(q("rainInput").value||state.weather.rain);state.demand.base=Number(q("baseDemandInput").value||state.demand.base);state.callouts=Number(q("calloutInput").value||state.callouts);state.water.chlorine=Number(q("chlorineInput").value||state.water.chlorine);state.water.ph=Number(q("phInput").value||state.water.ph);state.water.alk=Number(q("alkInput").value||state.water.alk);state.audit.unshift(new Date().toLocaleString()+": "+reason);render();saveState(false)}
+
+
+function greetingForCurrentTime(){
+  var hour=new Date().getHours();
+  if(hour<12)return"Good morning";
+  if(hour<17)return"Good afternoon";
+  return"Good evening";
+}
+function renderPersonalWelcome(){
+  var name=(state.managerName||"").trim();
+  var facility=activeFacility();
+  if(q("personalGreeting"))q("personalGreeting").textContent=greetingForCurrentTime()+(name?", "+name:"");
+  if(q("personalNameLine"))q("personalNameLine").textContent=name
+    ? "Here is what needs your attention for today’s shift."
+    : "Add your name to personalize the shift welcome.";
+  if(q("shiftDateLine"))q("shiftDateLine").textContent=new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"});
+  if(q("welcomeFacilityName"))q("welcomeFacilityName").textContent=facility.name;
+  if(q("managerNameInput")&&document.activeElement!==q("managerNameInput"))q("managerNameInput").value=state.managerName||"";
+}
+function saveManagerName(){
+  state.managerName=q("managerNameInput").value.trim();
+  state.audit.unshift(new Date().toLocaleString()+": Manager profile name updated");
+  saveState(false);
+  renderPersonalWelcome();
+  showToast(state.managerName?"Welcome, "+state.managerName:"Manager name cleared");
+}
 
 function renderOperationsHome(){
   var score=healthScore(), needed=staffNeeded(), avail=staffAvailable(), recs=recommendations();
@@ -941,6 +986,12 @@ function printManagerReport(){updateReportPreview();window.print()}
 
 function init(){loadState();ensureExtendedState();hydrateInputs();document.querySelectorAll("#nav button").forEach(btn=>btn.addEventListener("click",function(){document.querySelectorAll("#nav button").forEach(b=>b.classList.remove("active"));document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));btn.classList.add("active");q(btn.dataset.page).classList.add("active");q("pageTitle").textContent=btn.textContent}));
 
+
+var saveManagerNameButton=q("saveManagerNameButton");
+if(saveManagerNameButton)saveManagerNameButton.addEventListener("click",saveManagerName);
+var managerNameInput=q("managerNameInput");
+if(managerNameInput)managerNameInput.addEventListener("keydown",function(e){if(e.key==="Enter")saveManagerName()});
+
 var refreshWeatherButton=q("refreshWeatherButton");if(refreshWeatherButton)refreshWeatherButton.addEventListener("click",function(){loadLiveWeather(true)});
 var refreshWeatherPageButton=q("refreshWeatherPageButton");if(refreshWeatherPageButton)refreshWeatherPageButton.addEventListener("click",function(){loadLiveWeather(true)});
 
@@ -954,7 +1005,7 @@ var pdfBtn=q("downloadPdfButton");if(pdfBtn)pdfBtn.addEventListener("click",down
 var excelBtn=q("downloadExcelButton");if(excelBtn)excelBtn.addEventListener("click",downloadReportExcel);
 var printBtn=q("printReportButton");if(printBtn)printBtn.addEventListener("click",printManagerReport);
 
-var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",function(e){e.preventDefault();toggleChat()});var begin=q("beginDayButton");if(begin)begin.addEventListener("click",beginDayReview);applyFacilityProfile(state.activeFacilityId||"gandy",true);renderCapacity();renderFacilityProfile();renderShiftWorkspace();populateReportFields();renderReportHistory();updateReportPreview();runScenario();loadLiveWeather(false);weatherRefreshTimer=setInterval(function(){loadLiveWeather(false)},WEATHER_REFRESH_MS)}init();
+var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",function(e){e.preventDefault();toggleChat()});var begin=q("beginDayButton");if(begin)begin.addEventListener("click",beginDayReview);applyFacilityProfile(state.activeFacilityId||"gandy",true);renderCapacity();renderFacilityProfile();renderShiftWorkspace();populateReportFields();renderReportHistory();updateReportPreview();renderPersonalWelcome();runScenario();loadLiveWeather(false);weatherRefreshTimer=setInterval(function(){loadLiveWeather(false)},WEATHER_REFRESH_MS)}init();
 </script>
 </body>
 </html>
