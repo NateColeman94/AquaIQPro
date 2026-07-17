@@ -261,3 +261,29 @@ body{
   background:rgba(14,165,183,.08);
 }
 .program-card-hidden{display:none !important}
+
+/* AquaIQPro 5.3.2 — full facility synchronization */
+.welcome-badge{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  gap:4px !important;
+}
+.welcome-badge span,
+.welcome-badge b{
+  display:block !important;
+}
+.welcome-badge b{
+  margin-top:2px;
+}
+.facility-data-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  margin-bottom:12px;
+  padding:7px 11px;
+  border-radius:999px;
+  background:rgba(14,165,183,.09);
+  border:1px solid rgba(14,165,183,.18);
+  font-size:13px;
+}
