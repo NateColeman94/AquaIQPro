@@ -6,7 +6,7 @@ function demandFor(temp,rain){var d=state.demand.base;if(temp>=92)d*=1.28;else i
 function calcDemand(){state.demand.adjusted=demandFor(state.weather.temp,state.weather.rain)}function staffAvailable(){return state.staff.filter(s=>s.status==="Scheduled").length-state.callouts}function staffNeeded(d){d=d||state.demand.adjusted;return Math.max(4,Math.ceil(d/55)+state.programs.parties.length+Math.ceil(state.programs.lessons.length/2))}function waterStatus(){var c=state.water.chlorine,p=state.water.ph;if(c<1||c>4||p<7.2||p>7.8)return"Action";if(c<1.5||c>3.5||p<7.3||p>7.7)return"Watch";return"Good"}function inventoryCalculated(){return state.inventory.map(i=>Object.assign({},i,{days:Math.round(i.onHand/(i.dailyUse*(state.demand.adjusted/250)))}))}function inventoryAlerts(){return inventoryCalculated().filter(i=>i.onHand<=i.min||i.days<=7)}function highOpenWorkOrders(){return state.workOrders.filter(w=>w.priority==="High"&&w.status!=="Completed")}function incompleteHighTasks(){return state.tasks.filter(t=>!t.done&&t.priority==="High")}
 function healthScore(){var score=100;if(waterStatus()==="Watch")score-=8;if(waterStatus()==="Action")score-=22;var gap=staffNeeded()-staffAvailable();if(gap>0)score-=gap*10;if(state.weather.rain>50)score-=7;score-=inventoryAlerts().length*6;score-=state.incidents.length*3;score-=highOpenWorkOrders().length*7;score-=incompleteHighTasks().length*4;return Math.max(45,Math.min(100,score))}
 function recommendations(){var rec=[],gap=staffNeeded()-staffAvailable();if(gap>0)rec.push({id:"staff-gap",p:"High",t:"Schedule "+gap+" additional lifeguard(s) for peak demand.",why:"Forecast attendance and program load exceed available coverage."});if(waterStatus()==="Action")rec.push({id:"water-action",p:"High",t:"Correct water chemistry before peak swim periods and document retest.",why:"Current chlorine or pH is outside configured range."});if(waterStatus()==="Watch")rec.push({id:"water-watch",p:"Medium",t:"Increase water chemistry testing frequency during afternoon peak.",why:"Readings are near the edge of target range."});if(state.weather.temp>=92&&state.weather.rain<30)rec.push({id:"heat-demand",p:"Medium",t:"Prepare for high open-swim demand with hydration, shade, and extra deck coverage.",why:"High temperature and low rain probability increase demand."});inventoryAlerts().forEach(i=>rec.push({id:"buy-"+i.item,p:i.onHand<=i.min?"High":"Medium",t:"Purchase "+i.item+"; projected supply is "+i.days+" day(s).",why:"Inventory is below minimum or projected below safety stock."}));highOpenWorkOrders().forEach(w=>rec.push({id:"wo-"+w.asset,p:"High",t:"Prioritize "+w.asset+" work order before peak operations.",why:w.desc}));if(incompleteHighTasks().length)rec.push({id:"tasks-high",p:"High",t:"Complete "+incompleteHighTasks().length+" high-priority daily task(s).",why:"Incomplete high-priority tasks reduce readiness."});if(state.programs.team.reduce((s,x)=>s+x.lanes,0)>=5)rec.push({id:"lane-pressure",p:"Medium",t:"Manage swim team lane capacity pressure and update public lane messaging.",why:"Swim team reserved five or more lanes."});if(!rec.length)rec.push({id:"normal",p:"Low",t:"No critical issues. Continue routine monitoring.",why:"All major indicators are within configured limits."});return rec}
-function showToast(msg){var t=q("toast");if(!t)return;t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1700)}function updateSaveIndicator(msg){var el=q("saveIndicator");if(el)el.textContent=msg||("Last saved: "+new Date().toLocaleTimeString())}function saveState(show){persistCompleteFacilityState();try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));updateSaveIndicator();if(show)showToast("AquaIQPro data saved")}catch(e){showToast("Save failed")}}function loadState(){try{var saved=localStorage.getItem(STORAGE_KEY);if(saved){var parsed=JSON.parse(saved);if(parsed&&parsed.facility)state=parsed}}catch(e){}}function exportData(){saveState(false);var payload=JSON.stringify({exportedAt:new Date().toISOString(),app:"AquaIQPro",version:"v5.3.2 Full Facility Synchronization",state:state},null,2),blob=new Blob([payload],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="AquaIQPro_Backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Backup exported")}function importData(event){var file=event.target.files&&event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var parsed=JSON.parse(e.target.result),imported=parsed.state||parsed;if(!imported.facility)throw new Error("Invalid file");state=imported;ensureExtendedState();saveState(false);hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Backup imported")}catch(err){showToast("Import failed")}};reader.readAsText(file)}function resetDemoData(){if(!confirm("Reset AquaIQPro to default demo data?"))return;state=JSON.parse(DEFAULT_STATE_JSON);localStorage.removeItem(STORAGE_KEY);ensureExtendedState();hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Demo data reset");updateSaveIndicator("Autosave ready")}
+function showToast(msg){var t=q("toast");if(!t)return;t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1700)}function updateSaveIndicator(msg){var el=q("saveIndicator");if(el)el.textContent=msg||("Last saved: "+new Date().toLocaleTimeString())}function saveState(show){persistCompleteFacilityState();try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));updateSaveIndicator();if(show)showToast("AquaIQPro data saved")}catch(e){showToast("Save failed")}}function loadState(){try{var saved=localStorage.getItem(STORAGE_KEY);if(saved){var parsed=JSON.parse(saved);if(parsed&&parsed.facility)state=parsed}}catch(e){}}function exportData(){saveState(false);var payload=JSON.stringify({exportedAt:new Date().toISOString(),app:"AquaIQPro",version:"v5.3.3 Facility Display Synchronization",state:state},null,2),blob=new Blob([payload],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="AquaIQPro_Backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Backup exported")}function importData(event){var file=event.target.files&&event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var parsed=JSON.parse(e.target.result),imported=parsed.state||parsed;if(!imported.facility)throw new Error("Invalid file");state=imported;ensureExtendedState();saveState(false);hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Backup imported")}catch(err){showToast("Import failed")}};reader.readAsText(file)}function resetDemoData(){if(!confirm("Reset AquaIQPro to default demo data?"))return;state=JSON.parse(DEFAULT_STATE_JSON);localStorage.removeItem(STORAGE_KEY);ensureExtendedState();hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Demo data reset");updateSaveIndicator("Autosave ready")}
 function hydrateInputs(){if(q("tempInput"))q("tempInput").value=state.weather.temp;if(q("rainInput"))q("rainInput").value=state.weather.rain;if(q("baseDemandInput"))q("baseDemandInput").value=state.demand.base;if(q("calloutInput"))q("calloutInput").value=state.callouts;if(q("chlorineInput"))q("chlorineInput").value=state.water.chlorine;if(q("phInput"))q("phInput").value=state.water.ph;if(q("alkInput"))q("alkInput").value=state.water.alk;if(q("scenarioTemp")){q("scenarioTemp").value=state.weather.temp;q("scenarioRain").value=state.weather.rain;q("scenarioExtraDemand").value=0;q("scenarioCallouts").value=0}}
 function updateInputs(reason){state.weather.temp=Number(q("tempInput").value||state.weather.temp);state.weather.rain=Number(q("rainInput").value||state.weather.rain);state.demand.base=Number(q("baseDemandInput").value||state.demand.base);state.callouts=Number(q("calloutInput").value||state.callouts);state.water.chlorine=Number(q("chlorineInput").value||state.water.chlorine);state.water.ph=Number(q("phInput").value||state.water.ph);state.water.alk=Number(q("alkInput").value||state.water.alk);state.audit.unshift(new Date().toLocaleString()+": "+reason);render();saveState(false)}
 
@@ -593,7 +593,8 @@ function renderFacilityDataContext(){
     operationsFacilityContext:"Showing operational checklist and incidents for "+name
   };
   Object.keys(labels).forEach(function(id){
-    if(q(id))q(id).textContent=labels[id];
+    var el=q(id);
+    if(el)el.textContent=labels[id];
   });
 }
 
@@ -652,9 +653,11 @@ function applyFacilityProfile(id,initial){
   hydrateInputs();
   render();
   renderFacilityProfile();
+  facilityDisplayAudit();
   renderFacilityComparison();
   renderShiftWorkspace();
   renderManagerIdentity();
+  refreshFacilityDisplay();
   populateReportFields();
   generateReport("Daily Operations Report");
   saveState(false);
@@ -771,10 +774,45 @@ function chooseRecommendedFacility(){
   showToast(FACILITY_PROFILES[recommended].name+" selected as the higher-demand planning facility");
 }
 
+
+
+function facilityDisplayAudit(){
+  var expected=activeFacility().name;
+  var ids=["welcomeFacilityName","facilityName","reportFacilityBadge","comparisonSelectedFacility"];
+  ids.forEach(function(id){
+    var el=q(id);
+    if(el&&el.textContent.trim()!==expected)el.textContent=expected;
+  });
+  renderFacilityDataContext();
+}
+
+function refreshFacilityDisplay(){
+  var p=activeFacility();
+  var facilityName=p.name;
+
+  if(q("facilitySelect"))q("facilitySelect").value=p.id;
+  if(q("welcomeFacilityName"))q("welcomeFacilityName").textContent=facilityName;
+  if(q("facilityName"))q("facilityName").textContent=facilityName;
+  if(q("reportFacilityBadge"))q("reportFacilityBadge").textContent=facilityName;
+  if(q("comparisonSelectedFacility"))q("comparisonSelectedFacility").textContent=facilityName;
+
+  renderFacilityDataContext();
+
+  if(q("facilityRosterNote")){
+    q("facilityRosterNote").innerHTML="<b>"+facilityName+" lifeguard roster</b><br><span class='small'>Names, shifts, status changes, and manager edits are stored separately for this facility.</span>";
+  }
+
+  if(q("facilityProgramNote")){
+    q("facilityProgramNote").innerHTML=p.id==="gandy"
+      ?"<b>Gandy Pool program profile</b><br><span class='small'>Swim Lessons, Pool Parties, Swim Team, and Aquatic Class affect demand and staffing.</span>"
+      :"<b>Simpson Park Pool program profile</b><br><span class='small'>Swim Lessons and Pool Parties affect demand and staffing. Swim Team and Aquatic Class are not scheduled here.</span>";
+  }
+}
+
 function renderFacilityProfile(){
   var p=activeFacility();
-  if(q("facilitySelect"))q("facilitySelect").value=p.id;
-  if(q("facilityName"))q("facilityName").textContent=p.name;
+  refreshFacilityDisplay();
+
   if(q("facilityDescription"))q("facilityDescription").textContent=p.description;
   if(q("facilityFacts")){
     q("facilityFacts").innerHTML=[
@@ -789,10 +827,6 @@ function renderFacilityProfile(){
   if(q("facilityCapacityInput"))q("facilityCapacityInput").value=p.capacity;
   if(q("facilityBaseDemandInput"))q("facilityBaseDemandInput").value=p.baseDemand;
   if(q("facilityTypicalGuardsInput"))q("facilityTypicalGuardsInput").value=p.typicalGuards;
-  if(q("reportFacilityBadge"))q("reportFacilityBadge").textContent=p.name;
-  if(q("facilityRosterNote")){
-    q("facilityRosterNote").innerHTML="<b>"+p.name+" lifeguard roster</b><br><span class='small'>Names, shifts, status changes, and manager edits are stored separately for this facility.</span>";
-  }
   renderManagerIdentity();
 }
 function saveFacilityAssumptions(){
@@ -987,7 +1021,7 @@ function init(){loadState();ensureExtendedState();hydrateInputs();document.query
 var refreshWeatherButton=q("refreshWeatherButton");if(refreshWeatherButton)refreshWeatherButton.addEventListener("click",function(){loadLiveWeather(true)});
 var refreshWeatherPageButton=q("refreshWeatherPageButton");if(refreshWeatherPageButton)refreshWeatherPageButton.addEventListener("click",function(){loadLiveWeather(true)});
 
-var facilitySelect=q("facilitySelect");if(facilitySelect)facilitySelect.addEventListener("change",function(){applyFacilityProfile(facilitySelect.value,false);showToast(activeFacility().name+" selected")});
+var facilitySelect=q("facilitySelect");if(facilitySelect)facilitySelect.addEventListener("change",function(){var selectedId=this.value;applyFacilityProfile(selectedId,false);refreshFacilityDisplay();showToast(activeFacility().name+" selected")});
 var saveManagerNameButton=q("saveManagerNameButton");if(saveManagerNameButton)saveManagerNameButton.addEventListener("click",saveManagerIdentity);
 var managerNameInput=q("managerNameInput");if(managerNameInput)managerNameInput.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();saveManagerIdentity()}});
 var returnToSelectedFacilityButton=q("returnToSelectedFacilityButton");if(returnToSelectedFacilityButton)returnToSelectedFacilityButton.addEventListener("click",function(){showPage("dashboard")});
@@ -1001,4 +1035,4 @@ var pdfBtn=q("downloadPdfButton");if(pdfBtn)pdfBtn.addEventListener("click",down
 var excelBtn=q("downloadExcelButton");if(excelBtn)excelBtn.addEventListener("click",downloadReportExcel);
 var printBtn=q("printReportButton");if(printBtn)printBtn.addEventListener("click",printManagerReport);
 
-var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",function(e){e.preventDefault();toggleChat()});var begin=q("beginDayButton");if(begin)begin.addEventListener("click",beginDayReview);applyFacilityProfile(state.activeFacilityId||"gandy",true);renderCapacity();renderFacilityProfile();renderFacilityComparison();renderShiftWorkspace();renderManagerIdentity();renderFacilityDataContext();renderShiftOperationsCenter();bindShiftQuickActions();populateReportFields();renderReportHistory();updateReportPreview();runScenario();loadLiveWeather(false);weatherRefreshTimer=setInterval(function(){loadLiveWeather(false)},WEATHER_REFRESH_MS)}init();
+var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",function(e){e.preventDefault();toggleChat()});var begin=q("beginDayButton");if(begin)begin.addEventListener("click",beginDayReview);applyFacilityProfile(state.activeFacilityId||"gandy",true);renderCapacity();renderFacilityProfile();facilityDisplayAudit();renderFacilityComparison();renderShiftWorkspace();renderManagerIdentity();refreshFacilityDisplay();renderShiftOperationsCenter();bindShiftQuickActions();populateReportFields();renderReportHistory();updateReportPreview();runScenario();loadLiveWeather(false);weatherRefreshTimer=setInterval(function(){loadLiveWeather(false)},WEATHER_REFRESH_MS)}init();
