@@ -1,3 +1,3 @@
-# AquaIQPro 5.5.1
+# AquaIQPro 5.4.2
 
-Incident Center Stability Hotfix.
+Capacity & Rotation Center consolidation patch.
