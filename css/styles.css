@@ -413,3 +413,6 @@ body{
   .incident-hero{align-items:flex-start;flex-direction:column}
   .incident-summary-grid{grid-template-columns:1fr}
 }
+
+/* AquaIQPro 5.5.1 — Incident Center stability */
+.incident-card .tag.info{white-space:nowrap}
