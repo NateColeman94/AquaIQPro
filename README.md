@@ -1,3 +1,3 @@
-# AquaIQPro 5.3.2
+# AquaIQPro 5.3.3
 
-Full Facility Synchronization Hotfix.
+Facility Display Synchronization Hotfix.
