@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AquaIQPro v5.0 Modular Foundation</title>
+<title>AquaIQPro v5.1 Facility Intelligence</title>
 
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -18,7 +18,8 @@
   <div class="facility-switcher"><label for="facilitySelect">Facility</label><select id="facilitySelect"><option value="gandy">Gandy Pool</option><option value="simpson">Simpson Park Pool</option></select></div>
   <nav id="nav">
     <button class="active" data-page="dashboard">Today's Shift</button>
-    <button data-page="facility">Facility Overview</button><button data-page="aiops">Daily Briefing</button>
+    <button data-page="facility">Facility Overview</button>
+    <button data-page="facilitycompare">Facility Comparison</button><button data-page="aiops">Daily Briefing</button>
     <button data-page="operations">Operations Center</button>
     <button data-page="scenario">Scenario Planner</button>
     <button data-page="forecasting">Forecasting</button>
@@ -34,10 +35,10 @@
     <button data-page="reports">Reports</button>
     <button data-page="assistant">Ask AquaIQ</button>
   </nav>
-  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.0 Modular Foundation merges stable app, clean reports, floating chat, and data persistence.</span></div>
+  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.1 Facility Intelligence merges stable app, clean reports, floating chat, and data persistence.</span></div>
 </aside>
 <main>
-  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.0 Modular Foundation</b> • <span class="good">System Ready</span></div></div>
+  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.1 Facility Intelligence</b> • <span class="good">System Ready</span></div></div>
 
   <section id="dashboard" class="section active">
     
@@ -124,6 +125,43 @@
   </section>
 
   
+
+<section id="facilitycompare" class="section">
+  <div class="notice"><b>Facility Intelligence:</b> compare how Gandy Pool and Simpson Park Pool differ operationally. Published facility details are separated from editable planning assumptions.</div>
+  <div id="facilityCompareCards" class="facility-compare-grid"></div>
+
+  <div class="card" style="margin-top:18px">
+    <div class="rowflex">
+      <div>
+        <h3>Operational Comparison</h3>
+        <p class="small">This comparison explains why staffing, demand, inventory, maintenance, and scheduling assumptions differ by facility.</p>
+      </div>
+      <button id="useRecommendedFacilityButton" class="btn secondary" type="button">Use Recommended Facility</button>
+    </div>
+    <div class="compare-table-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr><th>Operating Area</th><th>Gandy Pool</th><th>Simpson Park Pool</th><th>Operational Effect</th></tr>
+        </thead>
+        <tbody id="facilityComparisonTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid two" style="margin-top:18px">
+    <div class="card">
+      <h3>Why the Facilities Differ</h3>
+      <div id="facilityDifferenceExplanation"></div>
+    </div>
+    <div class="card">
+      <h3>Recommended Planning Focus</h3>
+      <div id="facilityPlanningFocus"></div>
+    </div>
+  </div>
+
+  <p class="facility-source">Published facility descriptions and operating patterns are based on City of Lakeland aquatics information. Capacity, base demand, staffing, and inventory figures remain editable planning assumptions until verified with facility records.</p>
+</section>
+
 <section id="facility" class="section">
   <div class="notice"><b>Facility profile:</b> operating details, planning assumptions, and current readiness for the selected location.</div>
   <div class="facility-profile">
