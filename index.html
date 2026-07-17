@@ -153,6 +153,14 @@
 </section>
 
 <section id="facilitycompare" class="section">
+  <div id="comparisonSelectionBanner" class="comparison-selection-banner">
+    <div>
+      <span>Currently managing</span>
+      <b id="comparisonSelectedFacility">Gandy Pool</b>
+      <small id="comparisonSelectedFacilityNote">Comparison highlights follow the facility selected in the main dropdown.</small>
+    </div>
+    <button id="returnToSelectedFacilityButton" class="btn secondary" type="button">Open Today’s Shift</button>
+  </div>
   <div class="notice"><b>Facility Intelligence:</b> compare how Gandy Pool and Simpson Park Pool differ operationally. Published facility details are separated from editable planning assumptions.</div>
   <div id="facilityCompareCards" class="facility-compare-grid"></div>
 
@@ -162,12 +170,12 @@
         <h3>Operational Comparison</h3>
         <p class="small">This comparison explains why staffing, demand, inventory, maintenance, and scheduling assumptions differ by facility.</p>
       </div>
-      <button id="useRecommendedFacilityButton" class="btn secondary" type="button">Use Recommended Facility</button>
+      <button id="useRecommendedFacilityButton" class="btn secondary" type="button">Select Higher-Demand Facility</button>
     </div>
     <div class="compare-table-wrap">
       <table class="compare-table">
         <thead>
-          <tr><th>Operating Area</th><th>Gandy Pool</th><th>Simpson Park Pool</th><th>Operational Effect</th></tr>
+          <tr><th>Operating Area</th><th id="gandyCompareHeader">Gandy Pool</th><th id="simpsonCompareHeader">Simpson Park Pool</th><th>Operational Effect</th></tr>
         </thead>
         <tbody id="facilityComparisonTable"></tbody>
       </table>

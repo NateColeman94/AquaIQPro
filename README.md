@@ -1,5 +1,5 @@
-# AquaIQPro 5.2.1 — Stability Hotfix
+# AquaIQPro 5.3
 
-Stable Sprint 5.2 Shift Operations Center built from the deployed repository.
+Facility Selection & Comparison Stability release.
 
-Upload the included files to the repository root while preserving the `css`, `js`, `data`, `assets`, and `docs` folders.
+This version is based on the stable 5.2.1 hotfix.
