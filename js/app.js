@@ -10,6 +10,55 @@ function showToast(msg){var t=q("toast");if(!t)return;t.textContent=msg;t.classL
 function hydrateInputs(){if(q("tempInput"))q("tempInput").value=state.weather.temp;if(q("rainInput"))q("rainInput").value=state.weather.rain;if(q("baseDemandInput"))q("baseDemandInput").value=state.demand.base;if(q("calloutInput"))q("calloutInput").value=state.callouts;if(q("chlorineInput"))q("chlorineInput").value=state.water.chlorine;if(q("phInput"))q("phInput").value=state.water.ph;if(q("alkInput"))q("alkInput").value=state.water.alk;if(q("scenarioTemp")){q("scenarioTemp").value=state.weather.temp;q("scenarioRain").value=state.weather.rain;q("scenarioExtraDemand").value=0;q("scenarioCallouts").value=0}}
 function updateInputs(reason){state.weather.temp=Number(q("tempInput").value||state.weather.temp);state.weather.rain=Number(q("rainInput").value||state.weather.rain);state.demand.base=Number(q("baseDemandInput").value||state.demand.base);state.callouts=Number(q("calloutInput").value||state.callouts);state.water.chlorine=Number(q("chlorineInput").value||state.water.chlorine);state.water.ph=Number(q("phInput").value||state.water.ph);state.water.alk=Number(q("alkInput").value||state.water.alk);state.audit.unshift(new Date().toLocaleString()+": "+reason);render();saveState(false)}
 
+
+function readinessComponents(){
+  var available=staffAvailable(),needed=staffNeeded();
+  var staffing=Math.max(0,Math.min(100,Math.round((available/Math.max(1,needed))*100)));
+  var water=waterStatus()==="Excellent"?100:waterStatus()==="Monitor"?75:45;
+  var invAlerts=inventoryAlerts().length;
+  var inventory=Math.max(45,100-invAlerts*15);
+  var openWork=state.workOrders.filter(function(w){return w.status!=="Completed";}).length;
+  var highWork=state.workOrders.filter(function(w){return w.status!=="Completed"&&w.priority==="High";}).length;
+  var maintenance=Math.max(40,100-openWork*8-highWork*12);
+  var programLoad=(state.programs.lessons+state.programs.parties+state.programs.team)>0?92:100;
+  var weather=state.weather.rain>=70?55:state.weather.rain>=45?75:state.weather.temp>=98?70:95;
+  return {staffing:staffing,water:water,inventory:inventory,maintenance:maintenance,programs:programLoad,weather:weather};
+}
+function renderShiftOperationsCenter(){
+  var score=healthScore(),parts=readinessComponents();
+  var available=staffAvailable(),needed=staffNeeded();
+  var invAlerts=inventoryAlerts().length;
+  var openWork=state.workOrders.filter(function(w){return w.status!=="Completed";}).length;
+  if(q("readinessGauge"))q("readinessGauge").style.setProperty("--score",score);
+  var values={readinessStaffing:parts.staffing+"%",readinessWater:parts.water+"%",readinessInventory:parts.inventory+"%",readinessMaintenance:parts.maintenance+"%",readinessPrograms:parts.programs+"%",readinessWeather:parts.weather+"%"};
+  Object.keys(values).forEach(function(id){if(q(id))q(id).textContent=values[id]});
+  function setStatus(cardId,valueId,noteId,value,note,color){
+    var card=q(cardId),val=q(valueId),noteEl=q(noteId);
+    if(card)card.style.setProperty("--status-color",color);
+    if(val)val.textContent=value;
+    if(noteEl)noteEl.textContent=note;
+  }
+  setStatus("statusWeather","statusWeatherValue","statusWeatherNote",Math.round(state.weather.temp)+"°F",state.weather.rain+"% rain",state.weather.rain>=60?"#ef4444":state.weather.rain>=35?"#f59e0b":"#10b981");
+  setStatus("statusStaffing","statusStaffingValue","statusStaffingNote",available>=needed?"Ready":"Needs action",available+" available / "+needed+" needed",available>=needed?"#10b981":"#ef4444");
+  var waterLabel=waterStatus();
+  setStatus("statusWater","statusWaterValue","statusWaterNote",waterLabel,"Cl "+state.water.chlorine+" • pH "+state.water.ph,waterLabel==="Excellent"?"#10b981":waterLabel==="Monitor"?"#f59e0b":"#ef4444");
+  setStatus("statusInventory","statusInventoryValue","statusInventoryNote",invAlerts?invAlerts+" alert"+(invAlerts===1?"":"s"):"Healthy",invAlerts?"Review low-stock items":"Par levels acceptable",invAlerts?"#f59e0b":"#10b981");
+  setStatus("statusMaintenance","statusMaintenanceValue","statusMaintenanceNote",openWork?openWork+" open":"Clear",openWork?"Review due work orders":"No open work orders",openWork?"#f59e0b":"#10b981");
+  if(q("homePriorities")){
+    q("homePriorities").innerHTML=recommendations().slice(0,6).map(function(r){
+      var cls=r.p==="High"?"high":r.p==="Medium"?"medium":"low";
+      return '<div class="priority-row"><span class="priority-dot '+cls+'"></span><div><h4>'+r.t+'</h4><p>'+r.why+'</p></div><span class="tag '+(r.p==="High"?"high":r.p==="Medium"?"med":"low")+'">'+r.p+'</span></div>';
+    }).join("");
+  }
+}
+function bindShiftQuickActions(){
+  document.querySelectorAll("[data-quick-page]").forEach(function(btn){
+    if(btn.dataset.bound==="1")return;
+    btn.dataset.bound="1";
+    btn.addEventListener("click",function(){showPage(btn.dataset.quickPage)});
+  });
+}
+
 function renderOperationsHome(){
   var score=healthScore(), needed=staffNeeded(), avail=staffAvailable(), recs=recommendations();
   var cap=typeof capacityMetrics==="function"?capacityMetrics():null;
@@ -77,7 +126,7 @@ function shortStatus(c){if(c.health>=90)return"Ready";if(c.health>=75)return"Rev
 function buildReportHTML(title){var c={health:healthScore(),total:state.demand.adjusted,staffActive:staffAvailable(),required:staffNeeded(),water:waterStatus()},b=reportBullets(),generated=new Date().toLocaleString();return'<div class="report-compact"><div class="report-hero"><h3>'+title+'</h3><p>'+state.facility+' • '+generated+'</p></div><div class="compact-kpis"><div class="compact-kpi"><span>Status</span><b>'+shortStatus(c)+'</b></div><div class="compact-kpi"><span>Health</span><b>'+c.health+'%</b></div><div class="compact-kpi"><span>Demand</span><b>'+c.total+'</b></div><div class="compact-kpi"><span>Staffing</span><b>'+c.staffActive+'/'+c.required+'</b></div></div><div class="compact-body"><div class="compact-section"><h4>Manager Snapshot</h4><ul class="bullet-clean">'+b.summary.map(x=>'<li>'+x+'</li>').join("")+'</ul></div><div class="compact-section"><h4>Top AI Actions</h4><ul class="bullet-clean">'+b.actions.map(x=>'<li>'+x+'</li>').join("")+'</ul></div><div class="compact-section"><h4>Programs & Demand</h4><ul class="bullet-clean">'+b.programs.map(x=>'<li>'+x+'</li>').join("")+'</ul></div><div class="compact-section"><h4>Operations Watchlist</h4><ul class="bullet-clean">'+b.operations.map(x=>'<li>'+x+'</li>').join("")+'</ul></div><div class="compact-section" style="grid-column:1/-1"><h4>Forecast Reasoning</h4><div class="status-strip"><div class="status-box"><b>Weather</b>'+state.weather.temp+'°F, '+state.weather.rain+'% rain</div><div class="status-box"><b>Water</b>Chlorine '+state.water.chlorine+' ppm, pH '+state.water.ph+'</div><div class="status-box"><b>Capacity</b>Programs + staffing + lane pressure</div><div class="status-box"><b>Saved Data</b>Browser autosave enabled</div></div></div></div></div>'}
 function generateReport(title){var visual=q("reportVisual");if(visual)visual.innerHTML=buildReportHTML(title);var text=q("reportBox");if(text)text.value=visual?visual.innerText:""}
 function runScenario(){var temp=Number(q("scenarioTemp").value||state.weather.temp),rain=Number(q("scenarioRain").value||state.weather.rain),extra=Number(q("scenarioExtraDemand").value||0),callouts=Number(q("scenarioCallouts").value||0),d=demandFor(temp,rain)+extra,need=staffNeeded(d),avail=staffAvailable()-callouts,gap=Math.max(0,need-avail),risk=gap>1||rain>65?"High":gap===1||temp>=95?"Medium":"Low";q("scenarioDemand").textContent=d;q("scenarioDemandNote").textContent="Based on "+temp+"°F, "+rain+"% rain, and "+extra+" extra visitors.";q("scenarioStaffGap").textContent=gap;q("scenarioStaffNote").textContent=avail+" available vs. "+need+" recommended.";q("scenarioRisk").textContent=risk;q("scenarioRiskNote").textContent=risk==="High"?"Manager action recommended.":risk==="Medium"?"Monitor and prepare backup coverage.":"Scenario appears manageable."}
-function quickAsk(txt){q("askInput").value=txt;askAI()}function askAI(){var ask=q("askInput").value.toLowerCase(),ans="Based on current inputs, ";if(ask.includes("lifeguard")||ask.includes("staff"))ans+=staffAvailable()>=staffNeeded()?"staffing appears sufficient with "+staffAvailable()+" available against "+staffNeeded()+" recommended.":"add "+(staffNeeded()-staffAvailable())+" lifeguard(s) for forecast demand and programs.";else if(ask.includes("chemical")||ask.includes("chlorine")||ask.includes("water"))ans+=waterStatus()==="Good"?"water quality is within target range. Continue routine testing.":"water quality needs attention. Chlorine is "+state.water.chlorine+" ppm and pH is "+state.water.ph+".";else if(ask.includes("buy")||ask.includes("order")||ask.includes("inventory"))ans+=inventoryAlerts().length?"purchase "+inventoryAlerts().map(i=>i.item).join(", ")+" based on current inventory and demand.":"no urgent purchases are required right now.";else if(ask.includes("maintenance"))ans+=highOpenWorkOrders().length?"prioritize "+highOpenWorkOrders().map(w=>w.asset).join(", ")+".":"there are no high-priority maintenance blockers right now.";else if(ask.includes("executive"))ans+="operational health is "+healthScore()+"%, forecast demand is "+state.demand.adjusted+", staffing is "+staffAvailable()+" available against "+staffNeeded()+" recommended, and there are "+recommendations().length+" active AI recommendations.";else ans+="the top recommendation is: "+recommendations()[0].t;q("assistantAnswer").innerHTML="<p>"+ans+"</p><p class='small'>Reasoning uses weather, demand, program load, staffing, water quality, inventory, maintenance, tasks, and incidents.</p>"}
+function quickAsk(txt){q("askInput").value=txt;askAI()}function askAI(){var ask=q("askInput").value.toLowerCase(),ans="Based on current inputs, ";if(ask.includes("lifeguard")||ask.includes("staff"))ans+=staffAvailable()>=staffNeeded()?"staffing appears sufficient with "+staffAvailable()+" available against "+staffNeeded()+" recommended.":"add "+(staffNeeded()-staffAvailable())+" lifeguard(s) for forecast demand and programs.";else if(ask.includes("chemical")||ask.includes("chlorine")||ask.includes("water"))ans+=waterStatus()==="Good"?"water quality is within target range. Continue routine testing.":"water quality needs attention. Chlorine is "+state.water.chlorine+" ppm and pH is "+state.water.ph+".";else if(ask.includes("buy")||ask.includes("order")||ask.includes("inventory"))ans+=inventoryAlerts().length?"purchase "+inventoryAlerts().map(i=>i.item).join(", ")+" based on current inventory and demand.":"no urgent purchases are required right now.";else if(ask.includes("maintenance"))ans+=highOpenWorkOrders().length?"prioritize "+highOpenWorkOrders().map(w=>w.asset).join(", ")+".":"there are no high-priority maintenance blockers right now.";else if(ask.includes("executive"))ans+="operational health is "+healthScore()+"%, forecast demand is "+state.demand.adjusted+", staffing is "+staffAvailable()+" available against "+staffNeeded()+" recommended, and there are "+recommendations().length+" active operational recommendations.";else ans+="the top recommendation is: "+recommendations()[0].t;q("assistantAnswer").innerHTML="<p>"+ans+"</p><p class='small'>Reasoning uses weather, demand, program load, staffing, water quality, inventory, maintenance, tasks, and incidents.</p>"}
 function toggleChat(){var p=q("chatPop");if(p)p.classList.toggle("open")}function askAIPopup(){var pop=q("popupAsk"),old=q("askInput"),ans=q("popupAnswer");if(pop&&old)old.value=pop.value;askAI();if(ans&&q("assistantAnswer"))ans.innerHTML=q("assistantAnswer").innerHTML}
 
 function capacityMetrics(){
@@ -654,4 +703,4 @@ var pdfBtn=q("downloadPdfButton");if(pdfBtn)pdfBtn.addEventListener("click",down
 var excelBtn=q("downloadExcelButton");if(excelBtn)excelBtn.addEventListener("click",downloadReportExcel);
 var printBtn=q("printReportButton");if(printBtn)printBtn.addEventListener("click",printManagerReport);
 
-var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",function(e){e.preventDefault();toggleChat()});var begin=q("beginDayButton");if(begin)begin.addEventListener("click",beginDayReview);applyFacilityProfile(state.activeFacilityId||"gandy",true);renderCapacity();renderFacilityProfile();renderFacilityComparison();renderShiftWorkspace();populateReportFields();renderReportHistory();updateReportPreview();runScenario();loadLiveWeather(false);weatherRefreshTimer=setInterval(function(){loadLiveWeather(false)},WEATHER_REFRESH_MS)}init();
+var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",function(e){e.preventDefault();toggleChat()});var begin=q("beginDayButton");if(begin)begin.addEventListener("click",beginDayReview);applyFacilityProfile(state.activeFacilityId||"gandy",true);renderCapacity();renderFacilityProfile();renderFacilityComparison();renderShiftWorkspace();renderShiftOperationsCenter();bindShiftQuickActions();populateReportFields();renderReportHistory();updateReportPreview();runScenario();loadLiveWeather(false);weatherRefreshTimer=setInterval(function(){loadLiveWeather(false)},WEATHER_REFRESH_MS)}init();
