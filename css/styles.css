@@ -287,3 +287,24 @@ body{
   border:1px solid rgba(14,165,183,.18);
   font-size:13px;
 }
+
+/* AquaIQPro 5.3.3 — selected-facility display synchronization */
+.welcome-badge{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  justify-items:start !important;
+  align-content:center !important;
+  row-gap:5px !important;
+}
+.welcome-badge > span{
+  display:block !important;
+  margin:0 !important;
+}
+.welcome-badge > b{
+  display:block !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+.facility-data-badge{
+  min-height:22px;
+}
