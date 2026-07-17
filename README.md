@@ -1,3 +1,3 @@
-# AquaIQPro 5.3.1
+# AquaIQPro 5.3.2
 
-Facility Rosters & Programs Hotfix.
+Full Facility Synchronization Hotfix.
