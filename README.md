@@ -1,5 +1,3 @@
-# AquaIQPro v5.4.1
+# AquaIQPro 5.4.2
 
-Lifeguard Rotation Board deployment-fix release.
-
-This package is based directly on the repository ZIP uploaded after the 5.4 deployment issue.
+Capacity & Rotation Center consolidation patch.

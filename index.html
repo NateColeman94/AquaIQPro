@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AquaIQPro v5.4.1 Lifeguard Rotation Board</title>
+<title>AquaIQPro v5.4.2 Capacity & Rotation Center</title>
 
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.0.0/jspdf.umd.min.js"></script>
 
-<link rel="stylesheet" href="css/styles.css?v=5.4.1">
+<link rel="stylesheet" href="css/styles.css?v=5.4.2">
 </head>
 <body>
 <div class="app">
@@ -26,7 +26,7 @@
     <button data-page="aiops">Forecast Drivers</button>
     <button data-page="data">Data Center</button>
     <button data-page="water">Water Quality</button>
-    <button data-page="staffing">Staffing</button><button data-page="rotations">Rotation Board</button>
+    <button data-page="staffing">Staffing</button>
 <button data-page="capacity">Capacity & Rotations</button>
     <button data-page="programs">Programs</button>
     <button data-page="inventory">Inventory</button>
@@ -39,7 +39,7 @@
   <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.4.1 adds facility-specific 30-minute lifeguard rotations, coverage monitoring, and full-name staffing rosters.</span></div>
 </aside>
 <main>
-  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.4.1 Lifeguard Rotation Board</b> • <span class="good">System Ready</span></div></div>
+  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.4.2 Capacity & Rotation Center</b> • <span class="good">System Ready</span></div></div>
 
   <section id="dashboard" class="section active">
   <div class="ops-hero shift-ops-hero">
@@ -112,7 +112,7 @@
       <div class="pool-section-title"><span class="dive-block" aria-hidden="true"></span><h3>Quick Actions</h3></div>
       <div class="command-actions" style="margin-top:12px">
         <button class="command-action" type="button" data-quick-page="staffing"><b>Review Staffing</b><span>Schedules, call-outs, and coverage</span></button>
-        <button class="command-action" type="button" data-quick-page="rotations"><b>Open Rotation Board</b><span>30-minute assignments and breaks</span></button>
+        <button class="command-action" type="button" data-quick-page="capacity"><b>Open Capacity & Rotations</b><span>30-minute assignments and breaks</span></button>
         <button class="command-action" type="button" data-quick-page="capacity"><b>Check Capacity</b><span>1:25 coverage and rotations</span></button>
         <button class="command-action" type="button" data-quick-page="water"><b>Review Water</b><span>Readings and retest guidance</span></button>
         <button class="command-action" type="button" data-quick-page="inventory"><b>Review Inventory</b><span>Low stock and purchase needs</span></button>
@@ -262,17 +262,23 @@
   <section id="staffing" class="section"><div id="facilityRosterNote" class="facility-context-note"></div><div class="card"><h3>Editable Lifeguard Schedule</h3><table><thead><tr><th>Name</th><th>Shift</th><th>Area</th><th>Status</th><th>Action</th></tr></thead><tbody id="staffTable"></tbody></table></div><div class="card" style="margin-top:18px"><h3>Add Lifeguard / Shift</h3><div class="form-grid three"><input id="newStaffName" placeholder="Name"><input id="newStaffShift" placeholder="Shift"><select id="newStaffArea"><option>Lap Pool</option><option>Recreation Pool</option><option>Lessons</option><option>Deck Supervisor</option></select></div><button class="btn" style="margin-top:12px" onclick="addStaff()">Add Staff Member</button></div></section>
 
   
-<section id="rotations" class="section">
+<section id="capacity" class="section">
+  <div class="combined-capacity-header">
+    <div>
+      <span class="eyebrow">Coverage, capacity, and 30-minute assignments</span>
+      <h2>Capacity & Rotation Center</h2>
+      <p>Manage staffing-controlled capacity and lifeguard rotations in one coordinated workspace.</p>
+    </div>
+  </div>
+
   <div class="facility-data-badge" id="rotationFacilityContext">Showing rotations for Gandy Pool</div>
-  <div class="rotation-hero"><div><span class="eyebrow">30-minute deck coverage</span><h2>Lifeguard Rotation Board</h2><p>Build and monitor position assignments, relief coverage, and scheduled breaks throughout the shift.</p></div><div class="rotation-controls"><label>Rotation start<select id="rotationStartTime"><option value="8">8:00 AM</option><option value="9">9:00 AM</option><option value="10">10:00 AM</option><option value="11">11:00 AM</option><option value="12">12:00 PM</option></select></label><label>Rotation blocks<select id="rotationBlockCount"><option value="6">3 hours</option><option value="8" selected>4 hours</option><option value="10">5 hours</option><option value="12">6 hours</option></select></label><button class="btn" id="generateRotationButton" type="button">Generate Rotation</button></div></div>
+  <div class="rotation-hero"><div><span class="eyebrow">30-minute deck coverage</span><h2>Capacity & Rotation Center</h2><p>Build and monitor position assignments, relief coverage, and scheduled breaks throughout the shift.</p></div><div class="rotation-controls"><label>Rotation start<select id="rotationStartTime"><option value="8">8:00 AM</option><option value="9">9:00 AM</option><option value="10">10:00 AM</option><option value="11">11:00 AM</option><option value="12">12:00 PM</option></select></label><label>Rotation blocks<select id="rotationBlockCount"><option value="6">3 hours</option><option value="8" selected>4 hours</option><option value="10">5 hours</option><option value="12">6 hours</option></select></label><button class="btn" id="generateRotationButton" type="button">Generate Rotation</button></div></div>
   <div class="rotation-summary-grid"><div class="metric-card"><span>Guards available</span><b class="viz-stat-value" id="rotationGuardCount">--</b><small>Scheduled and available</small></div><div class="metric-card"><span>Active positions</span><b class="viz-stat-value" id="rotationPositionCount">--</b><small>Deck and pool assignments</small></div><div class="metric-card"><span>Rotation interval</span><b class="viz-stat-value">30 min</b><small>Automatic schedule blocks</small></div><div class="metric-card"><span>Coverage status</span><b class="viz-stat-value" id="rotationCoverageStatus">--</b><small id="rotationCoverageNote">Checking schedule</small></div></div>
   <div class="card rotation-alert-card"><div><h3 id="rotationAlertTitle">Rotation check</h3><p id="rotationAlertText">Generate a schedule to review coverage.</p></div><span class="tag info" id="rotationAlertBadge">Pending</span></div>
   <div class="rotation-legend"><span><i class="rotation-key active"></i> Active position</span><span><i class="rotation-key relief"></i> Relief / roaming</span><span><i class="rotation-key break"></i> Scheduled break</span><span><i class="rotation-key unavailable"></i> Unavailable</span></div>
   <div class="rotation-board-wrap"><div id="rotationBoard" class="rotation-board" aria-live="polite"></div></div>
   <div class="grid two" style="margin-top:18px"><div class="card"><h3>Position Configuration</h3><div id="rotationPositionsEditor"></div><button class="btn secondary" id="addRotationPositionButton" type="button">Add Position</button></div><div class="card"><h3>Rotation Notes</h3><textarea id="rotationNotes" placeholder="Document substitutions, heat precautions, training assignments, or changes made during the shift."></textarea><button class="btn" id="saveRotationNotesButton" type="button">Save Rotation Notes</button><div id="rotationNotesStatus" class="small" style="margin-top:8px"></div></div></div>
-</section>
 
-<section id="capacity" class="section">
   <div class="notice"><b>Coverage policy:</b> one active surveillance lifeguard per 25 swimmers. When two or more surveillance positions are required, AquaIQPro adds one relief guard so each position can rotate every 30 minutes without losing continuous surveillance.</div>
   <div class="card">
     <h3>Lifeguard Coverage & Pool Capacity</h3>
@@ -381,6 +387,6 @@
 <button class="chat-fab" title="Ask AquaIQ">💬</button><div id="chatPop" class="chat-pop"><div class="chat-head"><b>Ask AquaIQ</b><button class="chat-close" onclick="toggleChat()">×</button></div><div class="chat-body"><textarea id="popupAsk" placeholder="Ask about staffing, water quality, purchasing, reports, or maintenance..."></textarea><div class="quickchips"><button onclick="q('popupAsk').value='Should I add another lifeguard today?';askAIPopup()">Staffing</button><button onclick="q('popupAsk').value='What chemicals should I buy?';askAIPopup()">Purchasing</button><button onclick="q('popupAsk').value='Is water quality safe?';askAIPopup()">Water</button></div><button class="btn" style="margin-top:10px" onclick="askAIPopup()">Ask</button><div id="popupAnswer" class="chat-answer">Ask a question to receive a short operational answer.</div></div></div>
 
 
-<script src="js/app.js?v=5.4.1"></script>
+<script src="js/app.js?v=5.4.2"></script>
 </body>
 </html>
