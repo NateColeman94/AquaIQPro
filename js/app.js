@@ -7,7 +7,7 @@ function demandFor(temp,rain){var d=state.demand.base;if(temp>=92)d*=1.28;else i
 function calcDemand(){state.demand.adjusted=demandFor(state.weather.temp,state.weather.rain)}function staffAvailable(){return state.staff.filter(s=>s.status==="Scheduled").length-state.callouts}function staffNeeded(d){d=d||state.demand.adjusted;return Math.max(4,Math.ceil(d/55)+state.programs.parties.length+Math.ceil(state.programs.lessons.length/2))}function waterStatus(){var c=state.water.chlorine,p=state.water.ph;if(c<1||c>4||p<7.2||p>7.8)return"Action";if(c<1.5||c>3.5||p<7.3||p>7.7)return"Watch";return"Good"}function inventoryCalculated(){return state.inventory.map(i=>Object.assign({},i,{days:Math.round(i.onHand/(i.dailyUse*(state.demand.adjusted/250)))}))}function inventoryAlerts(){return inventoryCalculated().filter(i=>i.onHand<=i.min||i.days<=7)}function highOpenWorkOrders(){return state.workOrders.filter(w=>w.priority==="High"&&w.status!=="Completed")}function incompleteHighTasks(){return state.tasks.filter(t=>!t.done&&t.priority==="High")}
 function healthScore(){var score=100;if(waterStatus()==="Watch")score-=8;if(waterStatus()==="Action")score-=22;var gap=staffNeeded()-staffAvailable();if(gap>0)score-=gap*10;if(state.weather.rain>50)score-=7;score-=inventoryAlerts().length*6;score-=state.incidents.length*3;score-=highOpenWorkOrders().length*7;score-=incompleteHighTasks().length*4;return Math.max(45,Math.min(100,score))}
 function recommendations(){var rec=[],gap=staffNeeded()-staffAvailable();if(gap>0)rec.push({id:"staff-gap",p:"High",t:"Schedule "+gap+" additional lifeguard(s) for peak demand.",why:"Forecast attendance and program load exceed available coverage."});if(waterStatus()==="Action")rec.push({id:"water-action",p:"High",t:"Correct water chemistry before peak swim periods and document retest.",why:"Current chlorine or pH is outside configured range."});if(waterStatus()==="Watch")rec.push({id:"water-watch",p:"Medium",t:"Increase water chemistry testing frequency during afternoon peak.",why:"Readings are near the edge of target range."});if(state.weather.temp>=92&&state.weather.rain<30)rec.push({id:"heat-demand",p:"Medium",t:"Prepare for high open-swim demand with hydration, shade, and extra deck coverage.",why:"High temperature and low rain probability increase demand."});inventoryAlerts().forEach(i=>rec.push({id:"buy-"+i.item,p:i.onHand<=i.min?"High":"Medium",t:"Purchase "+i.item+"; projected supply is "+i.days+" day(s).",why:"Inventory is below minimum or projected below safety stock."}));highOpenWorkOrders().forEach(w=>rec.push({id:"wo-"+w.asset,p:"High",t:"Prioritize "+w.asset+" work order before peak operations.",why:w.desc}));if(incompleteHighTasks().length)rec.push({id:"tasks-high",p:"High",t:"Complete "+incompleteHighTasks().length+" high-priority daily task(s).",why:"Incomplete high-priority tasks reduce readiness."});if(state.programs.team.reduce((s,x)=>s+x.lanes,0)>=5)rec.push({id:"lane-pressure",p:"Medium",t:"Manage swim team lane capacity pressure and update public lane messaging.",why:"Swim team reserved five or more lanes."});if(!rec.length)rec.push({id:"normal",p:"Low",t:"No critical issues. Continue routine monitoring.",why:"All major indicators are within configured limits."});return rec}
-function showToast(msg){var t=q("toast");if(!t)return;t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1700)}function updateSaveIndicator(msg){var el=q("saveIndicator");if(el)el.textContent=msg||("Last saved: "+new Date().toLocaleTimeString())}function saveState(show){persistCompleteFacilityState();try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));updateSaveIndicator();if(show)showToast("AquaIQPro data saved")}catch(e){showToast("Save failed")}}function loadState(){try{var saved=localStorage.getItem(STORAGE_KEY);if(saved){var parsed=JSON.parse(saved);if(parsed&&parsed.facility)state=parsed}}catch(e){}}function exportData(){saveState(false);var payload=JSON.stringify({exportedAt:new Date().toISOString(),app:"AquaIQPro",version:"v5.4.2 Capacity & Rotation Center",state:state},null,2),blob=new Blob([payload],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="AquaIQPro_Backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Backup exported")}function importData(event){var file=event.target.files&&event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var parsed=JSON.parse(e.target.result),imported=parsed.state||parsed;if(!imported.facility)throw new Error("Invalid file");state=imported;ensureExtendedState();saveState(false);hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Backup imported")}catch(err){showToast("Import failed")}};reader.readAsText(file)}function resetDemoData(){if(!confirm("Reset AquaIQPro to default demo data?"))return;state=JSON.parse(DEFAULT_STATE_JSON);localStorage.removeItem(STORAGE_KEY);ensureExtendedState();hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Demo data reset");updateSaveIndicator("Autosave ready")}
+function showToast(msg){var t=q("toast");if(!t)return;t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1700)}function updateSaveIndicator(msg){var el=q("saveIndicator");if(el)el.textContent=msg||("Last saved: "+new Date().toLocaleTimeString())}function saveState(show){persistCompleteFacilityState();try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));updateSaveIndicator();if(show)showToast("AquaIQPro data saved")}catch(e){showToast("Save failed")}}function loadState(){try{var saved=localStorage.getItem(STORAGE_KEY);if(saved){var parsed=JSON.parse(saved);if(parsed&&parsed.facility)state=parsed}}catch(e){}}function exportData(){saveState(false);var payload=JSON.stringify({exportedAt:new Date().toISOString(),app:"AquaIQPro",version:"v5.5.2 Stable Incident Center",state:state},null,2),blob=new Blob([payload],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="AquaIQPro_Backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Backup exported")}function importData(event){var file=event.target.files&&event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var parsed=JSON.parse(e.target.result),imported=parsed.state||parsed;if(!imported.facility)throw new Error("Invalid file");state=imported;ensureExtendedState();saveState(false);hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Backup imported")}catch(err){showToast("Import failed")}};reader.readAsText(file)}function resetDemoData(){if(!confirm("Reset AquaIQPro to default demo data?"))return;state=JSON.parse(DEFAULT_STATE_JSON);localStorage.removeItem(STORAGE_KEY);ensureExtendedState();hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Demo data reset");updateSaveIndicator("Autosave ready")}
 function hydrateInputs(){if(q("tempInput"))q("tempInput").value=state.weather.temp;if(q("rainInput"))q("rainInput").value=state.weather.rain;if(q("baseDemandInput"))q("baseDemandInput").value=state.demand.base;if(q("calloutInput"))q("calloutInput").value=state.callouts;if(q("chlorineInput"))q("chlorineInput").value=state.water.chlorine;if(q("phInput"))q("phInput").value=state.water.ph;if(q("alkInput"))q("alkInput").value=state.water.alk;if(q("scenarioTemp")){q("scenarioTemp").value=state.weather.temp;q("scenarioRain").value=state.weather.rain;q("scenarioExtraDemand").value=0;q("scenarioCallouts").value=0}}
 function updateInputs(reason){state.weather.temp=Number(q("tempInput").value||state.weather.temp);state.weather.rain=Number(q("rainInput").value||state.weather.rain);state.demand.base=Number(q("baseDemandInput").value||state.demand.base);state.callouts=Number(q("calloutInput").value||state.callouts);state.water.chlorine=Number(q("chlorineInput").value||state.water.chlorine);state.water.ph=Number(q("phInput").value||state.water.ph);state.water.alk=Number(q("alkInput").value||state.water.alk);state.audit.unshift(new Date().toLocaleString()+": "+reason);render();saveState(false)}
 
@@ -1086,3 +1086,272 @@ var excelBtn=q("downloadExcelButton");if(excelBtn)excelBtn.addEventListener("cli
 var printBtn=q("printReportButton");if(printBtn)printBtn.addEventListener("click",printManagerReport);
 
 var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",function(e){e.preventDefault();toggleChat()});var begin=q("beginDayButton");if(begin)begin.addEventListener("click",beginDayReview);applyFacilityProfile(state.activeFacilityId||"gandy",true);renderCapacity();renderFacilityProfile();facilityDisplayAudit();renderFacilityComparison();renderRotationBoard();bindRotationBoard();renderShiftWorkspace();renderManagerIdentity();refreshFacilityDisplay();renderShiftOperationsCenter();bindShiftQuickActions();populateReportFields();renderReportHistory();updateReportPreview();runScenario();loadLiveWeather(false);weatherRefreshTimer=setInterval(function(){loadLiveWeather(false)},WEATHER_REFRESH_MS)}init();
+
+/* AquaIQPro 5.5.2 isolated Incident Center module */
+(function(){
+  "use strict";
+
+  var INCIDENT_STORAGE_KEY="aquaiqpro_incident_center_v1";
+  var incidentEditingId=null;
+  var incidentStore={gandy:[],simpson:[]};
+
+  function incidentEl(id){
+    return document.getElementById(id);
+  }
+
+  function incidentFacilityId(){
+    if(typeof activeFacilityId==="string"&&(activeFacilityId==="gandy"||activeFacilityId==="simpson")){
+      return activeFacilityId;
+    }
+    var select=incidentEl("facilitySelect");
+    return select&&select.value==="simpson"?"simpson":"gandy";
+  }
+
+  function incidentFacilityName(){
+    var id=incidentFacilityId();
+    if(typeof FACILITY_PROFILES==="object"&&FACILITY_PROFILES[id]){
+      return FACILITY_PROFILES[id].name;
+    }
+    return id==="simpson"?"Simpson Park Pool":"Gandy Pool";
+  }
+
+  function loadIncidentStore(){
+    try{
+      var parsed=JSON.parse(localStorage.getItem(INCIDENT_STORAGE_KEY)||"null");
+      if(parsed&&typeof parsed==="object"){
+        incidentStore.gandy=Array.isArray(parsed.gandy)?parsed.gandy:[];
+        incidentStore.simpson=Array.isArray(parsed.simpson)?parsed.simpson:[];
+      }
+    }catch(error){
+      incidentStore={gandy:[],simpson:[]};
+      console.warn("Incident Center storage reset:",error);
+    }
+  }
+
+  function saveIncidentStore(){
+    try{
+      localStorage.setItem(INCIDENT_STORAGE_KEY,JSON.stringify(incidentStore));
+    }catch(error){
+      console.warn("Incident Center could not save:",error);
+    }
+  }
+
+  function activeIncidentRecords(){
+    var id=incidentFacilityId();
+    if(!Array.isArray(incidentStore[id]))incidentStore[id]=[];
+    return incidentStore[id];
+  }
+
+  function incidentDefaults(){
+    var now=new Date();
+    return{
+      date:now.toISOString().slice(0,10),
+      time:String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0")
+    };
+  }
+
+  function clearIncidentForm(){
+    incidentEditingId=null;
+    var defaults=incidentDefaults();
+    if(incidentEl("incidentCenterFormTitle"))incidentEl("incidentCenterFormTitle").textContent="Log New Incident";
+    if(incidentEl("incidentCenterType"))incidentEl("incidentCenterType").value="First Aid";
+    if(incidentEl("incidentCenterSeverity"))incidentEl("incidentCenterSeverity").value="Medium";
+    if(incidentEl("incidentCenterDate"))incidentEl("incidentCenterDate").value=defaults.date;
+    if(incidentEl("incidentCenterTime"))incidentEl("incidentCenterTime").value=defaults.time;
+    ["incidentCenterLocation","incidentCenterResponder","incidentCenterDescription","incidentCenterAction","incidentCenterFollowUp"].forEach(function(id){
+      if(incidentEl(id))incidentEl(id).value="";
+    });
+    if(incidentEl("incidentCenterStatus"))incidentEl("incidentCenterStatus").value="Open";
+    if(incidentEl("incidentCenterManagerReview"))incidentEl("incidentCenterManagerReview").value="Pending";
+    if(incidentEl("incidentCenterMessage"))incidentEl("incidentCenterMessage").textContent="";
+  }
+
+  function formIncident(){
+    return{
+      id:incidentEditingId||("INC-"+Date.now()),
+      facilityId:incidentFacilityId(),
+      type:incidentEl("incidentCenterType").value,
+      severity:incidentEl("incidentCenterSeverity").value,
+      date:incidentEl("incidentCenterDate").value,
+      time:incidentEl("incidentCenterTime").value,
+      location:incidentEl("incidentCenterLocation").value.trim(),
+      responder:incidentEl("incidentCenterResponder").value.trim(),
+      description:incidentEl("incidentCenterDescription").value.trim(),
+      action:incidentEl("incidentCenterAction").value.trim(),
+      followUp:incidentEl("incidentCenterFollowUp").value.trim(),
+      status:incidentEl("incidentCenterStatus").value,
+      managerReview:incidentEl("incidentCenterManagerReview").value,
+      updatedAt:new Date().toISOString()
+    };
+  }
+
+  function incidentValid(record){
+    return Boolean(
+      record.type&&record.severity&&record.date&&record.time&&
+      record.location&&record.responder&&record.description&&record.action
+    );
+  }
+
+  function saveIncidentRecord(){
+    var record=formIncident();
+    if(!incidentValid(record)){
+      incidentEl("incidentCenterMessage").textContent="Complete the required fields before saving.";
+      return;
+    }
+
+    var records=activeIncidentRecords();
+    var index=records.findIndex(function(item){return item.id===record.id});
+    if(index>=0){
+      records[index]=record;
+    }else{
+      records.unshift(record);
+    }
+
+    saveIncidentStore();
+    clearIncidentForm();
+    renderIncidentCenterIsolated();
+    if(typeof showToast==="function")showToast(index>=0?"Incident updated":"Incident saved");
+  }
+
+  function editIncidentRecord(id){
+    var record=activeIncidentRecords().find(function(item){return item.id===id});
+    if(!record)return;
+
+    incidentEditingId=id;
+    incidentEl("incidentCenterFormTitle").textContent="Edit Incident";
+    incidentEl("incidentCenterType").value=record.type;
+    incidentEl("incidentCenterSeverity").value=record.severity;
+    incidentEl("incidentCenterDate").value=record.date;
+    incidentEl("incidentCenterTime").value=record.time;
+    incidentEl("incidentCenterLocation").value=record.location;
+    incidentEl("incidentCenterResponder").value=record.responder;
+    incidentEl("incidentCenterDescription").value=record.description;
+    incidentEl("incidentCenterAction").value=record.action;
+    incidentEl("incidentCenterFollowUp").value=record.followUp||"";
+    incidentEl("incidentCenterStatus").value=record.status;
+    incidentEl("incidentCenterManagerReview").value=record.managerReview||"Pending";
+  }
+
+  function resolveIncidentRecord(id){
+    var record=activeIncidentRecords().find(function(item){return item.id===id});
+    if(!record)return;
+    record.status="Resolved";
+    record.managerReview="Reviewed";
+    record.updatedAt=new Date().toISOString();
+    saveIncidentStore();
+    renderIncidentCenterIsolated();
+  }
+
+  function removeIncidentRecord(id){
+    var facility=incidentFacilityId();
+    incidentStore[facility]=activeIncidentRecords().filter(function(item){return item.id!==id});
+    saveIncidentStore();
+    renderIncidentCenterIsolated();
+  }
+
+  function severityTagClass(severity){
+    return severity==="High"||severity==="Critical"?"high":severity==="Medium"?"med":"low";
+  }
+
+  function renderIncidentCenterIsolated(){
+    var facilityName=incidentFacilityName();
+    var records=activeIncidentRecords();
+
+    if(incidentEl("incidentCenterFacility")){
+      incidentEl("incidentCenterFacility").textContent="Showing incident records for "+facilityName;
+    }
+
+    var open=records.filter(function(item){return item.status!=="Resolved"});
+    var high=records.filter(function(item){return item.severity==="High"||item.severity==="Critical"});
+    var resolved=records.filter(function(item){return item.status==="Resolved"});
+    var pending=records.filter(function(item){return item.managerReview!=="Reviewed"});
+
+    incidentEl("incidentMetricOpen").textContent=open.length;
+    incidentEl("incidentMetricHigh").textContent=high.length;
+    incidentEl("incidentMetricResolved").textContent=resolved.length;
+    incidentEl("incidentMetricReview").textContent=pending.length?"Review":"Ready";
+    incidentEl("incidentMetricReviewNote").textContent=pending.length
+      ?pending.length+" record(s) awaiting review"
+      :"No pending records";
+
+    var statusFilter=incidentEl("incidentCenterStatusFilter").value;
+    var severityFilter=incidentEl("incidentCenterSeverityFilter").value;
+    var filtered=records.filter(function(item){
+      return(statusFilter==="all"||item.status===statusFilter)&&
+        (severityFilter==="all"||item.severity===severityFilter);
+    });
+
+    var list=incidentEl("incidentCenterList");
+    if(filtered.length){
+      list.innerHTML=filtered.map(function(item){
+        return'<div class="incident-center-card '+String(item.severity||"Low").toLowerCase()+'">'+
+          '<div class="rowflex"><div><h4>'+item.type+'</h4><span class="small">'+item.date+' • '+item.time+' • '+item.location+'</span></div>'+
+          '<span class="tag '+severityTagClass(item.severity)+'">'+item.severity+'</span></div>'+
+          '<p>'+item.description+'</p>'+
+          '<div class="incident-center-meta"><span class="tag info">'+item.status+'</span><span class="tag info">Responder: '+item.responder+'</span><span class="tag info">Manager: '+item.managerReview+'</span></div>'+
+          '<div class="incident-center-card-actions"><button type="button" class="btn secondary" data-incident-edit="'+item.id+'">Edit</button>'+
+          (item.status!=="Resolved"?'<button type="button" class="btn secondary" data-incident-resolve="'+item.id+'">Resolve</button>':'')+
+          '<button type="button" class="btn secondary" data-incident-remove="'+item.id+'">Remove</button></div>'+
+        '</div>';
+      }).join("");
+    }else{
+      list.innerHTML='<p class="small">No incidents match the selected filters.</p>';
+    }
+
+    list.querySelectorAll("[data-incident-edit]").forEach(function(button){
+      button.addEventListener("click",function(){editIncidentRecord(button.dataset.incidentEdit)});
+    });
+    list.querySelectorAll("[data-incident-resolve]").forEach(function(button){
+      button.addEventListener("click",function(){resolveIncidentRecord(button.dataset.incidentResolve)});
+    });
+    list.querySelectorAll("[data-incident-remove]").forEach(function(button){
+      button.addEventListener("click",function(){removeIncidentRecord(button.dataset.incidentRemove)});
+    });
+
+    var followUp=incidentEl("incidentCenterFollowUpList");
+    if(open.length){
+      followUp.innerHTML=open.map(function(item){
+        return'<div class="incident-center-followup"><span class="incident-center-followup-dot"></span><div><b>'+item.type+' — '+item.location+'</b><div class="small">'+(item.followUp||"Follow-up details have not been entered.")+'</div></div><span class="tag '+(item.followUp?"med":"high")+'">'+(item.followUp?"Assigned":"Missing")+'</span></div>';
+      }).join("");
+    }else{
+      followUp.innerHTML='<p class="small">No open incident follow-up actions.</p>';
+    }
+  }
+
+  function bindIncidentCenterIsolated(){
+    ["incidentCenterStatusFilter","incidentCenterSeverityFilter"].forEach(function(id){
+      var element=incidentEl(id);
+      if(element)element.addEventListener("change",renderIncidentCenterIsolated);
+    });
+
+    var newButton=incidentEl("incidentNewButton");
+    if(newButton)newButton.addEventListener("click",clearIncidentForm);
+
+    var saveButton=incidentEl("incidentCenterSaveButton");
+    if(saveButton)saveButton.addEventListener("click",saveIncidentRecord);
+
+    var clearButton=incidentEl("incidentCenterClearButton");
+    if(clearButton)clearButton.addEventListener("click",clearIncidentForm);
+
+    var facilitySelect=incidentEl("facilitySelect");
+    if(facilitySelect){
+      facilitySelect.addEventListener("change",function(){
+        incidentEditingId=null;
+        clearIncidentForm();
+        renderIncidentCenterIsolated();
+      });
+    }
+  }
+
+  function incidentCenterIsolatedInit(){
+    if(!incidentEl("incidentcenter"))return;
+    loadIncidentStore();
+    clearIncidentForm();
+    bindIncidentCenterIsolated();
+    renderIncidentCenterIsolated();
+    console.info("AquaIQPro v5.5.2 isolated Incident Center loaded");
+  }
+
+  incidentCenterIsolatedInit();
+})();
+
