@@ -4,13 +4,58 @@
     "type": "Heated 10-lane, 25-yard pool with attached recreation pool",
     "planning_capacity": 300,
     "base_demand": 230,
-    "typical_guards": 9
+    "typical_guards": 9,
+    "address": "404 Imperial Boulevard, Lakeland, FL 33803",
+    "phone": "863.834.3157",
+    "published_configuration": "Heated 10-lane, 25-yard short-course pool with one-meter diving board and attached 3\u20134 foot recreation pool",
+    "operating_pattern": "Year-round operations with lap swim and open swim",
+    "program_profile": [
+      "Lap swim",
+      "Open swim",
+      "Swim lessons",
+      "Swim team",
+      "Aquatic fitness"
+    ],
+    "inventory_profile": {
+      "chemical_par_multiplier": 1.0,
+      "concessions_par_multiplier": 1.0,
+      "reason": "Larger year-round program load and heated-pool operation"
+    },
+    "maintenance_profile": [
+      "Diving board inspection",
+      "Lane rope and starting-block inspection",
+      "Heated-pool equipment review",
+      "Main pump and filtration checks"
+    ],
+    "comparison_notes": "Higher program complexity and year-round use create greater staffing, scheduling, chemical, and maintenance demands."
   },
   "simpson": {
     "name": "Simpson Park Pool",
     "type": "Seasonal neighborhood pool",
     "planning_capacity": 175,
     "base_demand": 110,
-    "typical_guards": 6
+    "typical_guards": 6,
+    "address": "1725 Martin Luther King Jr. Avenue, Lakeland, FL 33805",
+    "phone": "863.834.2286",
+    "published_configuration": "Seasonal neighborhood aquatics facility associated with Simpson Park Community Center",
+    "operating_pattern": "Seasonal summer operation with lap and open swim",
+    "program_profile": [
+      "Lap swim",
+      "Open swim",
+      "Seasonal programs",
+      "Special events"
+    ],
+    "inventory_profile": {
+      "chemical_par_multiplier": 0.65,
+      "concessions_par_multiplier": 0.7,
+      "reason": "Shorter operating season and lower assumed daily demand"
+    },
+    "maintenance_profile": [
+      "Seasonal opening and closing inspection",
+      "Pool liner and wall inspection",
+      "Deck and access inspection",
+      "Seasonal equipment readiness"
+    ],
+    "comparison_notes": "Seasonal operation reduces annual operating volume but increases the importance of opening, closing, and seasonal-readiness tasks."
   }
 }
