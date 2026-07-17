@@ -1,0 +1,16 @@
+{
+  "gandy": {
+    "name": "Gandy Pool",
+    "type": "Heated 10-lane, 25-yard pool with attached recreation pool",
+    "planning_capacity": 300,
+    "base_demand": 230,
+    "typical_guards": 9
+  },
+  "simpson": {
+    "name": "Simpson Park Pool",
+    "type": "Seasonal neighborhood pool",
+    "planning_capacity": 175,
+    "base_demand": 110,
+    "typical_guards": 6
+  }
+}
