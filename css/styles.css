@@ -518,3 +518,22 @@ body{
   .report2-section-grid,
   .report2-snapshot{grid-template-columns:1fr}
 }
+
+/* v5.6.1 Corrected Stability Fix */
+.rotation-summary-grid .metric-card{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  justify-content:flex-start !important;
+  gap:7px !important;
+}
+.rotation-summary-grid .metric-card > span,
+.rotation-summary-grid .metric-card > b,
+.rotation-summary-grid .metric-card > small{
+  display:block !important;
+  width:100% !important;
+  margin:0 !important;
+}
+.rotation-summary-grid .metric-card > b{
+  line-height:1.15 !important;
+}
