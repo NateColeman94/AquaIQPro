@@ -1,3 +1,3 @@
-# AquaIQPro 5.6.1 — Corrected Stability Fix
+# AquaIQPro 5.6.2 — Runtime Recovery
 
-Built from the actual v5.6 Report Center 2.0 repository.
+Built directly from the uploaded v5.6 repository.
