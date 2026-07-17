@@ -1,5 +1,5 @@
-# AquaIQPro v3.0 Master
+# AquaIQPro 5.2.1 — Stability Hotfix
 
-Merged stable master build with clean reports, working floating chat, Data Center, auto-save, import/export, reset demo data, scenario planner, AI Ops, maintenance, tasks, and decision workflow.
+Stable Sprint 5.2 Shift Operations Center built from the deployed repository.
 
-Deploy: upload `index.html` to the root of your AquaIQPro GitHub repository.
+Upload the included files to the repository root while preserving the `css`, `js`, `data`, `assets`, and `docs` folders.

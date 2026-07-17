@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AquaIQPro v5.2 Shift Operations Center</title>
+<title>AquaIQPro v5.2.1 Stability Hotfix</title>
 
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -35,10 +35,10 @@
     <button data-page="reports">Reports</button>
     <button data-page="assistant">Ask AquaIQ</button>
   </nav>
-  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.2 Shift Operations Center merges stable app, clean reports, floating chat, and data persistence.</span></div>
+  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.2.1 Stability Hotfix merges stable app, clean reports, floating chat, and data persistence.</span></div>
 </aside>
 <main>
-  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.2 Shift Operations Center</b> • <span class="good">System Ready</span></div></div>
+  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.2.1 Stability Hotfix</b> • <span class="good">System Ready</span></div></div>
 
   <section id="dashboard" class="section active">
   <div class="ops-hero shift-ops-hero">
@@ -144,6 +144,12 @@
     <div class="card"><h3>Manager Review Status</h3><div id="decisionStatus"></div></div>
   </div>
   <div id="priorityActions" style="display:none"></div>
+  <!-- Compatibility nodes retained for legacy render functions. -->
+  <div class="compatibility-nodes" hidden aria-hidden="true">
+    <span id="waterMetric"></span><span id="waterTrend"></span>
+    <span id="readinessRing"></span><span id="homeRotation"></span>
+    <span id="homeInventoryFlags"></span><span id="homeMaintenance"></span>
+  </div>
 </section>
 
 <section id="facilitycompare" class="section">
