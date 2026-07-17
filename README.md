@@ -1,3 +1,3 @@
-# AquaIQPro 5.3.3
+# AquaIQPro 5.4
 
-Facility Display Synchronization Hotfix.
+Lifeguard Rotation Board release.
