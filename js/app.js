@@ -344,6 +344,93 @@ function applyFacilityProfile(id,initial){
   generateReport("Daily Operations Report");
   saveState(false);
 }
+
+var FACILITY_REFERENCE_DATA={
+  gandy:{
+    publishedConfiguration:"Heated 10-lane, 25-yard short-course pool with one-meter diving board and attached recreation pool",
+    operatingPattern:"Year-round operations",
+    programs:["Lap swim","Open swim","Swim lessons","Swim team","Aquatic fitness"],
+    maintenance:["Diving board inspection","Lane ropes and starting blocks","Heating equipment","Pump and filtration"],
+    inventoryReason:"Higher year-round demand and broader program mix",
+    comparisonNote:"Gandy requires broader daily coordination because it combines competition, recreation, programs, and year-round operations."
+  },
+  simpson:{
+    publishedConfiguration:"Seasonal neighborhood aquatics facility associated with Simpson Park Community Center",
+    operatingPattern:"Seasonal summer operations",
+    programs:["Lap swim","Open swim","Seasonal programs","Special events"],
+    maintenance:["Seasonal opening and closing","Pool liner and walls","Deck and access","Seasonal equipment"],
+    inventoryReason:"Lower assumed demand and shorter operating season",
+    comparisonNote:"Simpson requires stronger seasonal-readiness controls even when normal daily demand is lower."
+  }
+};
+
+function facilityComparisonRows(){
+  var g=FACILITY_PROFILES.gandy,s=FACILITY_PROFILES.simpson;
+  return [
+    ["Facility model",FACILITY_REFERENCE_DATA.gandy.publishedConfiguration,FACILITY_REFERENCE_DATA.simpson.publishedConfiguration,"Changes program complexity, surveillance zones, and maintenance needs."],
+    ["Operating pattern",FACILITY_REFERENCE_DATA.gandy.operatingPattern,FACILITY_REFERENCE_DATA.simpson.operatingPattern,"Gandy requires continuous year-round planning; Simpson requires seasonal opening and closing readiness."],
+    ["Base demand assumption",g.baseDemand+" patrons",s.baseDemand+" patrons","Higher assumed demand increases staffing, chemical use, inventory, and reporting volume."],
+    ["Planning capacity",g.capacity+" people",s.capacity+" people","The lower of facility capacity and staffing-controlled capacity determines the operating limit."],
+    ["Typical lifeguards",g.typicalGuards+" scheduled",s.typicalGuards+" scheduled","AquaIQ still applies active surveillance capacity and 30-minute relief coverage."],
+    ["Program mix",FACILITY_REFERENCE_DATA.gandy.programs.join(", "),FACILITY_REFERENCE_DATA.simpson.programs.join(", "),"Programs change attendance peaks, lane availability, and staffing timing."],
+    ["Maintenance focus",FACILITY_REFERENCE_DATA.gandy.maintenance.join(", "),FACILITY_REFERENCE_DATA.simpson.maintenance.join(", "),"Different facility assets create different preventive-maintenance priorities."],
+    ["Inventory focus",FACILITY_REFERENCE_DATA.gandy.inventoryReason,FACILITY_REFERENCE_DATA.simpson.inventoryReason,"Par levels should reflect facility volume and operating season rather than use one standard level."]
+  ];
+}
+
+function renderFacilityComparison(){
+  var selected=activeFacilityId;
+  var ids=["gandy","simpson"];
+  if(q("facilityCompareCards")){
+    q("facilityCompareCards").innerHTML=ids.map(function(id){
+      var p=FACILITY_PROFILES[id],r=FACILITY_REFERENCE_DATA[id];
+      var selectedClass=id===selected?" selected":"";
+      return '<div class="facility-compare-card'+selectedClass+'">'+
+        '<div class="compare-head"><div><h3>'+p.name+'</h3><p class="small">'+r.operatingPattern+'</p></div>'+
+        '<span class="tag '+(id===selected?"low":"info")+'">'+(id===selected?"Selected":"Available")+'</span></div>'+
+        '<div class="compare-metrics">'+
+          '<div class="compare-metric"><span>Base demand</span><b>'+p.baseDemand+'</b></div>'+
+          '<div class="compare-metric"><span>Planning capacity</span><b>'+p.capacity+'</b></div>'+
+          '<div class="compare-metric"><span>Typical guards</span><b>'+p.typicalGuards+'</b></div>'+
+          '<div class="compare-metric"><span>Program types</span><b>'+r.programs.length+'</b></div>'+
+        '</div>'+
+        '<div class="facility-difference">'+r.comparisonNote+'</div>'+
+        '<ul class="compare-list">'+r.programs.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul>'+
+        '<button class="btn secondary facility-select-card" type="button" data-facility-card="'+id+'" style="margin-top:12px">Use '+p.name+'</button>'+
+      '</div>';
+    }).join("");
+    q("facilityCompareCards").querySelectorAll("[data-facility-card]").forEach(function(btn){
+      btn.addEventListener("click",function(){applyFacilityProfile(btn.dataset.facilityCard,false);showPage("dashboard")});
+    });
+  }
+  if(q("facilityComparisonTable")){
+    q("facilityComparisonTable").innerHTML=facilityComparisonRows().map(function(row){
+      return "<tr><td><b>"+row[0]+"</b></td><td>"+row[1]+"</td><td>"+row[2]+"</td><td>"+row[3]+"</td></tr>";
+    }).join("");
+  }
+  if(q("facilityDifferenceExplanation")){
+    q("facilityDifferenceExplanation").innerHTML=
+      '<div class="facility-difference"><b>Gandy:</b> '+FACILITY_REFERENCE_DATA.gandy.comparisonNote+'</div>'+
+      '<div class="facility-difference"><b>Simpson:</b> '+FACILITY_REFERENCE_DATA.simpson.comparisonNote+'</div>';
+  }
+  if(q("facilityPlanningFocus")){
+    var p=activeFacility(),r=FACILITY_REFERENCE_DATA[p.id];
+    var focus=p.id==="gandy"
+      ?["Peak-period staffing and lane allocation","Year-round chemical and equipment readiness","Swim-team and program coordination","Higher inventory par levels"]
+      :["Seasonal opening and closing readiness","Pool liner, deck, and seasonal equipment inspection","Weather-sensitive attendance planning","Lower but carefully timed inventory par levels"];
+    q("facilityPlanningFocus").innerHTML="<p><b>Selected: "+p.name+"</b></p><ul>"+focus.map(function(x){return"<li>"+x+"</li>"}).join("")+"</ul>";
+  }
+}
+
+function chooseRecommendedFacility(){
+  var gScore=FACILITY_PROFILES.gandy.baseDemand+FACILITY_PROFILES.gandy.typicalGuards*10;
+  var sScore=FACILITY_PROFILES.simpson.baseDemand+FACILITY_PROFILES.simpson.typicalGuards*10;
+  var recommended=gScore>=sScore?"gandy":"simpson";
+  applyFacilityProfile(recommended,false);
+  renderFacilityComparison();
+  showToast(FACILITY_PROFILES[recommended].name+" selected based on current planning demand");
+}
+
 function renderFacilityProfile(){
   var p=activeFacility();
   if(q("facilitySelect"))q("facilitySelect").value=p.id;
@@ -557,6 +644,7 @@ var refreshWeatherButton=q("refreshWeatherButton");if(refreshWeatherButton)refre
 var refreshWeatherPageButton=q("refreshWeatherPageButton");if(refreshWeatherPageButton)refreshWeatherPageButton.addEventListener("click",function(){loadLiveWeather(true)});
 
 var facilitySelect=q("facilitySelect");if(facilitySelect)facilitySelect.addEventListener("change",function(){applyFacilityProfile(facilitySelect.value,false)});
+var recommendedFacilityButton=q("useRecommendedFacilityButton");if(recommendedFacilityButton)recommendedFacilityButton.addEventListener("click",chooseRecommendedFacility);
 var saveFacility=q("saveFacilityProfile");if(saveFacility)saveFacility.addEventListener("click",saveFacilityAssumptions);
 
 var saveNotes=q("saveShiftNotes");if(saveNotes)saveNotes.addEventListener("click",saveShiftHandoff);
@@ -566,4 +654,4 @@ var pdfBtn=q("downloadPdfButton");if(pdfBtn)pdfBtn.addEventListener("click",down
 var excelBtn=q("downloadExcelButton");if(excelBtn)excelBtn.addEventListener("click",downloadReportExcel);
 var printBtn=q("printReportButton");if(printBtn)printBtn.addEventListener("click",printManagerReport);
 
-var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",function(e){e.preventDefault();toggleChat()});var begin=q("beginDayButton");if(begin)begin.addEventListener("click",beginDayReview);applyFacilityProfile(state.activeFacilityId||"gandy",true);renderCapacity();renderFacilityProfile();renderShiftWorkspace();populateReportFields();renderReportHistory();updateReportPreview();runScenario();loadLiveWeather(false);weatherRefreshTimer=setInterval(function(){loadLiveWeather(false)},WEATHER_REFRESH_MS)}init();
+var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",function(e){e.preventDefault();toggleChat()});var begin=q("beginDayButton");if(begin)begin.addEventListener("click",beginDayReview);applyFacilityProfile(state.activeFacilityId||"gandy",true);renderCapacity();renderFacilityProfile();renderFacilityComparison();renderShiftWorkspace();populateReportFields();renderReportHistory();updateReportPreview();runScenario();loadLiveWeather(false);weatherRefreshTimer=setInterval(function(){loadLiveWeather(false)},WEATHER_REFRESH_MS)}init();
