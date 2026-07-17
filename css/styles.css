@@ -553,3 +553,6 @@ body{
   width:100% !important;
   margin:0 !important;
 }
+
+/* v5.6.3 full runtime recovery */
+.module-recovery-message{margin:0 0 14px;border-left:4px solid #f59e0b;}
