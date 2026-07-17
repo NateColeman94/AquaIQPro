@@ -7,7 +7,7 @@ function demandFor(temp,rain){var d=state.demand.base;if(temp>=92)d*=1.28;else i
 function calcDemand(){state.demand.adjusted=demandFor(state.weather.temp,state.weather.rain)}function staffAvailable(){return state.staff.filter(s=>s.status==="Scheduled").length-state.callouts}function staffNeeded(d){d=d||state.demand.adjusted;return Math.max(4,Math.ceil(d/55)+state.programs.parties.length+Math.ceil(state.programs.lessons.length/2))}function waterStatus(){var c=state.water.chlorine,p=state.water.ph;if(c<1||c>4||p<7.2||p>7.8)return"Action";if(c<1.5||c>3.5||p<7.3||p>7.7)return"Watch";return"Good"}function inventoryCalculated(){return state.inventory.map(i=>Object.assign({},i,{days:Math.round(i.onHand/(i.dailyUse*(state.demand.adjusted/250)))}))}function inventoryAlerts(){return inventoryCalculated().filter(i=>i.onHand<=i.min||i.days<=7)}function highOpenWorkOrders(){return state.workOrders.filter(w=>w.priority==="High"&&w.status!=="Completed")}function incompleteHighTasks(){return state.tasks.filter(t=>!t.done&&t.priority==="High")}
 function healthScore(){var score=100;if(waterStatus()==="Watch")score-=8;if(waterStatus()==="Action")score-=22;var gap=staffNeeded()-staffAvailable();if(gap>0)score-=gap*10;if(state.weather.rain>50)score-=7;score-=inventoryAlerts().length*6;score-=state.incidents.length*3;score-=highOpenWorkOrders().length*7;score-=incompleteHighTasks().length*4;return Math.max(45,Math.min(100,score))}
 function recommendations(){var rec=[],gap=staffNeeded()-staffAvailable();if(gap>0)rec.push({id:"staff-gap",p:"High",t:"Schedule "+gap+" additional lifeguard(s) for peak demand.",why:"Forecast attendance and program load exceed available coverage."});if(waterStatus()==="Action")rec.push({id:"water-action",p:"High",t:"Correct water chemistry before peak swim periods and document retest.",why:"Current chlorine or pH is outside configured range."});if(waterStatus()==="Watch")rec.push({id:"water-watch",p:"Medium",t:"Increase water chemistry testing frequency during afternoon peak.",why:"Readings are near the edge of target range."});if(state.weather.temp>=92&&state.weather.rain<30)rec.push({id:"heat-demand",p:"Medium",t:"Prepare for high open-swim demand with hydration, shade, and extra deck coverage.",why:"High temperature and low rain probability increase demand."});inventoryAlerts().forEach(i=>rec.push({id:"buy-"+i.item,p:i.onHand<=i.min?"High":"Medium",t:"Purchase "+i.item+"; projected supply is "+i.days+" day(s).",why:"Inventory is below minimum or projected below safety stock."}));highOpenWorkOrders().forEach(w=>rec.push({id:"wo-"+w.asset,p:"High",t:"Prioritize "+w.asset+" work order before peak operations.",why:w.desc}));if(incompleteHighTasks().length)rec.push({id:"tasks-high",p:"High",t:"Complete "+incompleteHighTasks().length+" high-priority daily task(s).",why:"Incomplete high-priority tasks reduce readiness."});if(state.programs.team.reduce((s,x)=>s+x.lanes,0)>=5)rec.push({id:"lane-pressure",p:"Medium",t:"Manage swim team lane capacity pressure and update public lane messaging.",why:"Swim team reserved five or more lanes."});if(!rec.length)rec.push({id:"normal",p:"Low",t:"No critical issues. Continue routine monitoring.",why:"All major indicators are within configured limits."});return rec}
-function showToast(msg){var t=q("toast");if(!t)return;t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1700)}function updateSaveIndicator(msg){var el=q("saveIndicator");if(el)el.textContent=msg||("Last saved: "+new Date().toLocaleTimeString())}function saveState(show){persistCompleteFacilityState();try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));updateSaveIndicator();if(show)showToast("AquaIQPro data saved")}catch(e){showToast("Save failed")}}function loadState(){try{var saved=localStorage.getItem(STORAGE_KEY);if(saved){var parsed=JSON.parse(saved);if(parsed&&parsed.facility)state=parsed}}catch(e){}}function exportData(){saveState(false);var payload=JSON.stringify({exportedAt:new Date().toISOString(),app:"AquaIQPro",version:"v5.4.2 Capacity & Rotation Center",state:state},null,2),blob=new Blob([payload],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="AquaIQPro_Backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Backup exported")}function importData(event){var file=event.target.files&&event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var parsed=JSON.parse(e.target.result),imported=parsed.state||parsed;if(!imported.facility)throw new Error("Invalid file");state=imported;ensureExtendedState();saveState(false);hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Backup imported")}catch(err){showToast("Import failed")}};reader.readAsText(file)}function resetDemoData(){if(!confirm("Reset AquaIQPro to default demo data?"))return;state=JSON.parse(DEFAULT_STATE_JSON);localStorage.removeItem(STORAGE_KEY);ensureExtendedState();hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Demo data reset");updateSaveIndicator("Autosave ready")}
+function showToast(msg){var t=q("toast");if(!t)return;t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1700)}function updateSaveIndicator(msg){var el=q("saveIndicator");if(el)el.textContent=msg||("Last saved: "+new Date().toLocaleTimeString())}function saveState(show){persistCompleteFacilityState();try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));updateSaveIndicator();if(show)showToast("AquaIQPro data saved")}catch(e){showToast("Save failed")}}function loadState(){try{var saved=localStorage.getItem(STORAGE_KEY);if(saved){var parsed=JSON.parse(saved);if(parsed&&parsed.facility)state=parsed}}catch(e){}}function exportData(){saveState(false);var payload=JSON.stringify({exportedAt:new Date().toISOString(),app:"AquaIQPro",version:"v5.5 Incident Center",state:state},null,2),blob=new Blob([payload],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="AquaIQPro_Backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Backup exported")}function importData(event){var file=event.target.files&&event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var parsed=JSON.parse(e.target.result),imported=parsed.state||parsed;if(!imported.facility)throw new Error("Invalid file");state=imported;ensureExtendedState();saveState(false);hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Backup imported")}catch(err){showToast("Import failed")}};reader.readAsText(file)}function resetDemoData(){if(!confirm("Reset AquaIQPro to default demo data?"))return;state=JSON.parse(DEFAULT_STATE_JSON);localStorage.removeItem(STORAGE_KEY);ensureExtendedState();hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Demo data reset");updateSaveIndicator("Autosave ready")}
 function hydrateInputs(){if(q("tempInput"))q("tempInput").value=state.weather.temp;if(q("rainInput"))q("rainInput").value=state.weather.rain;if(q("baseDemandInput"))q("baseDemandInput").value=state.demand.base;if(q("calloutInput"))q("calloutInput").value=state.callouts;if(q("chlorineInput"))q("chlorineInput").value=state.water.chlorine;if(q("phInput"))q("phInput").value=state.water.ph;if(q("alkInput"))q("alkInput").value=state.water.alk;if(q("scenarioTemp")){q("scenarioTemp").value=state.weather.temp;q("scenarioRain").value=state.weather.rain;q("scenarioExtraDemand").value=0;q("scenarioCallouts").value=0}}
 function updateInputs(reason){state.weather.temp=Number(q("tempInput").value||state.weather.temp);state.weather.rain=Number(q("rainInput").value||state.weather.rain);state.demand.base=Number(q("baseDemandInput").value||state.demand.base);state.callouts=Number(q("calloutInput").value||state.callouts);state.water.chlorine=Number(q("chlorineInput").value||state.water.chlorine);state.water.ph=Number(q("phInput").value||state.water.ph);state.water.alk=Number(q("alkInput").value||state.water.alk);state.audit.unshift(new Date().toLocaleString()+": "+reason);render();saveState(false)}
 
@@ -121,6 +121,233 @@ function generateRotationSchedule(save){var r=activeRotationState(),guards=rotat
 function renderRotationBoard(){upgradeGandyLifeguardNames();ensureRotationState();var r=activeRotationState(),guards=rotationAvailableGuards(),positions=r.positions,blocks=r.blockCount;if(q("rotationFacilityContext"))q("rotationFacilityContext").textContent="Showing rotations for "+activeFacility().name;if(q("rotationStartTime"))q("rotationStartTime").value=String(r.startHour);if(q("rotationBlockCount"))q("rotationBlockCount").value=String(r.blockCount);if(q("rotationNotes"))q("rotationNotes").value=r.notes||"";if(q("rotationGuardCount"))q("rotationGuardCount").textContent=guards.length;if(q("rotationPositionCount"))q("rotationPositionCount").textContent=positions.filter(function(x){return x.toLowerCase().indexOf("break")<0}).length;var required=positions.filter(function(x){var l=x.toLowerCase();return l.indexOf("break")<0&&l.indexOf("relief")<0&&l.indexOf("roaming")<0}).length,ok=guards.length>=required+1;if(q("rotationCoverageStatus"))q("rotationCoverageStatus").textContent=ok?"Ready":"Gap";if(q("rotationCoverageNote"))q("rotationCoverageNote").textContent=ok?"Relief coverage available":"Additional coverage needed";if(q("rotationAlertTitle"))q("rotationAlertTitle").textContent=ok?"Rotation coverage is ready":"Rotation coverage needs attention";if(q("rotationAlertText"))q("rotationAlertText").textContent=ok?guards.length+" available guards cover "+required+" active positions with relief capacity.":guards.length+" available guards cannot safely cover "+required+" active positions plus relief.";if(q("rotationAlertBadge")){q("rotationAlertBadge").textContent=ok?"Ready":"Action";q("rotationAlertBadge").className="tag "+(ok?"low":"high")}if(!r.schedule.length||r.schedule.length!==positions.length){generateRotationSchedule(false);return}if(q("rotationBoard")){var h='<div class="rotation-grid" style="grid-template-columns:180px repeat('+blocks+',minmax(120px,1fr))"><div class="rotation-cell header position">Position</div>';for(var b=0;b<blocks;b++)h+='<div class="rotation-cell header">'+rotationTimeLabel(r.startHour,b)+'</div>';positions.forEach(function(position,p){h+='<div class="rotation-cell position">'+position+'</div>';for(var b=0;b<blocks;b++){var a=r.schedule[p][b];h+='<div class="rotation-cell"><div class="rotation-assignment '+a.type+'"><b>'+a.name+'</b><span>'+a.detail+'</span></div></div>'}});h+='</div>';q("rotationBoard").innerHTML=h}if(q("rotationPositionsEditor")){q("rotationPositionsEditor").innerHTML=positions.map(function(position,index){return '<div class="rotation-position-row"><input data-rotation-position="'+index+'" value="'+position.replace(/"/g,'&quot;')+'"><button type="button" class="btn secondary" data-remove-rotation-position="'+index+'">Remove</button></div>'}).join("");q("rotationPositionsEditor").querySelectorAll("[data-rotation-position]").forEach(function(input){input.addEventListener("change",function(){r.positions[Number(input.dataset.rotationPosition)]=input.value.trim()||"Unnamed Position";r.schedule=[];generateRotationSchedule()})});q("rotationPositionsEditor").querySelectorAll("[data-remove-rotation-position]").forEach(function(button){button.addEventListener("click",function(){r.positions.splice(Number(button.dataset.removeRotationPosition),1);r.schedule=[];generateRotationSchedule()})})}}
 function bindRotationBoard(){var g=q("generateRotationButton");if(g&&!g.dataset.bound){g.dataset.bound="1";g.addEventListener("click",function(){var r=activeRotationState();r.startHour=Number(q("rotationStartTime").value);r.blockCount=Number(q("rotationBlockCount").value);r.schedule=[];generateRotationSchedule();showToast("30-minute rotation schedule generated")})}var a=q("addRotationPositionButton");if(a&&!a.dataset.bound){a.dataset.bound="1";a.addEventListener("click",function(){var r=activeRotationState();r.positions.push("New Position");r.schedule=[];generateRotationSchedule()})}var s=q("saveRotationNotesButton");if(s&&!s.dataset.bound){s.dataset.bound="1";s.addEventListener("click",function(){var r=activeRotationState();r.notes=q("rotationNotes").value.trim();saveState(false);if(q("rotationNotesStatus"))q("rotationNotesStatus").textContent="Rotation notes saved for "+activeFacility().name+".";showToast("Rotation notes saved")})}}
 
+
+var editingIncidentId=null;
+
+function ensureIncidentCenterState(){
+  if(!state.operationsByFacility)return;
+  ["gandy","simpson"].forEach(function(id){
+    if(!Array.isArray(state.operationsByFacility[id].incidents)){
+      state.operationsByFacility[id].incidents=[];
+    }
+  });
+}
+
+function incidentNowDefaults(){
+  var now=new Date();
+  var date=now.toISOString().slice(0,10);
+  var time=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
+  return {date:date,time:time};
+}
+
+function resetIncidentForm(){
+  editingIncidentId=null;
+  var defaults=incidentNowDefaults();
+  if(q("incidentFormTitle"))q("incidentFormTitle").textContent="Log New Incident";
+  if(q("incidentType"))q("incidentType").value="First Aid";
+  if(q("incidentSeverity"))q("incidentSeverity").value="Medium";
+  if(q("incidentDate"))q("incidentDate").value=defaults.date;
+  if(q("incidentTime"))q("incidentTime").value=defaults.time;
+  if(q("incidentLocation"))q("incidentLocation").value="";
+  if(q("incidentResponder"))q("incidentResponder").value="";
+  if(q("incidentDescription"))q("incidentDescription").value="";
+  if(q("incidentAction"))q("incidentAction").value="";
+  if(q("incidentFollowUp"))q("incidentFollowUp").value="";
+  if(q("incidentStatus"))q("incidentStatus").value="Open";
+  if(q("incidentManagerReview"))q("incidentManagerReview").value="Pending";
+  if(q("incidentFormStatus"))q("incidentFormStatus").textContent="";
+}
+
+function incidentRequiredComplete(incident){
+  return Boolean(
+    incident.type &&
+    incident.severity &&
+    incident.date &&
+    incident.time &&
+    incident.location &&
+    incident.responder &&
+    incident.description &&
+    incident.action
+  );
+}
+
+function saveIncidentFromForm(){
+  ensureIncidentCenterState();
+  var incident={
+    id:editingIncidentId||("INC-"+Date.now()),
+    type:q("incidentType").value,
+    severity:q("incidentSeverity").value,
+    date:q("incidentDate").value,
+    time:q("incidentTime").value,
+    location:q("incidentLocation").value.trim(),
+    responder:q("incidentResponder").value.trim(),
+    description:q("incidentDescription").value.trim(),
+    action:q("incidentAction").value.trim(),
+    followUp:q("incidentFollowUp").value.trim(),
+    status:q("incidentStatus").value,
+    managerReview:q("incidentManagerReview").value,
+    createdAt:new Date().toISOString(),
+    facilityId:activeFacilityId
+  };
+
+  if(!incidentRequiredComplete(incident)){
+    if(q("incidentFormStatus"))q("incidentFormStatus").textContent="Complete all required fields before saving.";
+    showToast("Incident record needs required details");
+    return;
+  }
+
+  var index=state.incidents.findIndex(function(x){return x.id===incident.id});
+  if(index>=0){
+    incident.createdAt=state.incidents[index].createdAt||incident.createdAt;
+    state.incidents[index]=incident;
+  }else{
+    state.incidents.unshift(incident);
+  }
+
+  persistCompleteFacilityState();
+  saveState(false);
+  resetIncidentForm();
+  renderIncidentCenter();
+  render();
+  showToast(index>=0?"Incident updated":"Incident saved");
+}
+
+function editIncident(id){
+  var incident=state.incidents.find(function(x){return x.id===id});
+  if(!incident)return;
+  editingIncidentId=id;
+  if(q("incidentFormTitle"))q("incidentFormTitle").textContent="Edit Incident";
+  q("incidentType").value=incident.type;
+  q("incidentSeverity").value=incident.severity;
+  q("incidentDate").value=incident.date;
+  q("incidentTime").value=incident.time;
+  q("incidentLocation").value=incident.location;
+  q("incidentResponder").value=incident.responder;
+  q("incidentDescription").value=incident.description;
+  q("incidentAction").value=incident.action;
+  q("incidentFollowUp").value=incident.followUp||"";
+  q("incidentStatus").value=incident.status;
+  q("incidentManagerReview").value=incident.managerReview||"Pending";
+  showPage("incidents");
+}
+
+function resolveIncident(id){
+  var incident=state.incidents.find(function(x){return x.id===id});
+  if(!incident)return;
+  incident.status="Resolved";
+  incident.managerReview="Reviewed";
+  persistCompleteFacilityState();
+  saveState(false);
+  renderIncidentCenter();
+  render();
+  showToast("Incident resolved");
+}
+
+function deleteIncidentRecord(id){
+  state.incidents=state.incidents.filter(function(x){return x.id!==id});
+  if(state.operationsByFacility){
+    state.operationsByFacility[activeFacilityId].incidents=state.incidents;
+  }
+  saveState(false);
+  renderIncidentCenter();
+  render();
+  showToast("Incident removed");
+}
+
+function renderIncidentCenter(){
+  ensureIncidentCenterState();
+  if(q("incidentFacilityContext"))q("incidentFacilityContext").textContent="Showing incident records for "+activeFacility().name;
+
+  var incidents=state.incidents||[];
+  var open=incidents.filter(function(x){return x.status!=="Resolved"});
+  var high=incidents.filter(function(x){return x.severity==="High"||x.severity==="Critical"});
+  var today=new Date().toISOString().slice(0,10);
+  var resolvedToday=incidents.filter(function(x){return x.status==="Resolved"&&x.date===today});
+  var incomplete=incidents.filter(function(x){return !incidentRequiredComplete(x)});
+
+  if(q("incidentOpenCount"))q("incidentOpenCount").textContent=open.length;
+  if(q("incidentHighCount"))q("incidentHighCount").textContent=high.length;
+  if(q("incidentResolvedCount"))q("incidentResolvedCount").textContent=resolvedToday.length;
+  if(q("incidentReportStatus"))q("incidentReportStatus").textContent=incomplete.length?"Review":"Ready";
+  if(q("incidentReportStatusNote"))q("incidentReportStatusNote").textContent=incomplete.length
+    ?incomplete.length+" record(s) missing required details"
+    :"No missing required fields";
+
+  var statusFilter=q("incidentStatusFilter")?q("incidentStatusFilter").value:"all";
+  var severityFilter=q("incidentSeverityFilter")?q("incidentSeverityFilter").value:"all";
+  var filtered=incidents.filter(function(x){
+    return (statusFilter==="all"||x.status===statusFilter) &&
+      (severityFilter==="all"||x.severity===severityFilter);
+  });
+
+  if(q("incidentList")){
+    q("incidentList").innerHTML=filtered.length?filtered.map(function(x){
+      var severityClass="severity-"+x.severity.toLowerCase();
+      return '<div class="incident-card '+severityClass+'">'+
+        '<div class="rowflex"><div><h4>'+x.type+'</h4><span class="small">'+x.date+' • '+x.time+' • '+x.location+'</span></div>'+
+        '<span class="tag '+(x.severity==="Critical"||x.severity==="High"?"high":x.severity==="Medium"?"med":"low")+'">'+x.severity+'</span></div>'+
+        '<p>'+x.description+'</p>'+
+        '<div class="incident-meta"><span class="tag info">'+x.status+'</span><span class="tag info">Responder: '+x.responder+'</span><span class="tag info">Manager: '+(x.managerReview||"Pending")+'</span></div>'+
+        '<div class="incident-card-actions"><button type="button" class="btn secondary" data-edit-incident="'+x.id+'">Edit</button>'+
+        (x.status!=="Resolved"?'<button type="button" class="btn secondary" data-resolve-incident="'+x.id+'">Resolve</button>':'')+
+        '<button type="button" class="btn secondary" data-delete-incident="'+x.id+'">Remove</button></div>'+
+      '</div>';
+    }).join(""):'<div class="empty">No incidents match the selected filters.</div>';
+
+    q("incidentList").querySelectorAll("[data-edit-incident]").forEach(function(button){
+      button.addEventListener("click",function(){editIncident(button.dataset.editIncident)});
+    });
+    q("incidentList").querySelectorAll("[data-resolve-incident]").forEach(function(button){
+      button.addEventListener("click",function(){resolveIncident(button.dataset.resolveIncident)});
+    });
+    q("incidentList").querySelectorAll("[data-delete-incident]").forEach(function(button){
+      button.addEventListener("click",function(){deleteIncidentRecord(button.dataset.deleteIncident)});
+    });
+  }
+
+  if(q("incidentFollowUpList")){
+    q("incidentFollowUpList").innerHTML=open.length?open.map(function(x){
+      return '<div class="incident-followup-row"><span class="incident-followup-dot"></span><div><b>'+x.type+' — '+x.location+'</b><div class="small">'+(x.followUp||"Follow-up details have not been entered.")+'</div></div><span class="tag '+(x.followUp?"med":"high")+'">'+(x.followUp?"Assigned":"Missing")+'</span></div>';
+    }).join(""):'<div class="empty">No open incident follow-up actions.</div>';
+  }
+}
+
+function bindIncidentCenter(){
+  var ids=["incidentStatusFilter","incidentSeverityFilter"];
+  ids.forEach(function(id){
+    var el=q(id);
+    if(el&&!el.dataset.bound){
+      el.dataset.bound="1";
+      el.addEventListener("change",renderIncidentCenter);
+    }
+  });
+
+  var newButton=q("newIncidentButton");
+  if(newButton&&!newButton.dataset.bound){
+    newButton.dataset.bound="1";
+    newButton.addEventListener("click",function(){
+      resetIncidentForm();
+      q("incidentFormTitle").scrollIntoView({behavior:"smooth",block:"start"});
+    });
+  }
+
+  var saveButton=q("saveIncidentButton");
+  if(saveButton&&!saveButton.dataset.bound){
+    saveButton.dataset.bound="1";
+    saveButton.addEventListener("click",saveIncidentFromForm);
+  }
+
+  var clearButton=q("clearIncidentButton");
+  if(clearButton&&!clearButton.dataset.bound){
+    clearButton.dataset.bound="1";
+    clearButton.addEventListener("click",resetIncidentForm);
+  }
+
+  if(q("incidentDate")&&!q("incidentDate").value){
+    resetIncidentForm();
+  }
+}
+
 function render(){syncCompleteFacilityState();ensureRotationState();calcDemand();var score=healthScore(),needed=staffNeeded(),avail=staffAvailable(),ws=waterStatus(),recs=recommendations();q("healthMetric").textContent=score+"%";q("healthTrend").textContent=score>=90?"Strong operating posture":score>=75?"Manageable with attention":"Needs manager action";q("healthBar").style.width=score+"%";q("demandMetric").textContent=state.demand.adjusted;q("demandTrend").textContent="Base "+state.demand.base+", adjusted for weather and programs.";q("staffMetric").textContent=avail+"/"+needed;q("staffTrend").textContent=avail>=needed?"Coverage meets forecast need":"Coverage gap detected";q("waterMetric").textContent=ws;q("waterTrend").textContent="Chlorine "+state.water.chlorine+" ppm, pH "+state.water.ph;q("aiSummary").innerHTML="<p><b>Today's outlook:</b> "+(score>=85?"Ready with routine monitoring.":"Manager attention recommended.")+"</p><p>Forecast demand is <b>"+state.demand.adjusted+"</b>. Recommended lifeguards: <b>"+needed+"</b>.</p><p><b>Explainability:</b> weather, programs, staffing, water, inventory, maintenance, tasks, and incidents feed the score.</p>";q("priorityActions").innerHTML=recs.map(r=>"<p>"+tag(r.p)+" "+r.t+"<br><span class='small'>Why: "+r.why+"</span></p>").join("");q("programLoad").innerHTML="<p>Lessons: <b>"+state.programs.lessons.length+"</b></p><p>Pool parties: <b>"+state.programs.parties.length+"</b></p>"+(activeFacilityId==="gandy"?"<p>Swim team reserved lanes: <b>"+state.programs.team.reduce((s,x)=>s+x.lanes,0)+"</b></p><p>Aquatic Class blocks: <b>"+(state.programs.aquaticClass||[]).length+"</b></p>":"<p>Facility program model: <b>Lessons and pool parties</b></p>");q("inventoryRisk").innerHTML=inventoryAlerts().length?inventoryAlerts().map(i=>"<p>"+tag("High")+" "+i.item+": "+i.days+" days left</p>").join(""):"<p>"+tag("Low")+" No urgent purchase alerts.</p>";q("decisionStatus").innerHTML="<p>Approved: <b>"+Object.values(state.decisions).filter(x=>x==="Approved").length+"</b></p><p>Deferred: <b>"+Object.values(state.decisions).filter(x=>x==="Deferred").length+"</b></p><p>Overridden: <b>"+Object.values(state.decisions).filter(x=>x==="Overridden").length+"</b></p>";renderOperations();renderForecast();renderWater();renderStaff();renderPrograms();renderInventory();renderMaintenance();renderTasks();renderDecisions();renderDataSummary();renderAIOps();renderOperationsHome();renderShiftOperationsCenter();renderCapacity()}
 function renderOperations(){q("checklist").innerHTML=["Water chemistry checked","Staffing coverage reviewed","Programs confirmed","Inventory reviewed","Maintenance reviewed"].map(x=>"<p>☑ "+x+"</p>").join("");q("incidents").innerHTML=state.incidents.length?state.incidents.map(i=>"<p>⚠ "+i+"</p>").join(""):"<p class='small'>No incidents logged.</p>"}
 function renderForecast(){var weatherSource=liveForecastWeatherArray();var vals=weatherSource.map((w,i)=>{var d=demandFor(w.t,w.r);return{day:w.date?weatherDayLabel(w.date):days[i],temp:w.t,rain:w.r,d:d,staff:staffNeeded(d)}}),max=Math.max(...vals.map(x=>x.d));q("demandChart").innerHTML=vals.map(x=>"<div style='height:"+Math.max(20,x.d/max*160)+"px'><b>"+x.d+"</b><span>"+x.day+"</span></div>").join("");q("forecastTable").innerHTML=vals.map((x,i)=>"<tr><td>"+x.day+"</td><td>"+x.temp+"°F</td><td>"+x.rain+"%</td><td>"+(i>=4?"Weekend/event load":"Standard")+"</td><td>"+x.d+"</td><td>"+x.staff+"</td></tr>").join("");var high=vals.slice().sort((a,b)=>b.d-a.d)[0];q("forecastExplanation").innerHTML="<p>AquaIQPro increases demand when heat is high and rain is low. It lowers demand when rain risk is high. Program load adds demand from lessons, parties, and swim team.</p><p><b>Highest projected day:</b> "+high.day+" with "+high.d+" visitors.</p>"}
@@ -160,7 +387,7 @@ function addIncident(){if(q("incidentInput").value.trim()){state.incidents.unshi
   updateInputs("Program added");
 }
 function removeProgram(type,i){state.programs[type].splice(i,1);updateInputs("Program removed")}function addWorkOrder(){if(q("woAsset").value.trim()){state.workOrders.unshift({asset:q("woAsset").value.trim(),priority:q("woPriority").value,status:q("woStatus").value,desc:q("woDesc").value.trim()||"No description entered."});q("woAsset").value="";q("woDesc").value="";updateInputs("Work order added")}}function addTask(){if(q("taskName").value.trim()){state.tasks.unshift({name:q("taskName").value.trim(),priority:q("taskPriority").value,owner:q("taskOwner").value,done:false});q("taskName").value="";updateInputs("Daily task added")}}function toggleTask(i){state.tasks[i].done=!state.tasks[i].done;updateInputs("Daily task status changed")}function decide(id,status){state.decisions[id]=status;state.audit.unshift(new Date().toLocaleString()+": Recommendation "+id+" "+status);render();saveState(false)}
-function shortStatus(c){if(c.health>=90)return"Ready";if(c.health>=75)return"Review";return"Action"}function reportBullets(){var recs=recommendations(),high=recs.filter(r=>r.p==="High"),lanes=state.programs.team.reduce((s,x)=>s+x.lanes,0),inv=inventoryAlerts(),openWO=state.workOrders.filter(w=>w.status!=="Completed"),openTasks=state.tasks.filter(t=>!t.done),programBullets=[state.programs.lessons.length+" swim lesson block(s)",state.programs.parties.length+" pool party event(s)"];if(activeFacilityId==="gandy"){programBullets.push(lanes+" swim team reserved lane(s)");programBullets.push((state.programs.aquaticClass||[]).length+" Aquatic Class block(s)");programBullets.push(lanes>=5?"Lane pressure is high.":"Lane pressure is manageable.");}return{summary:["Forecast demand is "+state.demand.adjusted+" visitors.","Staffing is "+staffAvailable()+" active vs. "+staffNeeded()+" recommended.","Water status is "+waterStatus()+".",high.length?high.length+" high-priority item(s) need review.":"No high-priority action is currently required."],actions:recs.slice(0,5).map(r=>r.p+": "+r.t),programs:programBullets,operations:[inv.length?inv.length+" inventory purchase flag(s)":"No urgent purchase flags",openWO.length+" open maintenance work order(s)",openTasks.length+" incomplete daily task(s)",state.incidents.length+" incident(s) logged"]}}
+function shortStatus(c){if(c.health>=90)return"Ready";if(c.health>=75)return"Review";return"Action"}function reportBullets(){var incidentOpen=(state.incidents||[]).filter(function(x){return x.status!=="Resolved"}),incidentHigh=(state.incidents||[]).filter(function(x){return x.severity==="High"||x.severity==="Critical"}),recs=recommendations(),high=recs.filter(r=>r.p==="High"),lanes=state.programs.team.reduce((s,x)=>s+x.lanes,0),inv=inventoryAlerts(),openWO=state.workOrders.filter(w=>w.status!=="Completed"),openTasks=state.tasks.filter(t=>!t.done),programBullets=[state.programs.lessons.length+" swim lesson block(s)",state.programs.parties.length+" pool party event(s)"];if(activeFacilityId==="gandy"){programBullets.push(lanes+" swim team reserved lane(s)");programBullets.push((state.programs.aquaticClass||[]).length+" Aquatic Class block(s)");programBullets.push(lanes>=5?"Lane pressure is high.":"Lane pressure is manageable.");}return{summary:["Forecast demand is "+state.demand.adjusted+" visitors.","Staffing is "+staffAvailable()+" active vs. "+staffNeeded()+" recommended.","Water status is "+waterStatus()+".",high.length?high.length+" high-priority item(s) need review.":"No high-priority action is currently required."],actions:recs.slice(0,5).map(r=>r.p+": "+r.t),programs:programBullets,operations:[inv.length?inv.length+" inventory purchase flag(s)":"No urgent purchase flags",openWO.length+" open maintenance work order(s)",openTasks.length+" incomplete daily task(s)",state.incidents.length+" incident(s) logged"]}}
 function buildReportHTML(title){var c={health:healthScore(),total:state.demand.adjusted,staffActive:staffAvailable(),required:staffNeeded(),water:waterStatus()},b=reportBullets(),generated=new Date().toLocaleString();return'<div class="report-compact"><div class="report-hero"><h3>'+title+'</h3><p>'+state.facility+' • '+generated+'</p></div><div class="compact-kpis"><div class="compact-kpi"><span>Status</span><b>'+shortStatus(c)+'</b></div><div class="compact-kpi"><span>Health</span><b>'+c.health+'%</b></div><div class="compact-kpi"><span>Demand</span><b>'+c.total+'</b></div><div class="compact-kpi"><span>Staffing</span><b>'+c.staffActive+'/'+c.required+'</b></div></div><div class="compact-body"><div class="compact-section"><h4>Manager Snapshot</h4><ul class="bullet-clean">'+b.summary.map(x=>'<li>'+x+'</li>').join("")+'</ul></div><div class="compact-section"><h4>Top AI Actions</h4><ul class="bullet-clean">'+b.actions.map(x=>'<li>'+x+'</li>').join("")+'</ul></div><div class="compact-section"><h4>Programs & Demand</h4><ul class="bullet-clean">'+b.programs.map(x=>'<li>'+x+'</li>').join("")+'</ul></div><div class="compact-section"><h4>Operations Watchlist</h4><ul class="bullet-clean">'+b.operations.map(x=>'<li>'+x+'</li>').join("")+'</ul></div><div class="compact-section" style="grid-column:1/-1"><h4>Forecast Reasoning</h4><div class="status-strip"><div class="status-box"><b>Weather</b>'+state.weather.temp+'°F, '+state.weather.rain+'% rain</div><div class="status-box"><b>Water</b>Chlorine '+state.water.chlorine+' ppm, pH '+state.water.ph+'</div><div class="status-box"><b>Capacity</b>Programs + staffing + lane pressure</div><div class="status-box"><b>Saved Data</b>Browser autosave enabled</div></div></div></div></div>'}
 function generateReport(title){var visual=q("reportVisual");if(visual)visual.innerHTML=buildReportHTML(title);var text=q("reportBox");if(text)text.value=visual?visual.innerText:""}
 function runScenario(){var temp=Number(q("scenarioTemp").value||state.weather.temp),rain=Number(q("scenarioRain").value||state.weather.rain),extra=Number(q("scenarioExtraDemand").value||0),callouts=Number(q("scenarioCallouts").value||0),d=demandFor(temp,rain)+extra,need=staffNeeded(d),avail=staffAvailable()-callouts,gap=Math.max(0,need-avail),risk=gap>1||rain>65?"High":gap===1||temp>=95?"Medium":"Low";q("scenarioDemand").textContent=d;q("scenarioDemandNote").textContent="Based on "+temp+"°F, "+rain+"% rain, and "+extra+" extra visitors.";q("scenarioStaffGap").textContent=gap;q("scenarioStaffNote").textContent=avail+" available vs. "+need+" recommended.";q("scenarioRisk").textContent=risk;q("scenarioRiskNote").textContent=risk==="High"?"Manager action recommended.":risk==="Medium"?"Monitor and prepare backup coverage.":"Scenario appears manageable."}
@@ -603,7 +830,8 @@ function renderFacilityDataContext(){
     maintenanceFacilityContext:"Showing maintenance work orders for "+name,
     tasksFacilityContext:"Showing opening and daily tasks for "+name,
     operationsFacilityContext:"Showing operational checklist and incidents for "+name,
-    rotationFacilityContext:"Showing capacity and rotations for "+name
+    rotationFacilityContext:"Showing capacity and rotations for "+name,
+    incidentFacilityContext:"Showing incident records for "+name
   };
   Object.keys(labels).forEach(function(id){
     var el=q(id);
@@ -659,6 +887,7 @@ function ensureExtendedState(){
   if(typeof state.managerName!=="string")state.managerName="";
   ensureCompleteFacilityState();
   ensureRotationState();
+  ensureIncidentCenterState();
 }
 
 function renderManagerIdentity(){
@@ -705,6 +934,8 @@ function applyFacilityProfile(id,initial){
   renderFacilityComparison();
   renderRotationBoard();
   bindRotationBoard();
+  renderIncidentCenter();
+  bindIncidentCenter();
   renderShiftWorkspace();
   renderManagerIdentity();
   refreshFacilityDisplay();
@@ -1085,4 +1316,4 @@ var pdfBtn=q("downloadPdfButton");if(pdfBtn)pdfBtn.addEventListener("click",down
 var excelBtn=q("downloadExcelButton");if(excelBtn)excelBtn.addEventListener("click",downloadReportExcel);
 var printBtn=q("printReportButton");if(printBtn)printBtn.addEventListener("click",printManagerReport);
 
-var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",function(e){e.preventDefault();toggleChat()});var begin=q("beginDayButton");if(begin)begin.addEventListener("click",beginDayReview);applyFacilityProfile(state.activeFacilityId||"gandy",true);renderCapacity();renderFacilityProfile();facilityDisplayAudit();renderFacilityComparison();renderRotationBoard();bindRotationBoard();renderShiftWorkspace();renderManagerIdentity();refreshFacilityDisplay();renderShiftOperationsCenter();bindShiftQuickActions();populateReportFields();renderReportHistory();updateReportPreview();runScenario();loadLiveWeather(false);weatherRefreshTimer=setInterval(function(){loadLiveWeather(false)},WEATHER_REFRESH_MS)}init();
+var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",function(e){e.preventDefault();toggleChat()});var begin=q("beginDayButton");if(begin)begin.addEventListener("click",beginDayReview);applyFacilityProfile(state.activeFacilityId||"gandy",true);renderCapacity();renderFacilityProfile();facilityDisplayAudit();renderFacilityComparison();renderRotationBoard();bindRotationBoard();renderIncidentCenter();bindIncidentCenter();renderShiftWorkspace();renderManagerIdentity();refreshFacilityDisplay();renderShiftOperationsCenter();bindShiftQuickActions();populateReportFields();renderReportHistory();updateReportPreview();runScenario();loadLiveWeather(false);weatherRefreshTimer=setInterval(function(){loadLiveWeather(false)},WEATHER_REFRESH_MS)}init();
