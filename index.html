@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AquaIQPro v5.1 Facility Intelligence</title>
+<title>AquaIQPro v5.2 Shift Operations Center</title>
 
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
@@ -15,7 +15,7 @@
 <div class="app">
 <aside>
   <div class="logo"><div class="mark">AQ</div><div><h1>AquaIQPro</h1><span>Aquatics Operations Platform</span></div></div><div class="lane-rope" aria-hidden="true"></div>
-  <div class="facility-switcher"><label for="facilitySelect">Facility</label><select id="facilitySelect"><option value="gandy">Gandy Pool</option><option value="simpson">Simpson Park Pool</option></select></div>
+  <div class="facility-switcher"><label for="facilitySelect">Facility</label><select id="facilitySelect"><option value="gandy">Gandy Pool</option><option value="simpson">Simpson Park Pool</option></select></div><div class="aquatic-divider" aria-hidden="true"></div>
   <nav id="nav">
     <button class="active" data-page="dashboard">Today's Shift</button>
     <button data-page="facility">Facility Overview</button>
@@ -35,96 +35,116 @@
     <button data-page="reports">Reports</button>
     <button data-page="assistant">Ask AquaIQ</button>
   </nav>
-  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.1 Facility Intelligence merges stable app, clean reports, floating chat, and data persistence.</span></div>
+  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.2 Shift Operations Center merges stable app, clean reports, floating chat, and data persistence.</span></div>
 </aside>
 <main>
-  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.1 Facility Intelligence</b> • <span class="good">System Ready</span></div></div>
+  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.2 Shift Operations Center</b> • <span class="good">System Ready</span></div></div>
 
   <section id="dashboard" class="section active">
-    
-<div class="weather-live-banner">
-  <div>
-    <strong>Live Lakeland Weather</strong>
-    <div id="weatherLiveSummary" class="small">Loading the latest forecast…</div>
-  </div>
-  <div class="weather-live-status">
-    <span id="weatherLiveDot" class="weather-dot"></span>
-    <span id="weatherLiveStatus" class="small">Connecting</span>
-    <button id="refreshWeatherButton" class="btn secondary" type="button">Refresh Weather</button>
-  </div>
-</div>
-
-<div class="ops-hero">
-      <div class="ops-hero-grid">
-        <div>
-          <h3>Good morning</h3>
-          <p id="homeSummaryLine">Your daily operating plan is ready for review.</p>
-          <div class="ops-stat-grid">
-            <div class="ops-stat"><span>Forecast attendance</span><b id="demandMetric">--</b><small id="demandTrend"></small></div>
-            <div class="ops-stat"><span>Peak period</span><b id="homePeak">2–4 PM</b><small>Highest expected demand</small></div>
-            <div class="ops-stat"><span>Staffing</span><b id="staffMetric">--</b><small id="staffTrend"></small></div>
-            <div class="ops-stat"><span>Capacity</span><b id="homeCapacity">--</b><small id="homeCapacityDetail">Operating limit</small></div>
+  <div class="ops-hero shift-ops-hero">
+    <div class="personal-welcome">
+      <div>
+        <h3 id="personalGreeting">Good morning</h3>
+        <div id="personalNameLine" class="personal-name-line">Welcome to today’s shift.</div>
+        <div id="shiftDateLine" class="shift-date-line"></div>
+        <p id="homeSummaryLine">Your daily operating plan is ready for review.</p>
+        <div class="personal-welcome-controls">
+          <label>Manager name<input id="managerNameInput" placeholder="Enter manager name"></label>
+          <button id="saveManagerNameButton" class="btn secondary" type="button">Save Name</button>
+        </div>
+      </div>
+      <div class="welcome-badge"><span>Selected facility</span><b id="welcomeFacilityName">Gandy Pool</b></div>
+    </div>
+    <div class="aquatic-divider" aria-hidden="true"></div>
+    <div class="shift-command-grid">
+      <div>
+        <div class="pool-section-title"><span class="dive-block" aria-hidden="true"></span><h3>Operations Readiness</h3></div>
+        <div class="readiness-panel" style="margin-top:14px">
+          <div id="readinessGauge" class="readiness-gauge"><div class="gauge-content"><b id="healthMetric">--</b><span>ready</span></div></div>
+          <div class="readiness-breakdown">
+            <div class="readiness-factor"><span>Staffing</span><b id="readinessStaffing">--</b></div>
+            <div class="readiness-factor"><span>Water</span><b id="readinessWater">--</b></div>
+            <div class="readiness-factor"><span>Inventory</span><b id="readinessInventory">--</b></div>
+            <div class="readiness-factor"><span>Maintenance</span><b id="readinessMaintenance">--</b></div>
+            <div class="readiness-factor"><span>Programs</span><b id="readinessPrograms">--</b></div>
+            <div class="readiness-factor"><span>Weather</span><b id="readinessWeather">--</b></div>
           </div>
         </div>
-        <div class="readiness-ring" id="readinessRing">
-          <div class="readiness-ring-inner"><div><b id="healthMetric">--</b><span>readiness</span></div></div>
-        </div>
+        <div class="bar" style="margin-top:16px"><span id="healthBar"></span></div>
+        <div id="healthTrend" class="small" style="color:#d9f5fb;margin-top:8px"></div>
       </div>
-      <div class="bar" style="margin-top:16px"><span id="healthBar"></span></div>
-      <div id="healthTrend" class="small" style="color:#d9f5fb;margin-top:8px"></div>
-    </div>
-
-    
-<div class="shift-grid" style="margin-top:18px">
-  <div class="card">
-    <h3>Today’s Schedule</h3>
-    <div id="todaySchedule" class="shift-schedule"></div>
-  </div>
-  <div class="card">
-    <div class="rowflex"><div><h3>Manager Inbox</h3><p class="small">One place for today’s alerts and follow-ups.</p></div><span id="inboxCount" class="tag info">0</span></div>
-    <div id="managerInbox"></div>
-  </div>
-</div>
-<div class="card" style="margin-top:18px">
-  <h3>Shift Notes & Handoff</h3>
-  <div class="handoff-box">
-    <div><textarea id="shiftNotes" placeholder="Add notes for the incoming manager, such as equipment concerns, deliveries, call-outs, patron issues, or program changes."></textarea><label class="small"><input id="handoffReviewed" type="checkbox" style="width:auto;margin-right:6px">Incoming manager reviewed these notes</label></div>
-    <button class="btn" id="saveShiftNotes" type="button">Save Notes</button>
-  </div>
-  <div id="handoffStatus" class="small" style="margin-top:8px"></div>
-</div>
-
-<div class="priority-grid">
-      <div class="card">
-        <div class="rowflex"><div><h3>Today’s Priorities</h3><p class="small">Ordered by operational importance.</p></div><span class="tag info" id="homeRiskBadge">Loading</span></div>
-        <div id="homePriorities"></div>
-        <button class="btn begin-day" id="beginDayButton" type="button">Begin Day Review</button>
-      </div>
-      <div class="card">
-        <h3>Operating Status</h3>
-        <div class="status-board">
-          <div class="status-tile"><span>Water quality</span><b id="waterMetric">--</b><small id="waterTrend"></small></div>
-          <div class="status-tile"><span>Rotation coverage</span><b id="homeRotation">--</b><small>30-minute rotation plan</small></div>
-          <div class="status-tile"><span>Inventory flags</span><b id="homeInventoryFlags">--</b><small>Items requiring review</small></div>
-          <div class="status-tile"><span>Open maintenance</span><b id="homeMaintenance">--</b><small>Unresolved work orders</small></div>
+      <div>
+        <div class="pool-section-title"><span class="dive-block" aria-hidden="true"></span><h3>Shift Snapshot</h3></div>
+        <div class="ops-stat-grid" style="grid-template-columns:repeat(2,1fr);margin-top:14px">
+          <div class="ops-stat"><span>Forecast attendance</span><b id="demandMetric">--</b><small id="demandTrend"></small></div>
+          <div class="ops-stat"><span>Peak period</span><b id="homePeak">2–4 PM</b><small>Highest expected demand</small></div>
+          <div class="ops-stat"><span>Staffing</span><b id="staffMetric">--</b><small id="staffTrend"></small></div>
+          <div class="ops-stat"><span>Capacity</span><b id="homeCapacity">--</b><small id="homeCapacityDetail">Operating limit</small></div>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="grid two" style="margin-top:18px">
-      <div class="card"><h3>Daily Operations Summary</h3><div id="aiSummary"></div></div>
-      <div class="card"><h3>Capacity & Rotation Timeline</h3><div class="timeline" id="homeTimeline"></div></div>
+  <div class="weather-live-banner">
+    <div><strong>Live Lakeland Weather</strong><div id="weatherLiveSummary" class="small">Loading the latest forecast…</div></div>
+    <div class="weather-live-status"><span id="weatherLiveDot" class="weather-dot"></span><span id="weatherLiveStatus" class="small">Connecting</span><button id="refreshWeatherButton" class="btn secondary" type="button">Refresh Weather</button></div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <div class="pool-section-title"><span class="dive-block" aria-hidden="true"></span><h3>Live Status</h3></div>
+    <div id="liveStatusStrip" class="live-status-strip" style="margin-top:14px">
+      <div class="live-status-item" id="statusWeather"><span>Weather</span><b id="statusWeatherValue">--</b><small id="statusWeatherNote"></small></div>
+      <div class="live-status-item" id="statusStaffing"><span>Staffing</span><b id="statusStaffingValue">--</b><small id="statusStaffingNote"></small></div>
+      <div class="live-status-item" id="statusWater"><span>Water</span><b id="statusWaterValue">--</b><small id="statusWaterNote"></small></div>
+      <div class="live-status-item" id="statusInventory"><span>Inventory</span><b id="statusInventoryValue">--</b><small id="statusInventoryNote"></small></div>
+      <div class="live-status-item" id="statusMaintenance"><span>Maintenance</span><b id="statusMaintenanceValue">--</b><small id="statusMaintenanceNote"></small></div>
     </div>
+  </div>
 
-    <div class="grid three" style="margin-top:18px">
-      <div class="card"><h3>Program Load</h3><div id="programLoad"></div></div>
-      <div class="card"><h3>Inventory Risk</h3><div id="inventoryRisk"></div></div>
-      <div class="card"><h3>Manager Review Status</h3><div id="decisionStatus"></div></div>
+  <div class="shift-command-grid" style="margin-top:18px">
+    <div class="card">
+      <div class="rowflex"><div class="pool-section-title"><span class="dive-block" aria-hidden="true"></span><h3>Today’s Priorities</h3></div><span id="homeRiskBadge" class="tag info">Loading</span></div>
+      <div id="homePriorities" class="priority-stack" style="margin-top:12px"></div>
+      <button class="btn begin-day" id="beginDayButton" type="button">Begin Day Review</button>
     </div>
-    <div id="priorityActions" style="display:none"></div>
-  </section>
+    <div class="card">
+      <div class="pool-section-title"><span class="dive-block" aria-hidden="true"></span><h3>Quick Actions</h3></div>
+      <div class="command-actions" style="margin-top:12px">
+        <button class="command-action" type="button" data-quick-page="staffing"><b>Review Staffing</b><span>Schedules, call-outs, and coverage</span></button>
+        <button class="command-action" type="button" data-quick-page="capacity"><b>Check Capacity</b><span>1:25 coverage and rotations</span></button>
+        <button class="command-action" type="button" data-quick-page="water"><b>Review Water</b><span>Readings and retest guidance</span></button>
+        <button class="command-action" type="button" data-quick-page="inventory"><b>Review Inventory</b><span>Low stock and purchase needs</span></button>
+        <button class="command-action" type="button" data-quick-page="maintenance"><b>Open Maintenance</b><span>Work orders and due items</span></button>
+        <button class="command-action" type="button" data-quick-page="reports"><b>Open Reports</b><span>Complete the shift record</span></button>
+      </div>
+    </div>
+  </div>
 
-  
+  <div class="shift-grid" style="margin-top:18px">
+    <div class="card"><div class="pool-section-title"><span class="dive-block" aria-hidden="true"></span><h3>Today’s Schedule</h3></div><div id="todaySchedule" class="shift-schedule"></div></div>
+    <div class="card"><div class="rowflex"><div class="pool-section-title"><span class="dive-block" aria-hidden="true"></span><h3>Manager Inbox</h3></div><span id="inboxCount" class="tag info">0</span></div><div id="managerInbox"></div></div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <div class="pool-section-title"><span class="dive-block" aria-hidden="true"></span><h3>Shift Notes & Handoff</h3></div>
+    <div class="handoff-box" style="margin-top:12px">
+      <div><textarea id="shiftNotes" placeholder="Add notes for the incoming manager, such as equipment concerns, deliveries, call-outs, patron issues, or program changes."></textarea><label class="small"><input id="handoffReviewed" type="checkbox" style="width:auto;margin-right:6px">Incoming manager reviewed these notes</label></div>
+      <button class="btn" id="saveShiftNotes" type="button">Save Notes</button>
+    </div>
+    <div id="handoffStatus" class="small" style="margin-top:8px"></div>
+  </div>
+
+  <div class="grid two" style="margin-top:18px">
+    <div class="card"><h3>Daily Operations Summary</h3><div id="aiSummary"></div></div>
+    <div class="card"><h3>Capacity & Rotation Timeline</h3><div class="timeline" id="homeTimeline"></div></div>
+  </div>
+  <div class="grid three" style="margin-top:18px">
+    <div class="card"><h3>Program Load</h3><div id="programLoad"></div></div>
+    <div class="card"><h3>Inventory Risk</h3><div id="inventoryRisk"></div></div>
+    <div class="card"><h3>Manager Review Status</h3><div id="decisionStatus"></div></div>
+  </div>
+  <div id="priorityActions" style="display:none"></div>
+</section>
 
 <section id="facilitycompare" class="section">
   <div class="notice"><b>Facility Intelligence:</b> compare how Gandy Pool and Simpson Park Pool differ operationally. Published facility details are separated from editable planning assumptions.</div>
