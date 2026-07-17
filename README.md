@@ -1,3 +1,3 @@
-# AquaIQPro 5.6
+# AquaIQPro 5.6.1 — Corrected Stability Fix
 
-Report Center 2.0 release with Capacity & Rotation cleanup.
+Built from the actual v5.6 Report Center 2.0 repository.
