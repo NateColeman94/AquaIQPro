@@ -243,3 +243,21 @@ body{
 @media(max-width:720px){
   .comparison-selection-banner{align-items:flex-start;flex-direction:column}
 }
+
+/* AquaIQPro 5.3.1 */
+.readiness-gauge .gauge-content,
+.readiness-gauge .gauge-content b,
+.readiness-factor,
+.readiness-factor b{
+  color:#17324a !important;
+}
+.readiness-factor span{color:#66788a !important}
+.readiness-factor{background:#fff !important}
+.facility-context-note{
+  margin:0 0 16px;
+  padding:11px 13px;
+  border:1px solid rgba(14,165,183,.18);
+  border-radius:12px;
+  background:rgba(14,165,183,.08);
+}
+.program-card-hidden{display:none !important}
