@@ -257,7 +257,7 @@
 
 <section id="water" class="section"><div class="grid two"><div class="card"><h3>Editable Water Test Readings</h3><div class="form-grid three"><label>Free Chlorine ppm<input id="chlorineInput" type="number" step=".1"></label><label>pH<input id="phInput" type="number" step=".1"></label><label>Alkalinity ppm<input id="alkInput" type="number"></label></div><button class="btn" style="margin-top:14px" onclick="updateInputs('Manager updated water chemistry')">Update Water Quality</button></div><div class="card"><h3>Target Chemical Ranges</h3><table><thead><tr><th>Chemical</th><th>Target</th><th>Current</th><th>Status</th></tr></thead><tbody id="chemicalRanges"></tbody></table><p class="small">Targets are demo values and should be verified against local policy and certified pool operator guidance.</p></div></div><div class="card" style="margin-top:18px"><h3>Water Quality Guidance</h3><div id="waterGuidance"></div></div></section>
 
-  <section id="staffing" class="section"><div class="card"><h3>Editable Lifeguard Schedule</h3><table><thead><tr><th>Name</th><th>Shift</th><th>Area</th><th>Status</th><th>Action</th></tr></thead><tbody id="staffTable"></tbody></table></div><div class="card" style="margin-top:18px"><h3>Add Lifeguard / Shift</h3><div class="form-grid three"><input id="newStaffName" placeholder="Name"><input id="newStaffShift" placeholder="Shift"><select id="newStaffArea"><option>Lap Pool</option><option>Recreation Pool</option><option>Lessons</option><option>Deck Supervisor</option></select></div><button class="btn" style="margin-top:12px" onclick="addStaff()">Add Staff Member</button></div></section>
+  <section id="staffing" class="section"><div id="facilityRosterNote" class="facility-context-note"></div><div class="card"><h3>Editable Lifeguard Schedule</h3><table><thead><tr><th>Name</th><th>Shift</th><th>Area</th><th>Status</th><th>Action</th></tr></thead><tbody id="staffTable"></tbody></table></div><div class="card" style="margin-top:18px"><h3>Add Lifeguard / Shift</h3><div class="form-grid three"><input id="newStaffName" placeholder="Name"><input id="newStaffShift" placeholder="Shift"><select id="newStaffArea"><option>Lap Pool</option><option>Recreation Pool</option><option>Lessons</option><option>Deck Supervisor</option></select></div><button class="btn" style="margin-top:12px" onclick="addStaff()">Add Staff Member</button></div></section>
 
   
 <section id="capacity" class="section">
@@ -276,7 +276,36 @@
   </div>
 </section>
 
-<section id="programs" class="section"><div class="grid three"><div class="card"><h3>Swim Lessons</h3><div id="lessonList"></div><button class="btn secondary" onclick="addProgram('lessons')">Add Lesson Block</button></div><div class="card"><h3>Pool Parties</h3><div id="partyList"></div><button class="btn secondary" onclick="addProgram('parties')">Add Pool Party</button></div><div class="card"><h3>Swim Team</h3><div id="teamList"></div><button class="btn secondary" onclick="addProgram('team')">Add Practice</button></div></div><div class="card" style="margin-top:18px"><h3>Lane Capacity Explanation</h3><p><b>Swim team lane capacity pressure</b> means swim team practice is reserving lanes, reducing lane availability for lap swim, lessons, open swim, and party use.</p><div id="lanePressure"></div></div></section>
+<section id="programs" class="section">
+  <div id="facilityProgramNote" class="facility-context-note"></div>
+  <div class="grid three">
+    <div class="card">
+      <h3>Swim Lessons</h3>
+      <div id="lessonList"></div>
+      <button class="btn secondary" onclick="addProgram('lessons')">Add Lesson Block</button>
+    </div>
+    <div class="card">
+      <h3>Pool Parties</h3>
+      <div id="partyList"></div>
+      <button class="btn secondary" onclick="addProgram('parties')">Add Pool Party</button>
+    </div>
+    <div class="card" id="swimTeamProgramCard">
+      <h3>Swim Team</h3>
+      <div id="teamList"></div>
+      <button class="btn secondary" onclick="addProgram('team')">Add Practice</button>
+    </div>
+    <div class="card" id="aquaticClassProgramCard">
+      <h3>Aquatic Class</h3>
+      <div id="aquaticClassList"></div>
+      <button class="btn secondary" onclick="addProgram('aquaticClass')">Add Aquatic Class</button>
+    </div>
+  </div>
+  <div class="card" id="laneCapacityCard" style="margin-top:18px">
+    <h3>Lane Capacity Explanation</h3>
+    <p><b>Swim team lane capacity pressure</b> means swim team practice is reserving lanes, reducing lane availability for lap swim, lessons, open swim, and party use.</p>
+    <div id="lanePressure"></div>
+  </div>
+</section>
 
   <section id="inventory" class="section"><div class="card"><h3>Inventory & Purchase Recommendations</h3><table><thead><tr><th>Item</th><th>On Hand</th><th>Minimum</th><th>Days Left</th><th>AI Recommendation</th></tr></thead><tbody id="inventoryTable"></tbody></table></div></section>
 
