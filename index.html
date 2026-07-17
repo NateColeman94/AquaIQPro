@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AquaIQPro v5.5.2 Stable Incident Center</title>
+<title>AquaIQPro v5.6 Report Center 2.0</title>
 
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.0.0/jspdf.umd.min.js"></script>
 
-<link rel="stylesheet" href="css/styles.css?v=5.5.2">
+<link rel="stylesheet" href="css/styles.css?v=5.6">
 </head>
 <body>
 <div class="app">
@@ -40,7 +40,7 @@
   <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.4.1 adds facility-specific 30-minute lifeguard rotations, coverage monitoring, and full-name staffing rosters.</span></div>
 </aside>
 <main>
-  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.5.2 Stable Incident Center</b> • <span class="good">System Ready</span></div></div>
+  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.6 Report Center 2.0</b> • <span class="good">System Ready</span></div></div>
 
   <section id="dashboard" class="section active">
   <div class="ops-hero shift-ops-hero">
@@ -264,13 +264,7 @@
 
   
 <section id="capacity" class="section">
-  <div class="combined-capacity-header">
-    <div>
-      <span class="eyebrow">Coverage, capacity, and 30-minute assignments</span>
-      <h2>Capacity & Rotation Center</h2>
-      <p>Manage staffing-controlled capacity and lifeguard rotations in one coordinated workspace.</p>
-    </div>
-  </div>
+</div>
 
   <div class="facility-data-badge" id="rotationFacilityContext">Showing rotations for Gandy Pool</div>
   <div class="rotation-hero"><div><span class="eyebrow">30-minute deck coverage</span><h2>Capacity & Rotation Center</h2><p>Build and monitor position assignments, relief coverage, and scheduled breaks throughout the shift.</p></div><div class="rotation-controls"><label>Rotation start<select id="rotationStartTime"><option value="8">8:00 AM</option><option value="9">9:00 AM</option><option value="10">10:00 AM</option><option value="11">11:00 AM</option><option value="12">12:00 PM</option></select></label><label>Rotation blocks<select id="rotationBlockCount"><option value="6">3 hours</option><option value="8" selected>4 hours</option><option value="10">5 hours</option><option value="12">6 hours</option></select></label><button class="btn" id="generateRotationButton" type="button">Generate Rotation</button></div></div>
@@ -481,50 +475,209 @@
 </section>
 
 <section id="reports" class="section">
-  <div class="notice"><b>Reports:</b> operational data is prefilled, while managers can add observations, outcomes, and shift-specific notes. Reports can be saved, reopened, printed, and downloaded as PDF or Excel.</div>
-  <div class="card">
-    <div class="rowflex"><div><h3>Reports</h3><p class="small">Create a manager-owned daily operating record.</p></div><span id="reportFacilityBadge" class="tag info">Gandy Pool</span></div>
-    <div class="report-editor-grid">
-      <div class="report-input-card"><h4>Report Information</h4>
-        <label>Manager name<input id="reportManager" placeholder="Manager name"></label>
-        <label>Shift<select id="reportShift"><option>Opening</option><option>Midday</option><option>Closing</option></select></label>
-        <label>Report date<input id="reportDate" type="date"></label>
-        <label>Actual attendance<input id="reportActualAttendance" type="number" placeholder="Enter actual attendance"></label>
-      </div>
-      <div class="report-input-card"><h4>Staffing & Operations</h4>
-        <label>Call-outs<input id="reportCallouts" type="number"></label>
-        <label>Overtime hours<input id="reportOvertime" type="number" step=".5"></label>
-        <label>Incident type<select id="reportIncidentType"><option>None</option><option>First Aid</option><option>Water Rescue</option><option>Weather Delay</option><option>Facility Closure</option><option>Other</option></select></label>
-        <label>Incident details<textarea id="reportIncidentDetails"></textarea></label>
-      </div>
-      <div class="report-input-card"><h4>Maintenance & Inventory</h4>
-        <label>Completed maintenance<textarea id="reportMaintenanceCompleted"></textarea></label>
-        <label>Outstanding maintenance<textarea id="reportMaintenanceOutstanding"></textarea></label>
-        <label>Items ordered<textarea id="reportItemsOrdered"></textarea></label>
-        <label>Items running low<textarea id="reportItemsLow"></textarea></label>
-      </div>
-      <div class="report-input-card"><h4>Manager Notes</h4>
-        <label>Shift summary<textarea id="reportShiftSummary"></textarea></label>
-        <label>Patron or staff observations<textarea id="reportObservations"></textarea></label>
-        <label>Follow-up required<textarea id="reportFollowUp"></textarea></label>
-        <label>Reviewed by<input id="reportReviewedBy" placeholder="Reviewer name"></label>
-      </div>
+  <div class="facility-data-badge" id="reportCenterFacilityContext">Building reports for Gandy Pool</div>
+
+  <div class="report2-hero">
+    <div>
+      <span class="eyebrow">Manager-reviewed operational record</span>
+      <h2>Report Center 2.0</h2>
+      <p>Use system data where it helps, then add the manager judgment, narrative, and follow-up details that automation cannot provide.</p>
     </div>
-    <div class="report-actions">
-      <button class="btn" id="previewReportButton" type="button">Update Preview</button>
-      <button class="btn good" id="saveReportButton" type="button">Save Report</button>
-      <button class="btn secondary" id="downloadPdfButton" type="button">Download PDF</button>
-      <button class="btn secondary" id="downloadExcelButton" type="button">Download Excel</button>
-      <button class="btn warn" id="printReportButton" type="button">Print Report</button>
+    <div class="report2-hero-actions">
+      <button class="btn" id="report2GenerateButton" type="button">Refresh System Data</button>
+      <button class="btn secondary" id="report2NewButton" type="button">Start New Report</button>
     </div>
-    <div id="exportStatus" class="export-status" aria-live="polite"></div>
   </div>
-  <div id="reportPrintable" style="margin-top:18px"><div id="reportVisual"></div></div>
+
+  <div class="report2-status-grid">
+    <div class="metric-card">
+      <span>Report type</span>
+      <b class="viz-stat-value" id="report2TypeMetric">Daily</b>
+      <small>Manager selectable</small>
+    </div>
+    <div class="metric-card">
+      <span>Auto-filled sections</span>
+      <b class="viz-stat-value">6</b>
+      <small>Operational data only</small>
+    </div>
+    <div class="metric-card">
+      <span>Manager-entry sections</span>
+      <b class="viz-stat-value">7</b>
+      <small>Remain editable</small>
+    </div>
+    <div class="metric-card">
+      <span>Completion</span>
+      <b class="viz-stat-value" id="report2CompletionMetric">0%</b>
+      <small id="report2CompletionNote">Complete required manager fields</small>
+    </div>
+  </div>
+
   <div class="grid two" style="margin-top:18px">
-    <div class="card"><h3>Report History</h3><div id="reportHistory"></div></div>
-    <div class="card"><h3>Report Guidance</h3><p>Operational data is filled from the selected facility. Managers add information that requires human judgment, including actual attendance, incidents, maintenance outcomes, shift observations, and follow-up needs.</p><p class="small">Saved reports are stored in this browser and can be reopened and exported again.</p></div>
+    <div class="card">
+      <h3>Report Setup</h3>
+      <div class="grid two">
+        <label>Report type
+          <select id="report2Type">
+            <option>Daily Operations Report</option>
+            <option>Opening Report</option>
+            <option>Closing Report</option>
+            <option>Shift Handoff Report</option>
+            <option>Supervisor Summary</option>
+          </select>
+        </label>
+        <label>Report date
+          <input id="report2Date" type="date">
+        </label>
+        <label>Manager
+          <input id="report2Manager" placeholder="Manager completing report">
+        </label>
+        <label>Shift
+          <select id="report2Shift">
+            <option>Opening</option>
+            <option>Midday</option>
+            <option>Closing</option>
+            <option>Full Day</option>
+          </select>
+        </label>
+      </div>
+      <label>Report title
+        <input id="report2Title" placeholder="Example: Gandy Pool Daily Operations Report">
+      </label>
+    </div>
+
+    <div class="card">
+      <h3>System Snapshot</h3>
+      <div id="report2SystemSnapshot" class="report2-snapshot"></div>
+      <p class="small">These values update from the active facility. Managers may add context below, but the system snapshot remains traceable to current operational data.</p>
+    </div>
   </div>
-  <textarea id="reportBox" style="display:none"></textarea>
+
+  <div class="report2-section-grid" style="margin-top:18px">
+    <div class="card report2-auto-section">
+      <div class="report2-section-header">
+        <div><span class="report2-section-type">System data</span><h3>Attendance, Capacity & Staffing</h3></div>
+        <span class="tag info">Auto-filled</span>
+      </div>
+      <div id="report2AttendanceData"></div>
+    </div>
+
+    <div class="card report2-auto-section">
+      <div class="report2-section-header">
+        <div><span class="report2-section-type">System data</span><h3>Water Quality</h3></div>
+        <span class="tag info">Auto-filled</span>
+      </div>
+      <div id="report2WaterData"></div>
+    </div>
+
+    <div class="card report2-auto-section">
+      <div class="report2-section-header">
+        <div><span class="report2-section-type">System data</span><h3>Programs & Schedule</h3></div>
+        <span class="tag info">Auto-filled</span>
+      </div>
+      <div id="report2ProgramData"></div>
+    </div>
+
+    <div class="card report2-auto-section">
+      <div class="report2-section-header">
+        <div><span class="report2-section-type">System data</span><h3>Inventory & Maintenance</h3></div>
+        <span class="tag info">Auto-filled</span>
+      </div>
+      <div id="report2OperationsData"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <div class="report2-section-header">
+      <div><span class="report2-section-type manager">Manager entry</span><h3>Manager Narrative</h3></div>
+      <span class="tag med">Required</span>
+    </div>
+    <label>Overall shift summary
+      <textarea id="report2Summary" class="report2-manager-field" placeholder="Describe how the shift operated, significant changes from plan, patron activity, and overall performance."></textarea>
+    </label>
+    <label>What went well
+      <textarea id="report2WentWell" class="report2-manager-field" placeholder="Document successful staffing decisions, program execution, safety performance, or service outcomes."></textarea>
+    </label>
+    <label>Challenges or concerns
+      <textarea id="report2Challenges" class="report2-manager-field" placeholder="Document operational challenges, unusual demand, equipment concerns, patron issues, or unresolved risk."></textarea>
+    </label>
+  </div>
+
+  <div class="grid two" style="margin-top:18px">
+    <div class="card">
+      <div class="report2-section-header">
+        <div><span class="report2-section-type manager">Manager entry</span><h3>Staffing & Performance Notes</h3></div>
+        <span class="tag med">Required</span>
+      </div>
+      <textarea id="report2StaffNotes" class="report2-manager-field" placeholder="Document call-outs, substitutions, coaching, strong performance, rotation concerns, or training needs."></textarea>
+    </div>
+
+    <div class="card">
+      <div class="report2-section-header">
+        <div><span class="report2-section-type manager">Manager entry</span><h3>Safety & Incident Notes</h3></div>
+        <span class="tag info">Manager judgment</span>
+      </div>
+      <textarea id="report2SafetyNotes" class="report2-manager-field" placeholder="Summarize safety observations, incident context, near misses, corrective actions, or reasons no incident report was needed."></textarea>
+    </div>
+
+    <div class="card">
+      <div class="report2-section-header">
+        <div><span class="report2-section-type manager">Manager entry</span><h3>Follow-Up Required</h3></div>
+        <span class="tag med">Required</span>
+      </div>
+      <textarea id="report2FollowUp" class="report2-manager-field" placeholder="List owners, deadlines, inspections, purchases, repairs, staff communication, or supervisor decisions still needed."></textarea>
+    </div>
+
+    <div class="card">
+      <div class="report2-section-header">
+        <div><span class="report2-section-type manager">Manager entry</span><h3>Incoming Shift Handoff</h3></div>
+        <span class="tag info">Editable</span>
+      </div>
+      <textarea id="report2Handoff" class="report2-manager-field" placeholder="Provide the next manager with the most important operational context and unfinished work."></textarea>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <div class="report2-section-header">
+      <div><span class="report2-section-type manager">Manager approval</span><h3>Review & Sign-Off</h3></div>
+      <span class="tag med">Required</span>
+    </div>
+    <div class="grid three">
+      <label>Manager review status
+        <select id="report2ReviewStatus">
+          <option>Draft</option>
+          <option>Manager Reviewed</option>
+          <option>Submitted for Supervisor Review</option>
+          <option>Final</option>
+        </select>
+      </label>
+      <label>Manager name
+        <input id="report2Signature" class="report2-manager-field" placeholder="Typed manager signature">
+      </label>
+      <label>Review date
+        <input id="report2ReviewDate" type="date">
+      </label>
+    </div>
+    <label>Supervisor comments
+      <textarea id="report2SupervisorComments" placeholder="Optional supervisor comments, approval notes, or requested revisions."></textarea>
+    </label>
+  </div>
+
+  <div class="report2-actions">
+    <button class="btn" id="report2SaveDraftButton" type="button">Save Draft</button>
+    <button class="btn secondary" id="report2FinalizeButton" type="button">Finalize Report</button>
+    <button class="btn secondary" id="report2PdfButton" type="button">Download PDF</button>
+    <button class="btn secondary" id="report2ExcelButton" type="button">Download Excel</button>
+    <button class="btn secondary" id="report2PrintButton" type="button">Print</button>
+  </div>
+  <div id="report2StatusMessage" class="small" style="margin-top:10px"></div>
+
+  <div class="card" style="margin-top:18px">
+    <div class="rowflex">
+      <h3>Report History</h3>
+      <input id="report2HistorySearch" placeholder="Search saved reports" style="max-width:280px">
+    </div>
+    <div id="report2History"></div>
+  </div>
 </section>
 
 <section id="assistant" class="section"><div class="grid two"><div class="card"><h3>Ask AquaIQ</h3><textarea id="askInput" placeholder="Try: Should I add another lifeguard? What chemicals should I buy? Is water quality safe?"></textarea><div class="quickchips"><button onclick="quickAsk('Should I add another lifeguard today?')">Staffing</button><button onclick="quickAsk('What chemicals should I buy?')">Purchasing</button><button onclick="quickAsk('Is water quality safe?')">Water Safety</button><button onclick="quickAsk('What maintenance should I prioritize?')">Maintenance</button><button onclick="quickAsk('Generate an executive summary.')">Executive Summary</button></div><button class="btn" style="margin-top:10px" onclick="askAI()">Ask Ask AquaIQ</button></div><div class="card ai-card"><h3>Ask AquaIQ Response</h3><div id="assistantAnswer">Ask a question about staffing, capacity, water quality, purchasing, maintenance, or reports.</div></div></div></section>
@@ -534,6 +687,6 @@
 <button class="chat-fab" title="Ask AquaIQ">💬</button><div id="chatPop" class="chat-pop"><div class="chat-head"><b>Ask AquaIQ</b><button class="chat-close" onclick="toggleChat()">×</button></div><div class="chat-body"><textarea id="popupAsk" placeholder="Ask about staffing, water quality, purchasing, reports, or maintenance..."></textarea><div class="quickchips"><button onclick="q('popupAsk').value='Should I add another lifeguard today?';askAIPopup()">Staffing</button><button onclick="q('popupAsk').value='What chemicals should I buy?';askAIPopup()">Purchasing</button><button onclick="q('popupAsk').value='Is water quality safe?';askAIPopup()">Water</button></div><button class="btn" style="margin-top:10px" onclick="askAIPopup()">Ask</button><div id="popupAnswer" class="chat-answer">Ask a question to receive a short operational answer.</div></div></div>
 
 
-<script src="js/app.js?v=5.5.2"></script>
+<script src="js/app.js?v=5.6"></script>
 </body>
 </html>
