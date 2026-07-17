@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AquaIQPro v5.4.2 Capacity & Rotation Center</title>
+<title>AquaIQPro v5.5.2 Stable Incident Center</title>
 
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.0.0/jspdf.umd.min.js"></script>
 
-<link rel="stylesheet" href="css/styles.css?v=5.4.2">
+<link rel="stylesheet" href="css/styles.css?v=5.5.2">
 </head>
 <body>
 <div class="app">
@@ -21,6 +21,7 @@
     <button data-page="facility">Facility Overview</button>
     <button data-page="facilitycompare">Facility Comparison</button><button data-page="aiops">Daily Briefing</button>
     <button data-page="operations">Operations Center</button>
+<button data-page="incidentcenter">Incident Center</button>
     <button data-page="scenario">Scenario Planner</button>
     <button data-page="forecasting">Forecasting</button>
     <button data-page="aiops">Forecast Drivers</button>
@@ -39,7 +40,7 @@
   <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.4.1 adds facility-specific 30-minute lifeguard rotations, coverage monitoring, and full-name staffing rosters.</span></div>
 </aside>
 <main>
-  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.4.2 Capacity & Rotation Center</b> • <span class="good">System Ready</span></div></div>
+  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.5.2 Stable Incident Center</b> • <span class="good">System Ready</span></div></div>
 
   <section id="dashboard" class="section active">
   <div class="ops-hero shift-ops-hero">
@@ -333,7 +334,153 @@
 
   <section id="decisions" class="section"><div class="notice"><b>Human-in-the-loop workflow:</b> managers approve, defer, or override AI recommendations.</div><div class="card"><h3>Recommendation Review Queue</h3><div id="approvalQueue"></div></div><div class="card" style="margin-top:18px"><h3>Decision Audit Trail</h3><div id="auditTrail"></div></div></section>
 
-  <section id="reports" class="section">
+  
+<section id="incidentcenter" class="section">
+  <div class="facility-data-badge" id="incidentCenterFacility">Showing incident records for Gandy Pool</div>
+
+  <div class="incident-center-hero">
+    <div>
+      <span class="eyebrow">Facility safety and follow-up</span>
+      <h2>Incident Center</h2>
+      <p>Document incidents, assign follow-up, and track manager review without affecting the core operating dashboard.</p>
+    </div>
+    <button class="btn" id="incidentNewButton" type="button">New Incident</button>
+  </div>
+
+  <div class="incident-center-metrics">
+    <div class="metric-card">
+      <span>Open</span>
+      <b class="viz-stat-value" id="incidentMetricOpen">0</b>
+      <small>Needs follow-up</small>
+    </div>
+    <div class="metric-card">
+      <span>High priority</span>
+      <b class="viz-stat-value" id="incidentMetricHigh">0</b>
+      <small>High or critical</small>
+    </div>
+    <div class="metric-card">
+      <span>Resolved</span>
+      <b class="viz-stat-value" id="incidentMetricResolved">0</b>
+      <small>Closed records</small>
+    </div>
+    <div class="metric-card">
+      <span>Manager review</span>
+      <b class="viz-stat-value" id="incidentMetricReview">Ready</b>
+      <small id="incidentMetricReviewNote">No pending records</small>
+    </div>
+  </div>
+
+  <div class="grid two" style="margin-top:18px">
+    <div class="card">
+      <div class="rowflex">
+        <h3>Incident Log</h3>
+        <div class="incident-center-filters">
+          <select id="incidentCenterStatusFilter">
+            <option value="all">All statuses</option>
+            <option value="Open">Open</option>
+            <option value="Under Review">Under Review</option>
+            <option value="Resolved">Resolved</option>
+          </select>
+          <select id="incidentCenterSeverityFilter">
+            <option value="all">All severities</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+            <option value="Critical">Critical</option>
+          </select>
+        </div>
+      </div>
+      <div id="incidentCenterList" class="incident-center-list"></div>
+    </div>
+
+    <div class="card">
+      <h3 id="incidentCenterFormTitle">Log New Incident</h3>
+
+      <div class="grid two">
+        <label>Incident type
+          <select id="incidentCenterType">
+            <option>First Aid</option>
+            <option>Rescue</option>
+            <option>Patron Injury</option>
+            <option>Staff Injury</option>
+            <option>Weather Delay</option>
+            <option>Water Quality</option>
+            <option>Equipment</option>
+            <option>Behavioral</option>
+            <option>Other</option>
+          </select>
+        </label>
+
+        <label>Severity
+          <select id="incidentCenterSeverity">
+            <option>Low</option>
+            <option selected>Medium</option>
+            <option>High</option>
+            <option>Critical</option>
+          </select>
+        </label>
+
+        <label>Date
+          <input id="incidentCenterDate" type="date">
+        </label>
+
+        <label>Time
+          <input id="incidentCenterTime" type="time">
+        </label>
+
+        <label>Location
+          <input id="incidentCenterLocation" placeholder="Pool area or facility location">
+        </label>
+
+        <label>Lead responder
+          <input id="incidentCenterResponder" placeholder="Staff member responsible">
+        </label>
+      </div>
+
+      <label>Description
+        <textarea id="incidentCenterDescription" placeholder="Describe what happened and who was involved."></textarea>
+      </label>
+
+      <label>Immediate action
+        <textarea id="incidentCenterAction" placeholder="Document first aid, rescue response, closure, notification, or equipment isolation."></textarea>
+      </label>
+
+      <label>Follow-up required
+        <textarea id="incidentCenterFollowUp" placeholder="Document inspections, review, corrective action, or patron contact."></textarea>
+      </label>
+
+      <div class="grid two">
+        <label>Status
+          <select id="incidentCenterStatus">
+            <option>Open</option>
+            <option>Under Review</option>
+            <option>Resolved</option>
+          </select>
+        </label>
+
+        <label>Manager review
+          <select id="incidentCenterManagerReview">
+            <option>Pending</option>
+            <option>Reviewed</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="incident-center-actions">
+        <button class="btn" id="incidentCenterSaveButton" type="button">Save Incident</button>
+        <button class="btn secondary" id="incidentCenterClearButton" type="button">Clear Form</button>
+      </div>
+      <div id="incidentCenterMessage" class="small" style="margin-top:8px"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <h3>Required Follow-Up</h3>
+    <div id="incidentCenterFollowUpList"></div>
+  </div>
+</section>
+
+<section id="reports" class="section">
   <div class="notice"><b>Reports:</b> operational data is prefilled, while managers can add observations, outcomes, and shift-specific notes. Reports can be saved, reopened, printed, and downloaded as PDF or Excel.</div>
   <div class="card">
     <div class="rowflex"><div><h3>Reports</h3><p class="small">Create a manager-owned daily operating record.</p></div><span id="reportFacilityBadge" class="tag info">Gandy Pool</span></div>
@@ -387,6 +534,6 @@
 <button class="chat-fab" title="Ask AquaIQ">💬</button><div id="chatPop" class="chat-pop"><div class="chat-head"><b>Ask AquaIQ</b><button class="chat-close" onclick="toggleChat()">×</button></div><div class="chat-body"><textarea id="popupAsk" placeholder="Ask about staffing, water quality, purchasing, reports, or maintenance..."></textarea><div class="quickchips"><button onclick="q('popupAsk').value='Should I add another lifeguard today?';askAIPopup()">Staffing</button><button onclick="q('popupAsk').value='What chemicals should I buy?';askAIPopup()">Purchasing</button><button onclick="q('popupAsk').value='Is water quality safe?';askAIPopup()">Water</button></div><button class="btn" style="margin-top:10px" onclick="askAIPopup()">Ask</button><div id="popupAnswer" class="chat-answer">Ask a question to receive a short operational answer.</div></div></div>
 
 
-<script src="js/app.js?v=5.4.2"></script>
+<script src="js/app.js?v=5.5.2"></script>
 </body>
 </html>
