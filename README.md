@@ -1,3 +1,4 @@
-# AquaIQPro 5.6.3 — Full Runtime Recovery
+# AquaIQPro 5.6.4 — Page Structure Recovery
 
-Built from the exact uploaded repository.
+Corrects the malformed HTML structure that placed Capacity & Rotations and all
+later modules outside the main application page container.
