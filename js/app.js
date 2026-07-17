@@ -6,7 +6,7 @@ function demandFor(temp,rain){var d=state.demand.base;if(temp>=92)d*=1.28;else i
 function calcDemand(){state.demand.adjusted=demandFor(state.weather.temp,state.weather.rain)}function staffAvailable(){return state.staff.filter(s=>s.status==="Scheduled").length-state.callouts}function staffNeeded(d){d=d||state.demand.adjusted;return Math.max(4,Math.ceil(d/55)+state.programs.parties.length+Math.ceil(state.programs.lessons.length/2))}function waterStatus(){var c=state.water.chlorine,p=state.water.ph;if(c<1||c>4||p<7.2||p>7.8)return"Action";if(c<1.5||c>3.5||p<7.3||p>7.7)return"Watch";return"Good"}function inventoryCalculated(){return state.inventory.map(i=>Object.assign({},i,{days:Math.round(i.onHand/(i.dailyUse*(state.demand.adjusted/250)))}))}function inventoryAlerts(){return inventoryCalculated().filter(i=>i.onHand<=i.min||i.days<=7)}function highOpenWorkOrders(){return state.workOrders.filter(w=>w.priority==="High"&&w.status!=="Completed")}function incompleteHighTasks(){return state.tasks.filter(t=>!t.done&&t.priority==="High")}
 function healthScore(){var score=100;if(waterStatus()==="Watch")score-=8;if(waterStatus()==="Action")score-=22;var gap=staffNeeded()-staffAvailable();if(gap>0)score-=gap*10;if(state.weather.rain>50)score-=7;score-=inventoryAlerts().length*6;score-=state.incidents.length*3;score-=highOpenWorkOrders().length*7;score-=incompleteHighTasks().length*4;return Math.max(45,Math.min(100,score))}
 function recommendations(){var rec=[],gap=staffNeeded()-staffAvailable();if(gap>0)rec.push({id:"staff-gap",p:"High",t:"Schedule "+gap+" additional lifeguard(s) for peak demand.",why:"Forecast attendance and program load exceed available coverage."});if(waterStatus()==="Action")rec.push({id:"water-action",p:"High",t:"Correct water chemistry before peak swim periods and document retest.",why:"Current chlorine or pH is outside configured range."});if(waterStatus()==="Watch")rec.push({id:"water-watch",p:"Medium",t:"Increase water chemistry testing frequency during afternoon peak.",why:"Readings are near the edge of target range."});if(state.weather.temp>=92&&state.weather.rain<30)rec.push({id:"heat-demand",p:"Medium",t:"Prepare for high open-swim demand with hydration, shade, and extra deck coverage.",why:"High temperature and low rain probability increase demand."});inventoryAlerts().forEach(i=>rec.push({id:"buy-"+i.item,p:i.onHand<=i.min?"High":"Medium",t:"Purchase "+i.item+"; projected supply is "+i.days+" day(s).",why:"Inventory is below minimum or projected below safety stock."}));highOpenWorkOrders().forEach(w=>rec.push({id:"wo-"+w.asset,p:"High",t:"Prioritize "+w.asset+" work order before peak operations.",why:w.desc}));if(incompleteHighTasks().length)rec.push({id:"tasks-high",p:"High",t:"Complete "+incompleteHighTasks().length+" high-priority daily task(s).",why:"Incomplete high-priority tasks reduce readiness."});if(state.programs.team.reduce((s,x)=>s+x.lanes,0)>=5)rec.push({id:"lane-pressure",p:"Medium",t:"Manage swim team lane capacity pressure and update public lane messaging.",why:"Swim team reserved five or more lanes."});if(!rec.length)rec.push({id:"normal",p:"Low",t:"No critical issues. Continue routine monitoring.",why:"All major indicators are within configured limits."});return rec}
-function showToast(msg){var t=q("toast");if(!t)return;t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1700)}function updateSaveIndicator(msg){var el=q("saveIndicator");if(el)el.textContent=msg||("Last saved: "+new Date().toLocaleTimeString())}function saveState(show){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));updateSaveIndicator();if(show)showToast("AquaIQPro data saved")}catch(e){showToast("Save failed")}}function loadState(){try{var saved=localStorage.getItem(STORAGE_KEY);if(saved){var parsed=JSON.parse(saved);if(parsed&&parsed.facility)state=parsed}}catch(e){}}function exportData(){saveState(false);var payload=JSON.stringify({exportedAt:new Date().toISOString(),app:"AquaIQPro",version:"v4.3 Live Lakeland Weather",state:state},null,2),blob=new Blob([payload],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="AquaIQPro_Backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Backup exported")}function importData(event){var file=event.target.files&&event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var parsed=JSON.parse(e.target.result),imported=parsed.state||parsed;if(!imported.facility)throw new Error("Invalid file");state=imported;saveState(false);hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Backup imported")}catch(err){showToast("Import failed")}};reader.readAsText(file)}function resetDemoData(){if(!confirm("Reset AquaIQPro to default demo data?"))return;state=JSON.parse(DEFAULT_STATE_JSON);localStorage.removeItem(STORAGE_KEY);hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Demo data reset");updateSaveIndicator("Autosave ready")}
+function showToast(msg){var t=q("toast");if(!t)return;t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1700)}function updateSaveIndicator(msg){var el=q("saveIndicator");if(el)el.textContent=msg||("Last saved: "+new Date().toLocaleTimeString())}function saveState(show){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));updateSaveIndicator();if(show)showToast("AquaIQPro data saved")}catch(e){showToast("Save failed")}}function loadState(){try{var saved=localStorage.getItem(STORAGE_KEY);if(saved){var parsed=JSON.parse(saved);if(parsed&&parsed.facility)state=parsed}}catch(e){}}function exportData(){saveState(false);var payload=JSON.stringify({exportedAt:new Date().toISOString(),app:"AquaIQPro",version:"v5.3 Facility Selection & Comparison",state:state},null,2),blob=new Blob([payload],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="AquaIQPro_Backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Backup exported")}function importData(event){var file=event.target.files&&event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var parsed=JSON.parse(e.target.result),imported=parsed.state||parsed;if(!imported.facility)throw new Error("Invalid file");state=imported;saveState(false);hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Backup imported")}catch(err){showToast("Import failed")}};reader.readAsText(file)}function resetDemoData(){if(!confirm("Reset AquaIQPro to default demo data?"))return;state=JSON.parse(DEFAULT_STATE_JSON);localStorage.removeItem(STORAGE_KEY);hydrateInputs();render();renderCapacity();generateReport("Daily Operations Report");showToast("Demo data reset");updateSaveIndicator("Autosave ready")}
 function hydrateInputs(){if(q("tempInput"))q("tempInput").value=state.weather.temp;if(q("rainInput"))q("rainInput").value=state.weather.rain;if(q("baseDemandInput"))q("baseDemandInput").value=state.demand.base;if(q("calloutInput"))q("calloutInput").value=state.callouts;if(q("chlorineInput"))q("chlorineInput").value=state.water.chlorine;if(q("phInput"))q("phInput").value=state.water.ph;if(q("alkInput"))q("alkInput").value=state.water.alk;if(q("scenarioTemp")){q("scenarioTemp").value=state.weather.temp;q("scenarioRain").value=state.weather.rain;q("scenarioExtraDemand").value=0;q("scenarioCallouts").value=0}}
 function updateInputs(reason){state.weather.temp=Number(q("tempInput").value||state.weather.temp);state.weather.rain=Number(q("rainInput").value||state.weather.rain);state.demand.base=Number(q("baseDemandInput").value||state.demand.base);state.callouts=Number(q("calloutInput").value||state.callouts);state.water.chlorine=Number(q("chlorineInput").value||state.water.chlorine);state.water.ph=Number(q("phInput").value||state.water.ph);state.water.alk=Number(q("alkInput").value||state.water.alk);state.audit.unshift(new Date().toLocaleString()+": "+reason);render();saveState(false)}
 
@@ -375,7 +375,33 @@ function ensureExtendedState(){
   if(!Array.isArray(state.reportHistory))state.reportHistory=[];
   reportHistoryData=state.reportHistory;
   if(!state.shiftNotes)state.shiftNotes={gandy:{text:"",reviewed:false},simpson:{text:"",reviewed:false}};
+  if(typeof state.managerName!=="string")state.managerName="";
 }
+
+function renderManagerIdentity(){
+  var name=(state.managerName||"").trim();
+  var hour=new Date().getHours();
+  var greeting=hour<12?"Good morning":hour<17?"Good afternoon":"Good evening";
+  if(q("personalGreeting"))q("personalGreeting").textContent=greeting+(name?", "+name:"");
+  if(q("personalNameLine"))q("personalNameLine").textContent=name
+    ?"Your saved manager profile is active."
+    :"Enter your name to personalize the shift workspace and reports.";
+  if(q("managerNameInput"))q("managerNameInput").value=name;
+  if(q("reportManager") && name && !q("reportManager").value.trim())q("reportManager").value=name;
+}
+function saveManagerIdentity(){
+  var input=q("managerNameInput");
+  if(!input)return;
+  var name=input.value.trim();
+  state.managerName=name;
+  if(q("reportManager"))q("reportManager").value=name;
+  state.audit.unshift(new Date().toLocaleString()+": Manager name "+(name?"saved as "+name:"cleared"));
+  saveState(false);
+  renderManagerIdentity();
+  populateReportFields();
+  showToast(name?"Manager name saved":"Manager name cleared");
+}
+
 function applyFacilityProfile(id,initial){
   if(!FACILITY_PROFILES[id])id="gandy";
   activeFacilityId=id;
@@ -389,7 +415,9 @@ function applyFacilityProfile(id,initial){
   hydrateInputs();
   render();
   renderFacilityProfile();
+  renderFacilityComparison();
   renderShiftWorkspace();
+  renderManagerIdentity();
   populateReportFields();
   generateReport("Daily Operations Report");
   saveState(false);
@@ -430,14 +458,20 @@ function facilityComparisonRows(){
 
 function renderFacilityComparison(){
   var selected=activeFacilityId;
+  var selectedProfile=activeFacility();
   var ids=["gandy","simpson"];
+
+  if(q("comparisonSelectedFacility"))q("comparisonSelectedFacility").textContent=selectedProfile.name;
+  if(q("comparisonSelectedFacilityNote"))q("comparisonSelectedFacilityNote").textContent=
+    "The "+selectedProfile.name+" column, planning focus, and facility cards are synchronized with the main facility dropdown.";
+
   if(q("facilityCompareCards")){
     q("facilityCompareCards").innerHTML=ids.map(function(id){
       var p=FACILITY_PROFILES[id],r=FACILITY_REFERENCE_DATA[id];
-      var selectedClass=id===selected?" selected":"";
-      return '<div class="facility-compare-card'+selectedClass+'">'+
+      var isSelected=id===selected;
+      return '<div class="facility-compare-card'+(isSelected?' selected':'')+'">'+
         '<div class="compare-head"><div><h3>'+p.name+'</h3><p class="small">'+r.operatingPattern+'</p></div>'+
-        '<span class="tag '+(id===selected?"low":"info")+'">'+(id===selected?"Selected":"Available")+'</span></div>'+
+        '<span class="tag '+(isSelected?'low':'info')+'">'+(isSelected?'Selected':'Compare')+'</span></div>'+
         '<div class="compare-metrics">'+
           '<div class="compare-metric"><span>Base demand</span><b>'+p.baseDemand+'</b></div>'+
           '<div class="compare-metric"><span>Planning capacity</span><b>'+p.capacity+'</b></div>'+
@@ -446,29 +480,48 @@ function renderFacilityComparison(){
         '</div>'+
         '<div class="facility-difference">'+r.comparisonNote+'</div>'+
         '<ul class="compare-list">'+r.programs.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul>'+
-        '<button class="btn secondary facility-select-card" type="button" data-facility-card="'+id+'" style="margin-top:12px">Use '+p.name+'</button>'+
+        '<button class="btn secondary facility-select-card" type="button" data-facility-card="'+id+'" '+(isSelected?'disabled':'')+' style="margin-top:12px">'+
+          (isSelected?'Currently Managing':'Switch to '+p.name)+
+        '</button>'+
       '</div>';
     }).join("");
+
     q("facilityCompareCards").querySelectorAll("[data-facility-card]").forEach(function(btn){
-      btn.addEventListener("click",function(){applyFacilityProfile(btn.dataset.facilityCard,false);showPage("dashboard")});
+      btn.addEventListener("click",function(){
+        if(btn.disabled)return;
+        applyFacilityProfile(btn.dataset.facilityCard,false);
+        showToast(activeFacility().name+" is now the active facility");
+      });
     });
   }
+
   if(q("facilityComparisonTable")){
     q("facilityComparisonTable").innerHTML=facilityComparisonRows().map(function(row){
-      return "<tr><td><b>"+row[0]+"</b></td><td>"+row[1]+"</td><td>"+row[2]+"</td><td>"+row[3]+"</td></tr>";
+      return "<tr><td><b>"+row[0]+"</b></td>"+
+        '<td class="'+(selected==="gandy"?"selected-column":"")+'">'+row[1]+"</td>"+
+        '<td class="'+(selected==="simpson"?"selected-column":"")+'">'+row[2]+"</td>"+
+        "<td>"+row[3]+"</td></tr>";
     }).join("");
   }
+
+  if(q("gandyCompareHeader"))q("gandyCompareHeader").classList.toggle("selected-column",selected==="gandy");
+  if(q("simpsonCompareHeader"))q("simpsonCompareHeader").classList.toggle("selected-column",selected==="simpson");
+
   if(q("facilityDifferenceExplanation")){
     q("facilityDifferenceExplanation").innerHTML=
-      '<div class="facility-difference"><b>Gandy:</b> '+FACILITY_REFERENCE_DATA.gandy.comparisonNote+'</div>'+
-      '<div class="facility-difference"><b>Simpson:</b> '+FACILITY_REFERENCE_DATA.simpson.comparisonNote+'</div>';
+      '<div class="facility-difference'+(selected==="gandy"?' selected-planning-focus':'')+'"><b>Gandy:</b> '+FACILITY_REFERENCE_DATA.gandy.comparisonNote+'</div>'+
+      '<div class="facility-difference'+(selected==="simpson"?' selected-planning-focus':'')+'"><b>Simpson:</b> '+FACILITY_REFERENCE_DATA.simpson.comparisonNote+'</div>';
   }
+
   if(q("facilityPlanningFocus")){
     var p=activeFacility(),r=FACILITY_REFERENCE_DATA[p.id];
     var focus=p.id==="gandy"
       ?["Peak-period staffing and lane allocation","Year-round chemical and equipment readiness","Swim-team and program coordination","Higher inventory par levels"]
       :["Seasonal opening and closing readiness","Pool liner, deck, and seasonal equipment inspection","Weather-sensitive attendance planning","Lower but carefully timed inventory par levels"];
-    q("facilityPlanningFocus").innerHTML="<p><b>Selected: "+p.name+"</b></p><ul>"+focus.map(function(x){return"<li>"+x+"</li>"}).join("")+"</ul>";
+    q("facilityPlanningFocus").innerHTML=
+      '<div class="selected-planning-focus"><p><b>Currently managing: '+p.name+'</b></p>'+
+      '<ul>'+focus.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul></div>'+
+      '<div class="facility-sync-note">Changing the facility dropdown updates this focus, the highlighted comparison column, reports, schedule, capacity, and facility profile.</div>';
   }
 }
 
@@ -478,7 +531,7 @@ function chooseRecommendedFacility(){
   var recommended=gScore>=sScore?"gandy":"simpson";
   applyFacilityProfile(recommended,false);
   renderFacilityComparison();
-  showToast(FACILITY_PROFILES[recommended].name+" selected based on current planning demand");
+  showToast(FACILITY_PROFILES[recommended].name+" selected as the higher-demand planning facility");
 }
 
 function renderFacilityProfile(){
@@ -500,6 +553,7 @@ function renderFacilityProfile(){
   if(q("facilityBaseDemandInput"))q("facilityBaseDemandInput").value=p.baseDemand;
   if(q("facilityTypicalGuardsInput"))q("facilityTypicalGuardsInput").value=p.typicalGuards;
   if(q("reportFacilityBadge"))q("reportFacilityBadge").textContent=p.name;
+  renderManagerIdentity();
 }
 function saveFacilityAssumptions(){
   var p=activeFacility();
@@ -693,7 +747,10 @@ function init(){loadState();ensureExtendedState();hydrateInputs();document.query
 var refreshWeatherButton=q("refreshWeatherButton");if(refreshWeatherButton)refreshWeatherButton.addEventListener("click",function(){loadLiveWeather(true)});
 var refreshWeatherPageButton=q("refreshWeatherPageButton");if(refreshWeatherPageButton)refreshWeatherPageButton.addEventListener("click",function(){loadLiveWeather(true)});
 
-var facilitySelect=q("facilitySelect");if(facilitySelect)facilitySelect.addEventListener("change",function(){applyFacilityProfile(facilitySelect.value,false)});
+var facilitySelect=q("facilitySelect");if(facilitySelect)facilitySelect.addEventListener("change",function(){applyFacilityProfile(facilitySelect.value,false);showToast(activeFacility().name+" selected")});
+var saveManagerNameButton=q("saveManagerNameButton");if(saveManagerNameButton)saveManagerNameButton.addEventListener("click",saveManagerIdentity);
+var managerNameInput=q("managerNameInput");if(managerNameInput)managerNameInput.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();saveManagerIdentity()}});
+var returnToSelectedFacilityButton=q("returnToSelectedFacilityButton");if(returnToSelectedFacilityButton)returnToSelectedFacilityButton.addEventListener("click",function(){showPage("dashboard")});
 var recommendedFacilityButton=q("useRecommendedFacilityButton");if(recommendedFacilityButton)recommendedFacilityButton.addEventListener("click",chooseRecommendedFacility);
 var saveFacility=q("saveFacilityProfile");if(saveFacility)saveFacility.addEventListener("click",saveFacilityAssumptions);
 
@@ -704,4 +761,4 @@ var pdfBtn=q("downloadPdfButton");if(pdfBtn)pdfBtn.addEventListener("click",down
 var excelBtn=q("downloadExcelButton");if(excelBtn)excelBtn.addEventListener("click",downloadReportExcel);
 var printBtn=q("printReportButton");if(printBtn)printBtn.addEventListener("click",printManagerReport);
 
-var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",function(e){e.preventDefault();toggleChat()});var begin=q("beginDayButton");if(begin)begin.addEventListener("click",beginDayReview);applyFacilityProfile(state.activeFacilityId||"gandy",true);renderCapacity();renderFacilityProfile();renderFacilityComparison();renderShiftWorkspace();renderShiftOperationsCenter();bindShiftQuickActions();populateReportFields();renderReportHistory();updateReportPreview();runScenario();loadLiveWeather(false);weatherRefreshTimer=setInterval(function(){loadLiveWeather(false)},WEATHER_REFRESH_MS)}init();
+var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",function(e){e.preventDefault();toggleChat()});var begin=q("beginDayButton");if(begin)begin.addEventListener("click",beginDayReview);applyFacilityProfile(state.activeFacilityId||"gandy",true);renderCapacity();renderFacilityProfile();renderFacilityComparison();renderShiftWorkspace();renderManagerIdentity();renderShiftOperationsCenter();bindShiftQuickActions();populateReportFields();renderReportHistory();updateReportPreview();runScenario();loadLiveWeather(false);weatherRefreshTimer=setInterval(function(){loadLiveWeather(false)},WEATHER_REFRESH_MS)}init();
