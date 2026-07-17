@@ -25,7 +25,7 @@ function showToast(msg){var t=q("toast");if(!t)return;t.textContent=msg;t.classL
   }catch(e){
     console.warn("Saved data could not be loaded; using stable defaults.",e);
   }
-}function exportData(){saveState(false);var payload=JSON.stringify({exportedAt:new Date().toISOString(),app:"AquaIQPro",version:"v5.6.3 Full Runtime Recovery",state:state},null,2),blob=new Blob([payload],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="AquaIQPro_Backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Backup exported")}function importData(event){var file=event.target.files&&event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var parsed=JSON.parse(e.target.result),imported=parsed.state||parsed;if(!imported.facility)throw new Error("Invalid file");state=imported;ensureExtendedState();saveState(false);hydrateInputs();render();renderCapacity();showToast("Backup imported")}catch(err){showToast("Import failed")}};reader.readAsText(file)}function resetDemoData(){if(!confirm("Reset AquaIQPro to default demo data?"))return;state=JSON.parse(DEFAULT_STATE_JSON);localStorage.removeItem(STORAGE_KEY);ensureExtendedState();hydrateInputs();render();renderCapacity();showToast("Demo data reset");updateSaveIndicator("Autosave ready")}
+}function exportData(){saveState(false);var payload=JSON.stringify({exportedAt:new Date().toISOString(),app:"AquaIQPro",version:"v5.6.4 Page Structure Recovery",state:state},null,2),blob=new Blob([payload],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="AquaIQPro_Backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Backup exported")}function importData(event){var file=event.target.files&&event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var parsed=JSON.parse(e.target.result),imported=parsed.state||parsed;if(!imported.facility)throw new Error("Invalid file");state=imported;ensureExtendedState();saveState(false);hydrateInputs();render();renderCapacity();showToast("Backup imported")}catch(err){showToast("Import failed")}};reader.readAsText(file)}function resetDemoData(){if(!confirm("Reset AquaIQPro to default demo data?"))return;state=JSON.parse(DEFAULT_STATE_JSON);localStorage.removeItem(STORAGE_KEY);ensureExtendedState();hydrateInputs();render();renderCapacity();showToast("Demo data reset");updateSaveIndicator("Autosave ready")}
 function hydrateInputs(){if(q("tempInput"))q("tempInput").value=state.weather.temp;if(q("rainInput"))q("rainInput").value=state.weather.rain;if(q("baseDemandInput"))q("baseDemandInput").value=state.demand.base;if(q("calloutInput"))q("calloutInput").value=state.callouts;if(q("chlorineInput"))q("chlorineInput").value=state.water.chlorine;if(q("phInput"))q("phInput").value=state.water.ph;if(q("alkInput"))q("alkInput").value=state.water.alk;if(q("scenarioTemp")){q("scenarioTemp").value=state.weather.temp;q("scenarioRain").value=state.weather.rain;q("scenarioExtraDemand").value=0;q("scenarioCallouts").value=0}}
 function updateInputs(reason){state.weather.temp=Number(q("tempInput").value||state.weather.temp);state.weather.rain=Number(q("rainInput").value||state.weather.rain);state.demand.base=Number(q("baseDemandInput").value||state.demand.base);state.callouts=Number(q("calloutInput").value||state.callouts);state.water.chlorine=Number(q("chlorineInput").value||state.water.chlorine);state.water.ph=Number(q("phInput").value||state.water.ph);state.water.alk=Number(q("alkInput").value||state.water.alk);state.audit.unshift(new Date().toLocaleString()+": "+reason);render();saveState(false)}
 
@@ -1397,7 +1397,11 @@ var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",
     }
   }
 
+  var incidentCenterBound=false;
+
   function bindIncidentCenterIsolated(){
+    if(incidentCenterBound)return;
+    incidentCenterBound=true;
     ["incidentCenterStatusFilter","incidentCenterSeverityFilter"].forEach(function(id){
       var element=incidentEl(id);
       if(element)element.addEventListener("change",renderIncidentCenterIsolated);
@@ -1431,7 +1435,11 @@ var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",
     console.info("AquaIQPro v5.5.2 isolated Incident Center loaded");
   }
 
-  incidentCenterIsolatedInit();
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",incidentCenterIsolatedInit,{once:true});
+  }else{
+    incidentCenterIsolatedInit();
+  }
 })();
 
 /* AquaIQPro 5.6 Report Center 2.0 isolated module */
