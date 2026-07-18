@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AquaIQPro v5.7.1 Staffing Architecture</title>
+<title>AquaIQPro v5.7.2 Workforce & Rotation Workflows</title>
 
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.0.0/jspdf.umd.min.js"></script>
 
-<link rel="stylesheet" href="css/styles.css?v=5.7.1">
+<link rel="stylesheet" href="css/styles.css?v=5.7.2">
 </head>
 <body>
 <div class="app">
@@ -55,10 +55,10 @@
     <button data-page="reports">Reports</button>
     <button data-page="assistant">Ask AquaIQ</button>
   </nav>
-  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.7.1 separates Capacity and Rotations as sibling work areas while preserving their shared staffing logic and every existing workflow.</span></div>
+  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.7.2 completes workforce requests, availability, certifications, directory profiles, and publishable rotation workflows.</span></div>
 </aside>
 <main>
-  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.7.1 Staffing Architecture</b> • <span class="good">System Ready</span></div></div>
+  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.7.2 Workforce & Rotation Workflows</b> • <span class="good">System Ready</span></div></div>
 
   <section id="dashboard" class="section active">
   <div class="ops-hero shift-ops-hero">
@@ -291,13 +291,77 @@
     </details>
 
     <details class="module-panel" id="staffRequestsPanel">
-      <summary><span>Requests & Availability</span><small>Planned home for time off, shift swaps, and availability</small></summary>
-      <div class="module-panel-body"><div class="grid three"><div class="card"><h3>Time-Off Requests</h3><p class="small">Manager approval workflow will be added here without creating a separate page.</p><span class="tag info">Architecture prepared</span></div><div class="card"><h3>Shift Swaps</h3><p class="small">Lifeguards will submit swaps; managers will approve them here.</p><span class="tag info">Architecture prepared</span></div><div class="card"><h3>Availability</h3><p class="small">Recurring and temporary availability will connect directly to scheduling.</p><span class="tag info">Architecture prepared</span></div></div></div>
+      <summary><span>Requests & Availability</span><small>Time off, shift swaps, and weekly availability</small></summary>
+      <div class="module-panel-body">
+        <div class="workforce-metrics">
+          <div class="metric-card"><span>Pending requests</span><b class="viz-stat-value" id="workforcePendingCount">0</b><small>Awaiting manager review</small></div>
+          <div class="metric-card"><span>Available today</span><b class="viz-stat-value" id="workforceAvailableToday">0</b><small>Based on weekly availability</small></div>
+          <div class="metric-card"><span>Coverage impacts</span><b class="viz-stat-value" id="workforceCoverageImpact">0</b><small>Approved requests affecting schedule</small></div>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <h3>Submit Staff Request</h3>
+            <div class="form-grid two">
+              <label>Staff member<select id="requestStaff"></select></label>
+              <label>Request type<select id="requestType"><option>Time Off</option><option>Shift Swap</option><option>Availability Change</option></select></label>
+              <label>Start date<input id="requestStart" type="date"></label>
+              <label>End date<input id="requestEnd" type="date"></label>
+              <label class="workforce-full">Swap with / replacement<select id="requestReplacement"><option value="">Not selected</option></select></label>
+              <label class="workforce-full">Reason<textarea id="requestReason" placeholder="Reason, coverage notes, or requested schedule change"></textarea></label>
+            </div>
+            <button class="btn" id="submitStaffRequest" type="button">Submit Request</button>
+            <div id="requestFormStatus" class="small workforce-status"></div>
+          </div>
+          <div class="card">
+            <div class="rowflex"><div><h3>Manager Request Queue</h3><p class="small">Approve or deny requests. Approved time off updates the working schedule status.</p></div><select id="requestStatusFilter" aria-label="Filter staff requests"><option value="all">All</option><option>Pending</option><option>Approved</option><option>Denied</option></select></div>
+            <div id="staffRequestList" class="workforce-list"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:18px">
+          <div class="rowflex"><div><h3>Weekly Availability</h3><p class="small">Set recurring availability for each lifeguard. Changes save automatically.</p></div><select id="availabilityStaff"></select></div>
+          <div id="availabilityGrid" class="availability-grid"></div>
+          <label style="margin-top:12px">Availability notes<textarea id="availabilityNotes" placeholder="School schedule, seasonal restrictions, preferred hours, or temporary limits"></textarea></label>
+          <button class="btn secondary" id="saveAvailability" type="button">Save Availability</button>
+          <div id="availabilityStatus" class="small workforce-status"></div>
+        </div>
+      </div>
     </details>
 
     <details class="module-panel" id="staffCredentialsPanel">
-      <summary><span>Certifications & Staff Directory</span><small>Planned workforce compliance and profile tools</small></summary>
-      <div class="module-panel-body"><div class="grid two"><div class="card"><h3>Certification Tracking</h3><p class="small">Future alerts will identify expiring lifeguard, CPR, first-aid, and instructor credentials.</p><span class="tag info">Architecture prepared</span></div><div class="card"><h3>Staff Directory</h3><p class="small">Staff profiles will support manager permissions and the 🛟 Lifeguard role view.</p><span class="tag info">Architecture prepared</span></div></div></div>
+      <summary><span>Certifications & Staff Directory</span><small>Credential compliance and operational staff profiles</small></summary>
+      <div class="module-panel-body">
+        <div class="workforce-metrics">
+          <div class="metric-card"><span>Active profiles</span><b class="viz-stat-value" id="directoryProfileCount">0</b><small>Facility staff directory</small></div>
+          <div class="metric-card"><span>Expiring soon</span><b class="viz-stat-value" id="certExpiringCount">0</b><small>Within 30 days</small></div>
+          <div class="metric-card"><span>Expired</span><b class="viz-stat-value" id="certExpiredCount">0</b><small>Manager action required</small></div>
+        </div>
+        <div class="grid two">
+          <div class="card">
+            <h3>Certification Tracker</h3>
+            <div class="form-grid two">
+              <label>Staff member<select id="certStaff"></select></label>
+              <label>Certification<select id="certType"><option>Lifeguard</option><option>CPR/AED</option><option>First Aid</option><option>Water Safety Instructor</option><option>Lifeguard Instructor</option><option>Certified Pool Operator</option></select></label>
+              <label>Issued<input id="certIssued" type="date"></label>
+              <label>Expires<input id="certExpires" type="date"></label>
+            </div>
+            <button class="btn" id="addCertification" type="button">Add Certification</button>
+            <div id="certificationList" class="workforce-list" style="margin-top:14px"></div>
+          </div>
+          <div class="card">
+            <h3>Staff Directory</h3>
+            <div class="form-grid two">
+              <label>Name<input id="directoryName" placeholder="Staff name"></label>
+              <label>Role<select id="directoryRole"><option>Lifeguard</option><option>Senior Lifeguard</option><option>Head Lifeguard</option><option>Deck Supervisor</option><option>Pool Manager</option><option>Instructor</option></select></label>
+              <label>Phone<input id="directoryPhone" placeholder="Phone"></label>
+              <label>Email<input id="directoryEmail" type="email" placeholder="Email"></label>
+              <label>Emergency contact<input id="directoryEmergencyName" placeholder="Contact name"></label>
+              <label>Emergency phone<input id="directoryEmergencyPhone" placeholder="Contact phone"></label>
+            </div>
+            <button class="btn" id="saveDirectoryProfile" type="button">Add Staff Profile</button>
+            <div id="directoryList" class="directory-grid"></div>
+          </div>
+        </div>
+      </div>
     </details>
   </section>
 
@@ -313,7 +377,7 @@
   <div class="rotation-summary-grid"><div class="metric-card"><span>Guards available</span><b class="viz-stat-value" id="rotationGuardCount">--</b><small>Scheduled and available</small></div><div class="metric-card"><span>Active positions</span><b class="viz-stat-value" id="rotationPositionCount">--</b><small>Deck and pool assignments</small></div><div class="metric-card"><span>Rotation interval</span><b class="viz-stat-value">30 min</b><small>Automatic schedule blocks</small></div><div class="metric-card"><span>Coverage status</span><b class="viz-stat-value" id="rotationCoverageStatus">--</b><small id="rotationCoverageNote">Checking schedule</small></div></div>
   <div class="card rotation-alert-card"><div><h3 id="rotationAlertTitle">Rotation check</h3><p id="rotationAlertText">Generate a schedule to review coverage.</p></div><span class="tag info" id="rotationAlertBadge">Pending</span></div>
   <div class="rotation-legend"><span><i class="rotation-key active"></i> Active position</span><span><i class="rotation-key relief"></i> Relief / roaming</span><span><i class="rotation-key break"></i> Scheduled break</span><span><i class="rotation-key unavailable"></i> Unavailable</span></div>
-  <div class="rotation-board-wrap"><div id="rotationBoard" class="rotation-board" aria-live="polite"></div></div>
+  <div class="rotation-board-actions"><button class="btn" id="publishRotationButton" type="button">Publish Rotation</button><button class="btn secondary" id="resetRotationButton" type="button">Reset Automatic Assignments</button><span class="small" id="rotationPublishStatus">Draft schedule</span></div><div class="rotation-board-wrap"><div id="rotationBoard" class="rotation-board" aria-live="polite"></div></div>
   <div class="grid two" style="margin-top:18px"><div class="card"><h3>Position Configuration</h3><div id="rotationPositionsEditor"></div><button class="btn secondary" id="addRotationPositionButton" type="button">Add Position</button></div><div class="card"><h3>Rotation Notes</h3><textarea id="rotationNotes" placeholder="Document substitutions, heat precautions, training assignments, or changes made during the shift."></textarea><button class="btn" id="saveRotationNotesButton" type="button">Save Rotation Notes</button><div id="rotationNotesStatus" class="small" style="margin-top:8px"></div></div></div>
 
     </div>
@@ -736,6 +800,6 @@
 <button class="chat-fab" title="Ask AquaIQ">💬</button><div id="chatPop" class="chat-pop"><div class="chat-head"><b>Ask AquaIQ</b><button class="chat-close" onclick="toggleChat()">×</button></div><div class="chat-body"><textarea id="popupAsk" placeholder="Ask about staffing, water quality, purchasing, reports, or maintenance..."></textarea><div class="quickchips"><button onclick="q('popupAsk').value='Should I add another lifeguard today?';askAIPopup()">Staffing</button><button onclick="q('popupAsk').value='What chemicals should I buy?';askAIPopup()">Purchasing</button><button onclick="q('popupAsk').value='Is water quality safe?';askAIPopup()">Water</button></div><button class="btn" style="margin-top:10px" onclick="askAIPopup()">Ask</button><div id="popupAnswer" class="chat-answer">Ask a question to receive a short operational answer.</div></div></div>
 
 
-<script src="js/app.js?v=5.7.1"></script>
+<script src="js/app.js?v=5.7.2"></script>
 </body>
 </html>

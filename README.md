@@ -1,10 +1,18 @@
-# AquaIQPro v5.7.1 — Staffing Architecture
+# AquaIQPro v5.7.2 — Workforce & Rotation Workflows
 
-Sprint 5.7B preserves all existing functionality while reorganizing Staffing, Capacity, and Rotations.
+This sprint completes the Staffing and Rotations work areas while preserving all existing AquaIQPro functionality.
 
-## Changes
-- Staffing now uses expandable work areas.
-- Capacity and Rotations are separate sibling navigation choices within the same Staffing & Rotations group.
-- Capacity and Rotations continue sharing the same staffing and safety calculations.
-- Workforce architecture is prepared for time-off requests, shift swaps, availability, certifications, staff profiles, and the future Lifeguard role.
-- No working workflow, calculation, saved-data key, or page was removed.
+## Added
+- Time-off, shift-swap, and availability-change request workflow
+- Manager approval and denial queue
+- Weekly lifeguard availability editor
+- Certification tracking with expiration warnings
+- Lightweight operational staff directory
+- Manual rotation assignment controls
+- Rotation conflict and unfilled-position detection
+- Publish and reset controls for rotation schedules
+
+## Safety
+- Existing storage key and current feature set remain intact
+- Workforce information is stored by facility
+- Capacity remains a separate sibling work area under Staffing & Rotations
