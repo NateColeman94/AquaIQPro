@@ -603,3 +603,18 @@ body{
   #nav .nav-group{grid-column:span 2}
   #nav .nav-group-items{grid-template-columns:1fr}
 }
+
+
+/* Sprint 5.7B: staffing architecture and sibling capacity/rotation work areas */
+.module-intro{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:18px}
+.module-intro h2{margin:3px 0 5px}.module-intro p{margin:0;color:var(--muted)}
+.role-readiness{display:inline-flex;align-items:center;white-space:nowrap;padding:8px 12px;border-radius:999px;background:rgba(14,116,144,.10);color:var(--primary);font-weight:700;font-size:.85rem}
+.module-panel{border:1px solid var(--border);border-radius:16px;background:var(--card);margin:0 0 16px;overflow:hidden}
+.module-panel>summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 18px;font-weight:800}
+.module-panel>summary::-webkit-details-marker{display:none}
+.module-panel>summary span:before{content:'▸';display:inline-block;margin-right:9px;transition:transform .2s ease;color:var(--primary)}
+.module-panel[open]>summary span:before{transform:rotate(90deg)}
+.module-panel>summary small{font-weight:500;color:var(--muted);text-align:right}
+.module-panel[open]>summary{border-bottom:1px solid var(--border);background:rgba(14,116,144,.045)}
+.module-panel-body{padding:18px}
+@media(max-width:720px){.module-intro{flex-direction:column}.module-panel>summary{align-items:flex-start;flex-direction:column}.module-panel>summary small{text-align:left}.role-readiness{white-space:normal}}
