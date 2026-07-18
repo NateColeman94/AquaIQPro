@@ -1,14 +1,10 @@
-# AquaIQPro v5.7.0 — Architecture Foundation
+# AquaIQPro v5.7.1 — Staffing Architecture
 
-Sprint 5.7A introduces the first low-risk architecture refactor.
+Sprint 5.7B preserves all existing functionality while reorganizing Staffing, Capacity, and Rotations.
 
 ## Changes
-- Renamed **Today’s Shift** to **Dashboard**.
-- Added a grouped **Facilities** navigation area.
-- Kept **Facility Overview** and **Facility Comparison** as separate sibling options.
-- Added direct facility shortcuts for **Gandy Pool** and **Simpson Park Pool**.
-- Grouped **Staffing** and **Capacity & Rotations** under **Staffing & Rotations**.
-- Preserved all existing pages, calculations, storage keys, reports, buttons, and workflows.
-- Added a reusable `showPage()` router so quick actions and navigation share the same behavior.
-
-No functional page was deleted in this sprint.
+- Staffing now uses expandable work areas.
+- Capacity and Rotations are separate sibling navigation choices within the same Staffing & Rotations group.
+- Capacity and Rotations continue sharing the same staffing and safety calculations.
+- Workforce architecture is prepared for time-off requests, shift swaps, availability, certifications, staff profiles, and the future Lifeguard role.
+- No working workflow, calculation, saved-data key, or page was removed.

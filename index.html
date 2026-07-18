@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AquaIQPro v5.7.0 Architecture Foundation</title>
+<title>AquaIQPro v5.7.1 Staffing Architecture</title>
 
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.0.0/jspdf.umd.min.js"></script>
 
-<link rel="stylesheet" href="css/styles.css?v=5.7.0">
+<link rel="stylesheet" href="css/styles.css?v=5.7.1">
 </head>
 <body>
 <div class="app">
@@ -41,8 +41,9 @@
     <details class="nav-group" open>
       <summary>👥 Staffing &amp; Rotations</summary>
       <div class="nav-group-items">
-        <button data-page="staffing" data-title="Staffing">Staffing</button>
-        <button data-page="capacity" data-title="Capacity &amp; Rotations">Capacity &amp; Rotations</button>
+        <button data-page="staffing" data-title="Staffing" data-focus="staffSchedulePanel">Staffing</button>
+        <button data-page="capacity" data-title="Capacity" data-focus="capacityPanel">Capacity</button>
+        <button data-page="capacity" data-title="Rotations" data-focus="rotationPanel">Rotations</button>
       </div>
     </details>
 
@@ -54,10 +55,10 @@
     <button data-page="reports">Reports</button>
     <button data-page="assistant">Ask AquaIQ</button>
   </nav>
-  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.7.0 introduces grouped navigation while preserving every existing workflow and data model.</span></div>
+  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.7.1 separates Capacity and Rotations as sibling work areas while preserving their shared staffing logic and every existing workflow.</span></div>
 </aside>
 <main>
-  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.7.0 Architecture Foundation</b> • <span class="good">System Ready</span></div></div>
+  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.7.1 Staffing Architecture</b> • <span class="good">System Ready</span></div></div>
 
   <section id="dashboard" class="section active">
   <div class="ops-hero shift-ops-hero">
@@ -277,12 +278,37 @@
 
 <section id="water" class="section"><div id="waterFacilityContext" class="facility-data-badge"></div><div class="grid two"><div class="card"><h3>Editable Water Test Readings</h3><div class="form-grid three"><label>Free Chlorine ppm<input id="chlorineInput" type="number" step=".1"></label><label>pH<input id="phInput" type="number" step=".1"></label><label>Alkalinity ppm<input id="alkInput" type="number"></label></div><button class="btn" style="margin-top:14px" onclick="updateInputs('Manager updated water chemistry')">Update Water Quality</button></div><div class="card"><h3>Target Chemical Ranges</h3><table><thead><tr><th>Chemical</th><th>Target</th><th>Current</th><th>Status</th></tr></thead><tbody id="chemicalRanges"></tbody></table><p class="small">Targets are demo values and should be verified against local policy and certified pool operator guidance.</p></div></div><div class="card" style="margin-top:18px"><h3>Water Quality Guidance</h3><div id="waterGuidance"></div></div></section>
 
-  <section id="staffing" class="section"><div id="facilityRosterNote" class="facility-context-note"></div><div class="card"><h3>Editable Lifeguard Schedule</h3><table><thead><tr><th>Name</th><th>Shift</th><th>Area</th><th>Status</th><th>Action</th></tr></thead><tbody id="staffTable"></tbody></table></div><div class="card" style="margin-top:18px"><h3>Add Lifeguard / Shift</h3><div class="form-grid three"><input id="newStaffName" placeholder="Name"><input id="newStaffShift" placeholder="Shift"><select id="newStaffArea"><option>Lap Pool</option><option>Recreation Pool</option><option>Lessons</option><option>Deck Supervisor</option></select></div><button class="btn" style="margin-top:12px" onclick="addStaff()">Add Staff Member</button></div></section>
+  <section id="staffing" class="section">
+    <div id="facilityRosterNote" class="facility-context-note"></div>
+    <div class="module-intro"><div><span class="eyebrow">Workforce operations</span><h2>Staffing</h2><p>Manage schedules and prepare the workforce tools that will support manager and lifeguard role views.</p></div><span class="role-readiness">🛟 Lifeguard role ready</span></div>
+
+    <details class="module-panel" id="staffSchedulePanel" open>
+      <summary><span>Schedule & Coverage</span><small>Current working schedule and call-out controls</small></summary>
+      <div class="module-panel-body">
+        <div class="card"><h3>Editable Lifeguard Schedule</h3><table><thead><tr><th>Name</th><th>Shift</th><th>Area</th><th>Status</th><th>Action</th></tr></thead><tbody id="staffTable"></tbody></table></div>
+        <div class="card" style="margin-top:18px"><h3>Add Lifeguard / Shift</h3><div class="form-grid three"><input id="newStaffName" placeholder="Name"><input id="newStaffShift" placeholder="Shift"><select id="newStaffArea"><option>Lap Pool</option><option>Recreation Pool</option><option>Lessons</option><option>Deck Supervisor</option></select></div><button class="btn" style="margin-top:12px" onclick="addStaff()">Add Staff Member</button></div>
+      </div>
+    </details>
+
+    <details class="module-panel" id="staffRequestsPanel">
+      <summary><span>Requests & Availability</span><small>Planned home for time off, shift swaps, and availability</small></summary>
+      <div class="module-panel-body"><div class="grid three"><div class="card"><h3>Time-Off Requests</h3><p class="small">Manager approval workflow will be added here without creating a separate page.</p><span class="tag info">Architecture prepared</span></div><div class="card"><h3>Shift Swaps</h3><p class="small">Lifeguards will submit swaps; managers will approve them here.</p><span class="tag info">Architecture prepared</span></div><div class="card"><h3>Availability</h3><p class="small">Recurring and temporary availability will connect directly to scheduling.</p><span class="tag info">Architecture prepared</span></div></div></div>
+    </details>
+
+    <details class="module-panel" id="staffCredentialsPanel">
+      <summary><span>Certifications & Staff Directory</span><small>Planned workforce compliance and profile tools</small></summary>
+      <div class="module-panel-body"><div class="grid two"><div class="card"><h3>Certification Tracking</h3><p class="small">Future alerts will identify expiring lifeguard, CPR, first-aid, and instructor credentials.</p><span class="tag info">Architecture prepared</span></div><div class="card"><h3>Staff Directory</h3><p class="small">Staff profiles will support manager permissions and the 🛟 Lifeguard role view.</p><span class="tag info">Architecture prepared</span></div></div></div>
+    </details>
+  </section>
 
   
 <section id="capacity" class="section">
 
-  <div class="facility-data-badge" id="rotationFacilityContext">Showing rotations for Gandy Pool</div>
+  <div class="facility-data-badge" id="rotationFacilityContext">Showing staffing operations for Gandy Pool</div>
+  <div class="module-intro"><div><span class="eyebrow">Coverage and deck operations</span><h2>Capacity & Rotations</h2><p>Capacity and rotations remain connected, but are separated into sibling work areas because managers use them for different decisions.</p></div></div>
+  <details class="module-panel" id="rotationPanel" open>
+    <summary><span>Rotations</span><small>30-minute assignments, relief coverage, positions, and breaks</small></summary>
+    <div class="module-panel-body">
   <div class="rotation-hero"><div><span class="eyebrow">30-minute deck coverage</span><h2>Capacity & Rotation Center</h2><p>Build and monitor position assignments, relief coverage, and scheduled breaks throughout the shift.</p></div><div class="rotation-controls"><label>Rotation start<select id="rotationStartTime"><option value="8">8:00 AM</option><option value="9">9:00 AM</option><option value="10">10:00 AM</option><option value="11">11:00 AM</option><option value="12">12:00 PM</option></select></label><label>Rotation blocks<select id="rotationBlockCount"><option value="6">3 hours</option><option value="8" selected>4 hours</option><option value="10">5 hours</option><option value="12">6 hours</option></select></label><button class="btn" id="generateRotationButton" type="button">Generate Rotation</button></div></div>
   <div class="rotation-summary-grid"><div class="metric-card"><span>Guards available</span><b class="viz-stat-value" id="rotationGuardCount">--</b><small>Scheduled and available</small></div><div class="metric-card"><span>Active positions</span><b class="viz-stat-value" id="rotationPositionCount">--</b><small>Deck and pool assignments</small></div><div class="metric-card"><span>Rotation interval</span><b class="viz-stat-value">30 min</b><small>Automatic schedule blocks</small></div><div class="metric-card"><span>Coverage status</span><b class="viz-stat-value" id="rotationCoverageStatus">--</b><small id="rotationCoverageNote">Checking schedule</small></div></div>
   <div class="card rotation-alert-card"><div><h3 id="rotationAlertTitle">Rotation check</h3><p id="rotationAlertText">Generate a schedule to review coverage.</p></div><span class="tag info" id="rotationAlertBadge">Pending</span></div>
@@ -290,6 +316,11 @@
   <div class="rotation-board-wrap"><div id="rotationBoard" class="rotation-board" aria-live="polite"></div></div>
   <div class="grid two" style="margin-top:18px"><div class="card"><h3>Position Configuration</h3><div id="rotationPositionsEditor"></div><button class="btn secondary" id="addRotationPositionButton" type="button">Add Position</button></div><div class="card"><h3>Rotation Notes</h3><textarea id="rotationNotes" placeholder="Document substitutions, heat precautions, training assignments, or changes made during the shift."></textarea><button class="btn" id="saveRotationNotesButton" type="button">Save Rotation Notes</button><div id="rotationNotesStatus" class="small" style="margin-top:8px"></div></div></div>
 
+    </div>
+  </details>
+  <details class="module-panel" id="capacityPanel">
+    <summary><span>Capacity</span><small>Forecast demand, staffing-controlled limit, and facility limit</small></summary>
+    <div class="module-panel-body">
   <div class="notice"><b>Coverage policy:</b> one active surveillance lifeguard per 25 swimmers. When two or more surveillance positions are required, AquaIQPro adds one relief guard so each position can rotate every 30 minutes without losing continuous surveillance.</div>
   <div class="card">
     <h3>Lifeguard Coverage & Pool Capacity</h3>
@@ -303,6 +334,8 @@
     <div id="rotationPlan" class="rotation-note"></div>
     <p class="small">The 300-person facility limit is a configurable planning assumption. The posted permit/approved bathing load remains the controlling facility limit when available.</p>
   </div>
+    </div>
+  </details>
 </section>
 
 <section id="programs" class="section">
@@ -703,6 +736,6 @@
 <button class="chat-fab" title="Ask AquaIQ">💬</button><div id="chatPop" class="chat-pop"><div class="chat-head"><b>Ask AquaIQ</b><button class="chat-close" onclick="toggleChat()">×</button></div><div class="chat-body"><textarea id="popupAsk" placeholder="Ask about staffing, water quality, purchasing, reports, or maintenance..."></textarea><div class="quickchips"><button onclick="q('popupAsk').value='Should I add another lifeguard today?';askAIPopup()">Staffing</button><button onclick="q('popupAsk').value='What chemicals should I buy?';askAIPopup()">Purchasing</button><button onclick="q('popupAsk').value='Is water quality safe?';askAIPopup()">Water</button></div><button class="btn" style="margin-top:10px" onclick="askAIPopup()">Ask</button><div id="popupAnswer" class="chat-answer">Ask a question to receive a short operational answer.</div></div></div>
 
 
-<script src="js/app.js?v=5.7.0"></script>
+<script src="js/app.js?v=5.7.1"></script>
 </body>
 </html>
