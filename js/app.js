@@ -2266,3 +2266,121 @@ function renderMaintenance(){ensureSprint57DState();q("workOrders").innerHTML=st
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init57F,{once:true});else init57F();
 })();
+
+/* Final polish: facility-aware role views, live hours, operations snapshot, and build-label cleanup */
+(function(){
+  var ROLE_HOME={manager:"dashboard",lifeguard:"lifeguardmode",deck:"deckmode",lobby:"lobbymode"};
+  function byId(id){return document.getElementById(id)}
+  function num(v,d){v=Number(v);return Number.isFinite(v)?v:(d||0)}
+  function facilityProfile(id){return (window.FACILITY_PROFILES&&FACILITY_PROFILES[id])||FACILITY_PROFILES.gandy}
+  function operationsFor(id){return state.operationsByFacility&&state.operationsByFacility[id]||{} }
+  function staffFor(id){return state.staffByFacility&&state.staffByFacility[id]||[] }
+  function inventoryAlertsFor(id){return (operationsFor(id).inventory||[]).filter(function(x){return num(x.onHand)<=num(x.min)})}
+  function waterStateFor(id){
+    var w=operationsFor(id).water||{};
+    var good=num(w.chlorine)>=1&&num(w.chlorine)<=4&&num(w.ph)>=7.2&&num(w.ph)<=7.8&&num(w.alk)>=80&&num(w.alk)<=120;
+    return {good:good,label:good?"In Range":"Review"};
+  }
+  function snapshotFor(id){
+    var p=facilityProfile(id), ops=operationsFor(id), staff=(staffFor(id)||[]).filter(function(s){return s.status!=="Unavailable"&&s.status!=="Off"});
+    var forecast=num(p.baseDemand,0), needed=Math.max(1,Math.ceil(forecast/25));
+    var water=waterStateFor(id), alerts=inventoryAlertsFor(id).length+(ops.workOrders||[]).filter(function(w){return w.status!=="Closed"&&w.priority==="High"}).length+(water.good?0:1)+Math.max(0,needed-staff.length);
+    var score=100;
+    score-=Math.max(0,needed-staff.length)*9;
+    score-=water.good?0:18;
+    score-=inventoryAlertsFor(id).length*5;
+    score-=(ops.workOrders||[]).filter(function(w){return w.status!=="Closed"&&w.priority==="High"}).length*7;
+    score=Math.max(45,Math.min(100,score));
+    return {readiness:score,forecast:forecast,staffing:staff.length+" / "+needed,water:water.label,alerts:alerts};
+  }
+  function renderSnapshot(){
+    var select=byId("snapshotFacilitySelect"); if(!select)return;
+    var s=snapshotFor(select.value||"gandy");
+    if(byId("snapshotReadiness"))byId("snapshotReadiness").textContent=s.readiness+"%";
+    if(byId("snapshotForecast"))byId("snapshotForecast").textContent=s.forecast;
+    if(byId("snapshotStaffing"))byId("snapshotStaffing").textContent=s.staffing;
+    if(byId("snapshotWater"))byId("snapshotWater").textContent=s.water;
+    if(byId("snapshotAlerts"))byId("snapshotAlerts").textContent=s.alerts;
+  }
+  function switchFacility(id){
+    var main=byId("facilitySelect");
+    if(!main||main.value===id){syncRoleFacilitySelectors(id);setTimeout(refreshRoleDisplays,20);return;}
+    main.value=id;
+    main.dispatchEvent(new Event("change",{bubbles:true}));
+    syncRoleFacilitySelectors(id);
+    setTimeout(refreshRoleDisplays,140);
+  }
+  function syncRoleFacilitySelectors(id){
+    ["lgFacilitySelect","lobbyFacilitySelect"].forEach(function(key){var x=byId(key);if(x&&x.value!==id)x.value=id});
+  }
+  function lakelandParts(){
+    var parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",weekday:"short",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(new Date());
+    var out={};parts.forEach(function(p){out[p.type]=p.value});
+    return {weekday:out.weekday,year:+out.year,month:+out.month,day:+out.day,hour:+out.hour,minute:+out.minute};
+  }
+  function minuteOfDay(t){return t.hour*60+t.minute}
+  function isSimpsonSeason(t){
+    var key=t.month*100+t.day;
+    return key>=501&&key<=930;
+  }
+  function operatingStatus(id){
+    var t=lakelandParts(), m=minuteOfDay(t), weekend=t.weekday==="Sat"||t.weekday==="Sun";
+    if(id==="simpson"&&!isSimpsonSeason(t))return {open:false,label:"CLOSED FOR SEASON",detail:"Seasonal operations are not currently active."};
+    var start,end;
+    if(id==="gandy"){
+      start=weekend?10*60:5*60+30; end=weekend?17*60:19*60;
+    }else{start=10*60;end=17*60;}
+    if(m>=start&&m<end)return {open:true,label:"WE’RE OPEN",detail:"Open until "+formatMinutes(end)};
+    if(m<start)return {open:false,label:"CLOSED",detail:"Opens today at "+formatMinutes(start)};
+    return {open:false,label:"CLOSED",detail:"Closed for today"};
+  }
+  function formatMinutes(total){
+    var h=Math.floor(total/60),min=total%60,ampm=h>=12?"PM":"AM",display=h%12||12;
+    return display+":"+String(min).padStart(2,"0")+" "+ampm;
+  }
+  function activeId(){return window.activeFacilityId||"gandy"}
+  function applyLiveOpenStatus(){
+    var id=activeId(), schedule=operatingStatus(id), water=waterStateFor(id);
+    var lobby=byId("lobbyOpenStatus"), publicStatus=byId("lobbyPublicStatus"), announcement=byId("lobbyAnnouncement");
+    if(lobby){
+      lobby.textContent=schedule.label;
+      lobby.classList.toggle("closed",!schedule.open);
+      lobby.classList.toggle("warning",schedule.open&&!water.good);
+    }
+    if(publicStatus)publicStatus.textContent=schedule.open?(water.good?"Open":"Open — operational review"):"Closed";
+    if(announcement){
+      var span=announcement.querySelector("span");
+      if(span)span.textContent=schedule.detail+(schedule.open&&!water.good?" Water conditions are under staff review.":"");
+    }
+    var deck=byId("deckOpenStatus");
+    if(deck){
+      deck.textContent=schedule.open?(water.good?"OPEN":"CHECK STATUS"):"CLOSED";
+      deck.classList.toggle("closed",!schedule.open);
+      deck.classList.toggle("warning",schedule.open&&!water.good);
+    }
+  }
+  function currentMode(){var s=byId("roleModeSelect");return s?s.value:"manager"}
+  function goRoleHome(){var mode=currentMode(); if(typeof showPage==="function")showPage(ROLE_HOME[mode]||"dashboard");}
+  function updateRoleHomeBar(){
+    var mode=currentMode(),bar=byId("roleContextBar"),btn=byId("roleHomeButton");
+    if(bar)bar.classList.toggle("visible",mode!=="manager");
+    if(btn)btn.textContent="🏠 "+({lifeguard:"Lifeguard Home",deck:"Deck Home",lobby:"Lobby Home"}[mode]||"Home");
+  }
+  function refreshRoleDisplays(){
+    syncRoleFacilitySelectors(activeId());
+    if(typeof renderModes==="function")renderModes();
+    applyLiveOpenStatus();
+    renderSnapshot();
+  }
+  function initFinalPolish(){
+    var snap=byId("snapshotFacilitySelect");if(snap){snap.value=activeId();snap.addEventListener("change",renderSnapshot)}
+    ["lgFacilitySelect","lobbyFacilitySelect"].forEach(function(key){var x=byId(key);if(x)x.addEventListener("change",function(){switchFacility(this.value)})});
+    var home=byId("roleHomeButton");if(home)home.addEventListener("click",goRoleHome);
+    document.querySelectorAll("[data-role-home]").forEach(function(b){b.addEventListener("click",goRoleHome)});
+    var role=byId("roleModeSelect");if(role)role.addEventListener("change",function(){updateRoleHomeBar();setTimeout(refreshRoleDisplays,80)});
+    var main=byId("facilitySelect");if(main)main.addEventListener("change",function(){syncRoleFacilitySelectors(this.value);setTimeout(refreshRoleDisplays,120)});
+    updateRoleHomeBar();refreshRoleDisplays();
+    setInterval(function(){applyLiveOpenStatus();renderSnapshot()},30000);
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initFinalPolish,{once:true});else initFinalPolish();
+})();
