@@ -3,32 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AquaIQPro v5.6.4 Page Structure Recovery</title>
+<title>AquaIQPro v5.7.0 Architecture Foundation</title>
 
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.0.0/jspdf.umd.min.js"></script>
 
-<link rel="stylesheet" href="css/styles.css?v=5.6.4">
+<link rel="stylesheet" href="css/styles.css?v=5.7.0">
 </head>
 <body>
 <div class="app">
 <aside>
   <div class="logo"><div class="mark">AQ</div><div><h1>AquaIQPro</h1><span>Aquatics Operations Platform</span></div></div><div class="lane-rope" aria-hidden="true"></div>
   <div class="facility-switcher"><label for="facilitySelect">Facility</label><select id="facilitySelect"><option value="gandy">Gandy Pool</option><option value="simpson">Simpson Park Pool</option></select></div><div class="aquatic-divider" aria-hidden="true"></div>
-  <nav id="nav">
-    <button class="active" data-page="dashboard">Today's Shift</button>
-    <button data-page="facility">Facility Overview</button>
-    <button data-page="facilitycompare">Facility Comparison</button><button data-page="aiops">Daily Briefing</button>
+  <nav id="nav" aria-label="Primary navigation">
+    <button class="active" data-page="dashboard" data-title="Dashboard">Dashboard</button>
+
+    <details class="nav-group" open>
+      <summary>🏊 Facilities</summary>
+      <div class="nav-group-items">
+        <button data-page="facility" data-title="Facility Overview">Facility Overview</button>
+        <button data-page="facilitycompare" data-title="Facility Comparison">Facility Comparison</button>
+        <button data-page="facility" data-title="Gandy Pool" data-facility-target="gandy">Gandy Pool</button>
+        <button data-page="facility" data-title="Simpson Park Pool" data-facility-target="simpson">Simpson Park Pool</button>
+      </div>
+    </details>
+
+    <button data-page="aiops">Daily Briefing</button>
     <button data-page="operations">Operations Center</button>
-<button data-page="incidentcenter">Incident Center</button>
+    <button data-page="incidentcenter">Incident Center</button>
     <button data-page="scenario">Scenario Planner</button>
     <button data-page="forecasting">Forecasting</button>
-    <button data-page="aiops">Forecast Drivers</button>
+    <button data-page="aiops" data-title="Forecast Drivers">Forecast Drivers</button>
     <button data-page="data">Data Center</button>
     <button data-page="water">Water Quality</button>
-    <button data-page="staffing">Staffing</button>
-<button data-page="capacity">Capacity & Rotations</button>
+
+    <details class="nav-group" open>
+      <summary>👥 Staffing &amp; Rotations</summary>
+      <div class="nav-group-items">
+        <button data-page="staffing" data-title="Staffing">Staffing</button>
+        <button data-page="capacity" data-title="Capacity &amp; Rotations">Capacity &amp; Rotations</button>
+      </div>
+    </details>
+
     <button data-page="programs">Programs</button>
     <button data-page="inventory">Inventory</button>
     <button data-page="maintenance">Maintenance</button>
@@ -37,10 +54,10 @@
     <button data-page="reports">Reports</button>
     <button data-page="assistant">Ask AquaIQ</button>
   </nav>
-  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.4.1 adds facility-specific 30-minute lifeguard rotations, coverage monitoring, and full-name staffing rosters.</span></div>
+  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.7.0 introduces grouped navigation while preserving every existing workflow and data model.</span></div>
 </aside>
 <main>
-  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.6.4 Page Structure Recovery</b> • <span class="good">System Ready</span></div></div>
+  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.7.0 Architecture Foundation</b> • <span class="good">System Ready</span></div></div>
 
   <section id="dashboard" class="section active">
   <div class="ops-hero shift-ops-hero">
@@ -686,6 +703,6 @@
 <button class="chat-fab" title="Ask AquaIQ">💬</button><div id="chatPop" class="chat-pop"><div class="chat-head"><b>Ask AquaIQ</b><button class="chat-close" onclick="toggleChat()">×</button></div><div class="chat-body"><textarea id="popupAsk" placeholder="Ask about staffing, water quality, purchasing, reports, or maintenance..."></textarea><div class="quickchips"><button onclick="q('popupAsk').value='Should I add another lifeguard today?';askAIPopup()">Staffing</button><button onclick="q('popupAsk').value='What chemicals should I buy?';askAIPopup()">Purchasing</button><button onclick="q('popupAsk').value='Is water quality safe?';askAIPopup()">Water</button></div><button class="btn" style="margin-top:10px" onclick="askAIPopup()">Ask</button><div id="popupAnswer" class="chat-answer">Ask a question to receive a short operational answer.</div></div></div>
 
 
-<script src="js/app.js?v=5.6.4"></script>
+<script src="js/app.js?v=5.7.0"></script>
 </body>
 </html>
