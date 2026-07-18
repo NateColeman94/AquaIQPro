@@ -2220,7 +2220,7 @@ function renderMaintenance(){ensureSprint57DState();q("workOrders").innerHTML=st
   var MODE_KEY="aquaiqpro_role_mode_v1", THEME_KEY="aquaiqpro_theme_v1";
   var subtitles={manager:"A priority-first operations platform for public pool managers.",lifeguard:"A focused shift workspace for on-duty aquatics staff.",deck:"A high-visibility deck operations display.",lobby:"A public-facing pool status and program display."};
   var permissions={
-    manager:["dashboard","facility","facilitycompare","staffing","capacity","water","programs","forecasting","aiops","operations","scenario","inventory","maintenance","incidentcenter","tasks","decisions","reports","assistant"],
+    manager:["dashboard","facility","facilitycompare","staffing","capacity","water","aiops","programs","forecasting","forecastdrivers","operations","scenario","inventory","maintenance","incidentcenter","tasks","decisions","reports","assistant"],
     lifeguard:["lifeguardmode","staffing","capacity","water","maintenance","incidentcenter"],
     deck:["deckmode","capacity","water","incidentcenter"],
     lobby:["lobbymode"]
