@@ -2363,7 +2363,7 @@ function renderMaintenance(){ensureSprint57DState();q("workOrders").innerHTML=st
   function goRoleHome(){var mode=currentMode(); if(typeof showPage==="function")showPage(ROLE_HOME[mode]||"dashboard");}
   function updateRoleHomeBar(){
     var mode=currentMode(),bar=byId("roleContextBar"),btn=byId("roleHomeButton");
-    if(bar)bar.classList.toggle("visible",mode!=="manager");
+    if(bar)bar.classList.toggle("visible",mode==="deck"||mode==="lobby");
     if(btn)btn.textContent="🏠 "+({lifeguard:"Lifeguard Home",deck:"Deck Home",lobby:"Lobby Home"}[mode]||"Home");
   }
   function refreshRoleDisplays(){
