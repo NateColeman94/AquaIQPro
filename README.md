@@ -16,3 +16,10 @@ This sprint completes the Staffing and Rotations work areas while preserving all
 - Existing storage key and current feature set remain intact
 - Workforce information is stored by facility
 - Capacity remains a separate sibling work area under Staffing & Rotations
+
+
+## Sprint 5.7C
+- Added Critical Alerts, Today's Operations, and an AI Operations Brief to Dashboard.
+- Enhanced Manager Inbox with workforce and credential items.
+- Fixed workforce metric-card spacing.
+- Simplified Facilities navigation to Overview and Comparison; the global facility selector controls the selected pool.
