@@ -1,4 +1,4 @@
-console.info("AquaIQPro v5.6.3 Full Runtime Recovery loaded");
+console.info("AquaIQPro v5.7.0 Architecture Foundation loaded");
 var state={facility:"Gandy Pool Demo",weather:{temp:94,rain:18},demand:{base:230,adjusted:0},water:{chlorine:2.1,ph:7.4,alk:95},callouts:1,staff:[{name:"Alex",shift:"6 AM–2 PM",area:"Lap Pool",status:"Scheduled"},{name:"Brianna",shift:"8 AM–4 PM",area:"Recreation Pool",status:"Scheduled"},{name:"Carlos",shift:"10 AM–6 PM",area:"Deck Supervisor",status:"Scheduled"},{name:"Dana",shift:"11 AM–5 PM",area:"Lessons",status:"Scheduled"},{name:"Eli",shift:"12 PM–6 PM",area:"Recreation Pool",status:"Scheduled"}],programs:{lessons:[{name:"Beginner Lessons",time:"9:00 AM",count:18},{name:"Intermediate Lessons",time:"10:30 AM",count:14}],parties:[{name:"Birthday Party A",time:"1:00 PM",count:25}],team:[{name:"Swim Team Practice",time:"4:00 PM",lanes:5}]},inventory:[{item:"Liquid Chlorine",onHand:42,min:25,unit:"gal",dailyUse:4.5},{item:"Muriatic Acid",onHand:9,min:10,unit:"gal",dailyUse:1.2},{item:"Test Reagents",onHand:6,min:4,unit:"kits",dailyUse:.35},{item:"Rescue Tubes",onHand:11,min:8,unit:"units",dailyUse:.03}],workOrders:[{asset:"Main Pump",priority:"Medium",status:"Open",desc:"Routine vibration check before weekend peak."},{asset:"Diving Board",priority:"High",status:"Open",desc:"Pre-opening safety inspection required."}],tasks:[{name:"Opening water test",priority:"High",owner:"Pool Manager",done:false},{name:"Confirm lifeguard coverage",priority:"High",owner:"Lifeguard Supervisor",done:false},{name:"Inspect deck and rescue equipment",priority:"Medium",owner:"Lifeguard Supervisor",done:false}],incidents:[],decisions:{},audit:["System initialized with v3.0 master build."]};
 var DEFAULT_STATE_JSON=JSON.stringify(state), STORAGE_KEY="AquaIQProV563Stable", days=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], forecastWeather=[{t:92,r:15},{t:94,r:18},{t:91,r:34},{t:88,r:55},{t:93,r:20},{t:96,r:12},{t:95,r:25}];
 function q(id){return document.getElementById(id)}function tag(level){var cls=level==="High"?"high":level==="Medium"?"med":level==="Low"?"low":"info";return '<span class="tag '+cls+'">'+level+'</span>'}
@@ -25,7 +25,7 @@ function showToast(msg){var t=q("toast");if(!t)return;t.textContent=msg;t.classL
   }catch(e){
     console.warn("Saved data could not be loaded; using stable defaults.",e);
   }
-}function exportData(){saveState(false);var payload=JSON.stringify({exportedAt:new Date().toISOString(),app:"AquaIQPro",version:"v5.6.4 Page Structure Recovery",state:state},null,2),blob=new Blob([payload],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="AquaIQPro_Backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Backup exported")}function importData(event){var file=event.target.files&&event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var parsed=JSON.parse(e.target.result),imported=parsed.state||parsed;if(!imported.facility)throw new Error("Invalid file");state=imported;ensureExtendedState();saveState(false);hydrateInputs();render();renderCapacity();showToast("Backup imported")}catch(err){showToast("Import failed")}};reader.readAsText(file)}function resetDemoData(){if(!confirm("Reset AquaIQPro to default demo data?"))return;state=JSON.parse(DEFAULT_STATE_JSON);localStorage.removeItem(STORAGE_KEY);ensureExtendedState();hydrateInputs();render();renderCapacity();showToast("Demo data reset");updateSaveIndicator("Autosave ready")}
+}function exportData(){saveState(false);var payload=JSON.stringify({exportedAt:new Date().toISOString(),app:"AquaIQPro",version:"v5.7.0 Architecture Foundation",state:state},null,2),blob=new Blob([payload],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="AquaIQPro_Backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Backup exported")}function importData(event){var file=event.target.files&&event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var parsed=JSON.parse(e.target.result),imported=parsed.state||parsed;if(!imported.facility)throw new Error("Invalid file");state=imported;ensureExtendedState();saveState(false);hydrateInputs();render();renderCapacity();showToast("Backup imported")}catch(err){showToast("Import failed")}};reader.readAsText(file)}function resetDemoData(){if(!confirm("Reset AquaIQPro to default demo data?"))return;state=JSON.parse(DEFAULT_STATE_JSON);localStorage.removeItem(STORAGE_KEY);ensureExtendedState();hydrateInputs();render();renderCapacity();showToast("Demo data reset");updateSaveIndicator("Autosave ready")}
 function hydrateInputs(){if(q("tempInput"))q("tempInput").value=state.weather.temp;if(q("rainInput"))q("rainInput").value=state.weather.rain;if(q("baseDemandInput"))q("baseDemandInput").value=state.demand.base;if(q("calloutInput"))q("calloutInput").value=state.callouts;if(q("chlorineInput"))q("chlorineInput").value=state.water.chlorine;if(q("phInput"))q("phInput").value=state.water.ph;if(q("alkInput"))q("alkInput").value=state.water.alk;if(q("scenarioTemp")){q("scenarioTemp").value=state.weather.temp;q("scenarioRain").value=state.weather.rain;q("scenarioExtraDemand").value=0;q("scenarioCallouts").value=0}}
 function updateInputs(reason){state.weather.temp=Number(q("tempInput").value||state.weather.temp);state.weather.rain=Number(q("rainInput").value||state.weather.rain);state.demand.base=Number(q("baseDemandInput").value||state.demand.base);state.callouts=Number(q("calloutInput").value||state.callouts);state.water.chlorine=Number(q("chlorineInput").value||state.water.chlorine);state.water.ph=Number(q("phInput").value||state.water.ph);state.water.alk=Number(q("alkInput").value||state.water.alk);state.audit.unshift(new Date().toLocaleString()+": "+reason);render();saveState(false)}
 
@@ -1150,7 +1150,35 @@ function downloadReportExcel(){
 }
 function printManagerReport(){updateReportPreview();window.print()}
 
-function init(){loadState();ensureExtendedState();hydrateInputs();document.querySelectorAll("#nav button").forEach(btn=>btn.addEventListener("click",function(){document.querySelectorAll("#nav button").forEach(b=>b.classList.remove("active"));document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));btn.classList.add("active");var page=q(btn.dataset.page);if(page)page.classList.add("active");if(q("pageTitle"))q("pageTitle").textContent=btn.textContent}));
+function showPage(pageId,sourceButton){
+  var page=q(pageId);
+  if(!page)return;
+  document.querySelectorAll("#nav button").forEach(function(b){b.classList.remove("active")});
+  document.querySelectorAll(".section").forEach(function(section){section.classList.remove("active")});
+  page.classList.add("active");
+  var btn=sourceButton||document.querySelector('#nav button[data-page="'+pageId+'"]');
+  if(btn){
+    btn.classList.add("active");
+    var group=btn.closest("details.nav-group");
+    if(group)group.open=true;
+  }
+  var title=btn&&(btn.dataset.title||btn.textContent.trim());
+  if(q("pageTitle"))q("pageTitle").textContent=title||pageId;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function init(){loadState();ensureExtendedState();hydrateInputs();document.querySelectorAll("#nav button").forEach(function(btn){
+  btn.addEventListener("click",function(){
+    var targetFacility=btn.dataset.facilityTarget;
+    if(targetFacility){
+      var selector=q("facilitySelect");
+      if(selector)selector.value=targetFacility;
+      applyFacilityProfile(targetFacility,false);
+      refreshFacilityDisplay();
+      showToast(activeFacility().name+" selected");
+    }
+    showPage(btn.dataset.page,btn);
+  });
+});
 
 var refreshWeatherButton=q("refreshWeatherButton");if(refreshWeatherButton)refreshWeatherButton.addEventListener("click",function(){loadLiveWeather(true)});
 var refreshWeatherPageButton=q("refreshWeatherPageButton");if(refreshWeatherPageButton)refreshWeatherPageButton.addEventListener("click",function(){loadLiveWeather(true)});
