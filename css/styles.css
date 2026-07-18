@@ -865,3 +865,94 @@ html[data-theme="dark"] .snapshot-facility-label option{background:#17333d;color
   .role-facility-control{display:grid;grid-template-columns:auto 1fr;width:100%}
   .role-facility-control select{min-width:0}
 }
+
+/* Final contrast audit: use theme surfaces consistently across every manager-facing module. */
+html[data-theme="dark"]{
+  --bg:#0b2027;
+  --panel:#16343e;
+  --ink:#f4fbfc;
+  --muted:#c2d7dd;
+  --line:#4b707b;
+  --shadow:0 12px 30px rgba(0,0,0,.28);
+}
+html[data-theme="dark"] body,
+html[data-theme="dark"] main{background:var(--bg);color:var(--ink)}
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .rowbox,
+html[data-theme="dark"] .priority-item,
+html[data-theme="dark"] .status-tile,
+html[data-theme="dark"] .data-tool-card,
+html[data-theme="dark"] .compact-section,
+html[data-theme="dark"] .compact-kpi,
+html[data-theme="dark"] .compare-metric,
+html[data-theme="dark"] .facility-difference,
+html[data-theme="dark"] .selected-planning-focus,
+html[data-theme="dark"] .facility-sync-note,
+html[data-theme="dark"] .chart,
+html[data-theme="dark"] .chat-pop,
+html[data-theme="dark"] .chat-body,
+html[data-theme="dark"] .report-compact,
+html[data-theme="dark"] .compact-kpis,
+html[data-theme="dark"] .capacity-card,
+html[data-theme="dark"] .rotation-board-wrap,
+html[data-theme="dark"] .rotation-cell,
+html[data-theme="dark"] .live-status-item,
+html[data-theme="dark"] .command-action,
+html[data-theme="dark"] .readiness-factor,
+html[data-theme="dark"] .facility-compare-card,
+html[data-theme="dark"] .comparison-selection-banner{
+  background:#173640!important;
+  color:#f4fbfc!important;
+  border-color:#4b707b!important;
+}
+html[data-theme="dark"] .facility-difference,
+html[data-theme="dark"] .selected-planning-focus,
+html[data-theme="dark"] .facility-sync-note{
+  background:#1b414c!important;
+}
+html[data-theme="dark"] .notice,
+html[data-theme="dark"] .status-box,
+html[data-theme="dark"] .rotation-note,
+html[data-theme="dark"] .chat-answer{
+  background:#163f49!important;
+  color:#eaf8fa!important;
+  border-color:#4c7b86!important;
+}
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea{
+  background:#102b34!important;
+  color:#f4fbfc!important;
+  border-color:#527984!important;
+}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder{color:#a9c2c9!important}
+html[data-theme="dark"] .btn.secondary,
+html[data-theme="dark"] .quickchips button{
+  background:#214b57!important;
+  color:#f4fbfc!important;
+  border-color:#5b8590!important;
+}
+html[data-theme="dark"] .compare-table th,
+html[data-theme="dark"] th,
+html[data-theme="dark"] .rotation-cell.header,
+html[data-theme="dark"] .rotation-cell.position{
+  background:#1c414b!important;
+  color:#f4fbfc!important;
+}
+html[data-theme="dark"] td{color:#e7f3f5!important}
+html[data-theme="dark"] .small,
+html[data-theme="dark"] .label,
+html[data-theme="dark"] .sub,
+html[data-theme="dark"] .trend,
+html[data-theme="dark"] .facility-source,
+html[data-theme="dark"] .compare-metric span,
+html[data-theme="dark"] .priority-item p,
+html[data-theme="dark"] .status-tile span{color:#c2d7dd!important}
+html[data-theme="dark"] .pill{background:#173640!important;color:#f4fbfc!important;border-color:#4b707b!important}
+html[data-theme="dark"] .bar{background:#31545e!important}
+html[data-theme="dark"] .chart{background:linear-gradient(#173640,#102b34)!important}
+html[data-theme="dark"] .chart div b{color:#eaf8fa!important}
+html[data-theme="dark"] .facility-difference b,
+html[data-theme="dark"] .selected-planning-focus b,
+html[data-theme="dark"] .selected-planning-focus li{color:#f4fbfc!important}
