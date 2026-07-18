@@ -1,15 +1,14 @@
-# AquaIQPro v5.7.7 — Role-Based Operations Release Candidate
+# AquaIQPro v5.7.8 Release Candidate
 
-This build adds four persistent operating modes and a persistent dark theme while preserving the full v5.7E operational system.
+Final Architecture & Integration release candidate.
 
-## Modes
-- Manager: full application access
-- Lifeguard: shift, rotations, water checks, cleaning, inspections, and incident entry
-- Deck: large high-visibility operational display and emergency actions
-- Lobby: public-safe occupancy, programs, weather, temperature, and announcements
+Highlights:
+- Desktop-optimized Deck Operations command center
+- Desktop-optimized public Lobby display
+- Manager, Lifeguard, Deck, and Lobby role modes
+- Persistent light and dark themes
+- Cross-module deck alerts driven by staffing, capacity, and water status
+- Final top-level navigation cleanup; Daily Tasks remains available through Maintenance & Cleaning workflows
+- Existing water, inventory, maintenance, incident, reporting, staffing, and facility features preserved
 
-## Theme
-Use the moon/sun control in the header to switch between light and dark mode. The selection is saved in browser storage.
-
-## Deployment
-Upload all files and folders in this package to the root of the GitHub Pages repository.
+Deploy the contents of this folder to the root of the AquaIQPro GitHub Pages repository.
