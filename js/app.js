@@ -1901,7 +1901,7 @@ var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",
   function renderReportHistoricalTrends(){
     var target=r2("reportHistoricalTrends");if(!target)return;
     var history=selectedReportHistory();
-    if(!history.length){target.innerHTML='<p class="small">Save reports to build historical trends.</p>';return;}
+    if(!history.length){target.innerHTML='<div class="historical-empty"><span>📚</span><div><b>No saved report history yet</b><p>Historical data is still available as a feature, but it begins after you save a draft or finalized report. Current live operating data continues to appear in the Executive Summary and AI Insights.</p></div></div>';return;}
     var finalCount=history.filter(function(r){return r.reviewStatus==="Final";}).length;
     var avgDemand=Math.round(history.reduce(function(sum,r){return sum+Number((r.systemSnapshot||{}).demand||0);},0)/history.length);
     var avgStaff=Math.round(history.reduce(function(sum,r){return sum+Number((r.systemSnapshot||{}).guards||0);},0)/history.length*10)/10;
