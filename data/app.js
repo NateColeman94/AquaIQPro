@@ -25,7 +25,7 @@ function showToast(msg){var t=q("toast");if(!t)return;t.textContent=msg;t.classL
   }catch(e){
     console.warn("Saved data could not be loaded; using stable defaults.",e);
   }
-}function exportData(){saveState(false);var payload=JSON.stringify({exportedAt:new Date().toISOString(),app:"AquaIQPro",version:"v5.7.4 Dashboard & UX Polish",state:state},null,2),blob=new Blob([payload],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="AquaIQPro_Backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Backup exported")}function importData(event){var file=event.target.files&&event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var parsed=JSON.parse(e.target.result),imported=parsed.state||parsed;if(!imported.facility)throw new Error("Invalid file");state=imported;ensureExtendedState();saveState(false);hydrateInputs();render();renderCapacity();if(typeof renderWorkforce==="function")renderWorkforce();showToast("Backup imported")}catch(err){showToast("Import failed")}};reader.readAsText(file)}function resetDemoData(){if(!confirm("Reset AquaIQPro to default demo data?"))return;state=JSON.parse(DEFAULT_STATE_JSON);localStorage.removeItem(STORAGE_KEY);ensureExtendedState();hydrateInputs();render();renderCapacity();if(typeof renderWorkforce==="function")renderWorkforce();showToast("Demo data reset");updateSaveIndicator("Autosave ready")}
+}function exportData(){saveState(false);var payload=JSON.stringify({exportedAt:new Date().toISOString(),app:"AquaIQPro",version:"v5.7.6 Incidents & Reports",state:state},null,2),blob=new Blob([payload],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="AquaIQPro_Backup_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Backup exported")}function importData(event){var file=event.target.files&&event.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var parsed=JSON.parse(e.target.result),imported=parsed.state||parsed;if(!imported.facility)throw new Error("Invalid file");state=imported;ensureExtendedState();saveState(false);hydrateInputs();render();renderCapacity();if(typeof renderWorkforce==="function")renderWorkforce();showToast("Backup imported")}catch(err){showToast("Import failed")}};reader.readAsText(file)}function resetDemoData(){if(!confirm("Reset AquaIQPro to default demo data?"))return;state=JSON.parse(DEFAULT_STATE_JSON);localStorage.removeItem(STORAGE_KEY);ensureExtendedState();hydrateInputs();render();renderCapacity();if(typeof renderWorkforce==="function")renderWorkforce();showToast("Demo data reset");updateSaveIndicator("Autosave ready")}
 function hydrateInputs(){if(q("tempInput"))q("tempInput").value=state.weather.temp;if(q("rainInput"))q("rainInput").value=state.weather.rain;if(q("baseDemandInput"))q("baseDemandInput").value=state.demand.base;if(q("calloutInput"))q("calloutInput").value=state.callouts;if(q("chlorineInput"))q("chlorineInput").value=state.water.chlorine;if(q("phInput"))q("phInput").value=state.water.ph;if(q("alkInput"))q("alkInput").value=state.water.alk;if(q("scenarioTemp")){q("scenarioTemp").value=state.weather.temp;q("scenarioRain").value=state.weather.rain;q("scenarioExtraDemand").value=0;q("scenarioCallouts").value=0}}
 function updateInputs(reason){state.weather.temp=Number(q("tempInput").value||state.weather.temp);state.weather.rain=Number(q("rainInput").value||state.weather.rain);state.demand.base=Number(q("baseDemandInput").value||state.demand.base);state.callouts=Number(q("calloutInput").value||state.callouts);state.water.chlorine=Number(q("chlorineInput").value||state.water.chlorine);state.water.ph=Number(q("phInput").value||state.water.ph);state.water.alk=Number(q("alkInput").value||state.water.alk);state.audit.unshift(new Date().toLocaleString()+": "+reason);render();saveState(false)}
 
@@ -1582,6 +1582,56 @@ var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",
     }else{
       followUp.innerHTML='<p class="small">No open incident follow-up actions.</p>';
     }
+
+    renderIncidentSafetyTrends(records);
+  }
+
+  function incidentRecordsInWindow(records){
+    var control=incidentEl("incidentTrendWindow");
+    var windowValue=control?control.value:"90";
+    if(windowValue==="all")return records.slice();
+    var cutoff=Date.now()-Number(windowValue)*86400000;
+    return records.filter(function(item){
+      var parsed=Date.parse(item.date||"");
+      return !isNaN(parsed)&&parsed>=cutoff;
+    });
+  }
+
+  function trendRows(counts,total){
+    var entries=Object.keys(counts).map(function(key){return[key,counts[key]];}).sort(function(a,b){return b[1]-a[1];});
+    if(!entries.length)return'<p class="small">No records in this period.</p>';
+    return entries.map(function(entry){
+      var pct=total?Math.round(entry[1]/total*100):0;
+      return'<div class="trend-row"><div class="rowflex"><span>'+entry[0]+'</span><b>'+entry[1]+'</b></div><div class="trend-bar"><span style="width:'+pct+'%"></span></div></div>';
+    }).join("");
+  }
+
+  function renderIncidentSafetyTrends(records){
+    var filtered=incidentRecordsInWindow(records);
+    var typeCounts={},severityCounts={};
+    filtered.forEach(function(item){
+      typeCounts[item.type||"Other"]=(typeCounts[item.type||"Other"]||0)+1;
+      severityCounts[item.severity||"Unknown"]=(severityCounts[item.severity||"Unknown"]||0)+1;
+    });
+    var high=filtered.filter(function(item){return item.severity==="High"||item.severity==="Critical";}).length;
+    var pending=filtered.filter(function(item){return item.managerReview!=="Reviewed";}).length;
+    var resolved=filtered.filter(function(item){return item.status==="Resolved";}).length;
+    var metrics=incidentEl("incidentSafetyMetrics");
+    if(metrics)metrics.innerHTML=[
+      ["Incidents",filtered.length,"Selected period"],
+      ["High severity",high,filtered.length?Math.round(high/filtered.length*100)+"% of incidents":"No incidents"],
+      ["Review pending",pending,"Manager action"],
+      ["Resolution rate",filtered.length?Math.round(resolved/filtered.length*100)+"%":"—",resolved+" resolved"]
+    ].map(function(item){return'<div class="metric-card"><span>'+item[0]+'</span><b class="viz-stat-value">'+item[1]+'</b><small>'+item[2]+'</small></div>';}).join("");
+    if(incidentEl("incidentTypeTrends"))incidentEl("incidentTypeTrends").innerHTML=trendRows(typeCounts,filtered.length);
+    if(incidentEl("incidentSeverityTrends"))incidentEl("incidentSeverityTrends").innerHTML=trendRows(severityCounts,filtered.length);
+    var topType=Object.keys(typeCounts).sort(function(a,b){return typeCounts[b]-typeCounts[a];})[0];
+    var insight=incidentEl("incidentSafetyInsight");
+    if(insight){
+      insight.innerHTML=filtered.length
+        ?'<b>Safety insight:</b> '+(topType||"Other")+' is the most common incident type in this period. '+(high?high+' high-severity record(s) warrant focused prevention review.':'No high-severity concentration is present.')
+        :'<b>Safety insight:</b> No incidents fall within the selected period.';
+    }
   }
 
   var incidentCenterBound=false;
@@ -1589,7 +1639,7 @@ var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",
   function bindIncidentCenterIsolated(){
     if(incidentCenterBound)return;
     incidentCenterBound=true;
-    ["incidentCenterStatusFilter","incidentCenterSeverityFilter"].forEach(function(id){
+    ["incidentCenterStatusFilter","incidentCenterSeverityFilter","incidentTrendWindow"].forEach(function(id){
       var element=incidentEl(id);
       if(element)element.addEventListener("change",renderIncidentCenterIsolated);
     });
@@ -1759,7 +1809,7 @@ var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",
       inventoryAlerts:inv.length,
       openWork:work.length,
       programs:programCount,
-      incidents:0
+      incidents:(typeof activeIncidentRecords==="function"?activeIncidentRecords().filter(function(x){return x.status!=="Resolved";}).length:0)
     };
   }
 
@@ -1821,6 +1871,60 @@ var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",
       r2("report2TypeMetric").textContent=r2("report2Type").value.replace(" Report","");
     }
     updateReportCompletion();
+    renderReportIntelligence();
+  }
+
+  function reportExecutiveText(){
+    var v=report2SystemValues();
+    var staffing=v.guards>=v.needed?"Staffing meets the current recommendation":"Staffing is below the current recommendation by "+(v.needed-v.guards)+" guard(s)";
+    var risks=[];
+    if(v.water!=="Good")risks.push("water quality requires attention");
+    if(v.inventoryAlerts)risks.push(v.inventoryAlerts+" inventory alert(s)");
+    if(v.openWork)risks.push(v.openWork+" open work order(s)");
+    if(v.incidents)risks.push(v.incidents+" active incident(s)");
+    return reportFacilityName()+" is operating at a forecast demand of "+v.demand+" patrons with an operating capacity of "+v.capacity+". "+staffing+". "+(risks.length?"Priority risks include "+risks.join(", ")+".":"No major operational exceptions are currently detected.");
+  }
+
+  function renderReportIntelligence(){
+    var executive=r2("reportExecutiveSummary");
+    if(executive)executive.innerHTML='<p>'+reportExecutiveText()+'</p><p class="small">Generated from the active facility snapshot; manager review is required.</p>';
+    renderReportHistoricalTrends();
+    renderReportAIInsights();
+  }
+
+  function selectedReportHistory(){
+    var control=r2("reportTrendWindow"),value=control?control.value:"30";
+    if(value==="all")return reportHistory.slice();
+    return reportHistory.slice(0,Number(value)||30);
+  }
+
+  function renderReportHistoricalTrends(){
+    var target=r2("reportHistoricalTrends");if(!target)return;
+    var history=selectedReportHistory();
+    if(!history.length){target.innerHTML='<p class="small">Save reports to build historical trends.</p>';return;}
+    var finalCount=history.filter(function(r){return r.reviewStatus==="Final";}).length;
+    var avgDemand=Math.round(history.reduce(function(sum,r){return sum+Number((r.systemSnapshot||{}).demand||0);},0)/history.length);
+    var avgStaff=Math.round(history.reduce(function(sum,r){return sum+Number((r.systemSnapshot||{}).guards||0);},0)/history.length*10)/10;
+    var waterExceptions=history.filter(function(r){return (r.systemSnapshot||{}).water!=="Good";}).length;
+    target.innerHTML=[
+      ["Reports analyzed",history.length],
+      ["Finalized",finalCount],
+      ["Average forecast demand",avgDemand],
+      ["Average guards available",avgStaff],
+      ["Water exceptions",waterExceptions]
+    ].map(function(item){return'<div class="trend-summary-row"><span>'+item[0]+'</span><b>'+item[1]+'</b></div>';}).join("");
+  }
+
+  function renderReportAIInsights(){
+    var target=r2("reportAIInsights");if(!target)return;
+    var v=report2SystemValues(),insights=[];
+    if(v.guards<v.needed)insights.push("Add or reassign "+(v.needed-v.guards)+" guard(s) before peak demand.");
+    else insights.push("Current staffing supports the recommended guard requirement.");
+    if(v.water!=="Good")insights.push("Review chemical readings and document corrective action before normal operations continue.");
+    if(v.inventoryAlerts)insights.push("Resolve "+v.inventoryAlerts+" low-stock item(s) using the Inventory purchase recommendations.");
+    if(v.openWork)insights.push("Prioritize "+v.openWork+" open maintenance work order(s), beginning with safety-critical assets.");
+    if(v.incidents)insights.push("Complete manager review and follow-up for "+v.incidents+" active incident(s).");
+    target.innerHTML='<ul class="insight-list">'+insights.map(function(x){return'<li>'+x+'</li>';}).join("")+'</ul>';
   }
 
   function managerFieldIds(){
@@ -1903,6 +2007,7 @@ var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",
     reportHistory.unshift(report);
     saveReportHistory();
     renderReportHistory();
+    renderReportIntelligence();
     r2("report2StatusMessage").textContent=finalize?"Report finalized and saved.":"Draft saved.";
   }
 
@@ -2017,6 +2122,8 @@ var fab=document.querySelector(".chat-fab");if(fab)fab.addEventListener("click",
     });
 
     r2("report2GenerateButton").addEventListener("click",renderReportSystemData);
+    if(r2("reportExecutiveRefresh"))r2("reportExecutiveRefresh").addEventListener("click",renderReportIntelligence);
+    if(r2("reportTrendWindow"))r2("reportTrendWindow").addEventListener("change",renderReportIntelligence);
     r2("report2NewButton").addEventListener("click",clearReport);
     r2("report2SaveDraftButton").addEventListener("click",function(){saveDraft(false);});
     r2("report2FinalizeButton").addEventListener("click",function(){saveDraft(true);});
