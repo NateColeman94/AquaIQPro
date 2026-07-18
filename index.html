@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AquaIQPro v5.7.8 Release Candidate</title>
+<title>AquaIQPro v5.7.9 Release Candidate</title>
 
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.0.0/jspdf.umd.min.js"></script>
 
-<link rel="stylesheet" href="css/styles.css?v=5.7.8">
+<link rel="stylesheet" href="css/styles.css?v=5.7.9">
 </head>
 <body>
 <div class="app">
@@ -17,52 +17,52 @@
   <div class="logo"><div class="mark">AQ</div><div><h1>AquaIQPro</h1><span>Aquatics Operations Platform</span></div></div><div class="lane-rope" aria-hidden="true"></div>
   <div class="facility-switcher"><label for="facilitySelect">Facility</label><select id="facilitySelect"><option value="gandy">Gandy Pool</option><option value="simpson">Simpson Park Pool</option></select></div><div class="aquatic-divider" aria-hidden="true"></div>
   <nav id="nav" aria-label="Primary navigation">
-    <button class="active" data-page="dashboard" data-title="Dashboard">Dashboard</button>
+    <button class="active" data-page="dashboard" data-title="Dashboard"><span class="nav-icon">🏠</span><span>Dashboard</span></button>
 
     <details class="nav-group" open>
       <summary>🏊 Facilities</summary>
       <div class="nav-group-items">
-        <button data-page="facility" data-title="Facility Overview">Facility Overview</button>
-        <button data-page="facilitycompare" data-title="Facility Comparison">Facility Comparison</button>
+        <button data-page="facility" data-title="Facility Overview"><span class="nav-icon">🏊</span><span>Facility Overview</span></button>
+        <button data-page="facilitycompare" data-title="Facility Comparison"><span class="nav-icon">↔️</span><span>Facility Comparison</span></button>
       </div>
     </details>
 
     <details class="nav-group" open>
       <summary>👥 Staffing &amp; Rotations</summary>
       <div class="nav-group-items">
-        <button data-page="staffing" data-title="Staffing" data-focus="staffSchedulePanel">Staffing</button>
-        <button data-page="capacity" data-title="Capacity" data-focus="capacityPanel">Capacity</button>
-        <button data-page="capacity" data-title="Rotations" data-focus="rotationPanel">Rotations</button>
+        <button data-page="staffing" data-title="Staffing" data-focus="staffSchedulePanel"><span class="nav-icon">👥</span><span>Staffing</span></button>
+        <button data-page="capacity" data-title="Capacity" data-focus="capacityPanel"><span class="nav-icon">📏</span><span>Capacity</span></button>
+        <button data-page="capacity" data-title="Rotations" data-focus="rotationPanel"><span class="nav-icon">🔄</span><span>Rotations</span></button>
       </div>
     </details>
 
-    <button data-page="water">Water Quality</button>
+    <button data-page="water"><span class="nav-icon">💧</span><span>Water Quality</span></button>
 
     <details class="nav-group">
       <summary>📅 Programs &amp; Forecasting</summary>
       <div class="nav-group-items">
-        <button data-page="programs" data-title="Programs">Programs</button>
-        <button data-page="forecasting" data-title="Forecasting">Forecasting</button>
-        <button data-page="aiops" data-title="Daily Briefing">Daily Briefing</button>
-        <button data-page="aiops" data-title="Forecast Drivers">Forecast Drivers</button>
-        <button data-page="operations" data-title="Operations Center">Operations Center</button>
-        <button data-page="scenario" data-title="Scenario Planner">Scenario Planner</button>
+        <button data-page="programs" data-title="Programs"><span class="nav-icon">📅</span><span>Programs</span></button>
+        <button data-page="forecasting" data-title="Forecasting"><span class="nav-icon">🌤️</span><span>Forecasting</span></button>
+        <button data-page="aiops" data-title="Daily Briefing"><span class="nav-icon">📝</span><span>Daily Briefing</span></button>
+        <button data-page="aiops" data-title="Forecast Drivers"><span class="nav-icon">📈</span><span>Forecast Drivers</span></button>
+        <button data-page="operations" data-title="Operations Center"><span class="nav-icon">🎛️</span><span>Operations Center</span></button>
+        <button data-page="scenario" data-title="Scenario Planner"><span class="nav-icon">🧪</span><span>Scenario Planner</span></button>
       </div>
     </details>
 
-    <button data-page="inventory">Inventory</button>
-    <button data-page="maintenance">Maintenance &amp; Cleaning</button>
-    <button data-page="incidentcenter">Incident Center</button>
-    <button data-page="decisions">Manager Review</button>
+    <button data-page="inventory"><span class="nav-icon">📦</span><span>Inventory</span></button>
+    <button data-page="maintenance"><span class="nav-icon">🔧</span><span>Maintenance &amp; Cleaning</span></button>
+    <button data-page="incidentcenter"><span class="nav-icon">🚨</span><span>Incident Center</span></button>
+    <button data-page="decisions"><span class="nav-icon">✅</span><span>Manager Review</span></button>
 
-    <button data-page="reports">📊 Reports</button>
+    <button data-page="reports"><span class="nav-icon">📊</span><span>Reports</span></button>
 
-    <button data-page="assistant">Ask AquaIQ</button>
+    <button data-page="assistant"><span class="nav-icon">🤖</span><span>Ask AquaIQ</span></button>
   </nav>
-  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.7.8 finalizes role-based desktop displays, cross-module integration, and dark mode.</span></div>
+  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.7.9 improves desktop role displays, navigation clarity, report history guidance, and dark-mode contrast.</span></div>
 </aside>
 <main>
-  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div id="modeSubtitle" class="sub">A priority-first operations platform for public pool managers.</div></div><div class="topbar-actions"><label class="mode-control" for="roleModeSelect"><span>View</span><select id="roleModeSelect"><option value="manager">🖥️ Manager</option><option value="lifeguard">🛟 Lifeguard</option><option value="deck">🏊 Deck</option><option value="lobby">📺 Lobby</option></select></label><button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button><div class="pill">Build: <b>v5.7.8 Release Candidate</b> • <span class="good">System Ready</span></div></div></div>
+  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div id="modeSubtitle" class="sub">A priority-first operations platform for public pool managers.</div></div><div class="topbar-actions"><label class="mode-control" for="roleModeSelect"><span>View</span><select id="roleModeSelect"><option value="manager">🖥️ Manager</option><option value="lifeguard">🛟 Lifeguard</option><option value="deck">🏊 Deck</option><option value="lobby">📺 Lobby</option></select></label><button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button><div class="pill">Build: <b>v5.7.9 Release Candidate</b> • <span class="good">System Ready</span></div></div></div>
 
   <section id="dashboard" class="section active">
   <div class="ops-hero shift-ops-hero">
@@ -704,7 +704,7 @@
     </div>
     <div class="card report-intelligence-card">
       <div class="report2-section-header"><div><span class="report2-section-type">Historical analysis</span><h3>Historical Trends</h3></div><select id="reportTrendWindow" style="max-width:160px"><option value="7">7 reports</option><option value="30" selected>30 reports</option><option value="all">All reports</option></select></div>
-      <div id="reportHistoricalTrends" class="trend-list"></div>
+      <div id="reportHistoricalTrends" class="trend-list"></div><p class="small report-history-help">Historical trends are built from reports saved in Report History. Save drafts or finalize reports to create a trend series.</p>
     </div>
     <div class="card report-intelligence-card">
       <div class="report2-section-header"><div><span class="report2-section-type">Decision support</span><h3>AI Insights</h3></div><span class="tag info">Manager review</span></div>
@@ -939,6 +939,6 @@
 <button class="chat-fab" title="Ask AquaIQ">💬</button><div id="chatPop" class="chat-pop"><div class="chat-head"><b>Ask AquaIQ</b><button class="chat-close" onclick="toggleChat()">×</button></div><div class="chat-body"><textarea id="popupAsk" placeholder="Ask about staffing, water quality, purchasing, reports, or maintenance..."></textarea><div class="quickchips"><button onclick="q('popupAsk').value='Should I add another lifeguard today?';askAIPopup()">Staffing</button><button onclick="q('popupAsk').value='What chemicals should I buy?';askAIPopup()">Purchasing</button><button onclick="q('popupAsk').value='Is water quality safe?';askAIPopup()">Water</button></div><button class="btn" style="margin-top:10px" onclick="askAIPopup()">Ask</button><div id="popupAnswer" class="chat-answer">Ask a question to receive a short operational answer.</div></div></div>
 
 
-<script src="js/app.js?v=5.7.8"></script>
+<script src="js/app.js?v=5.7.9"></script>
 </body>
 </html>
