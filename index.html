@@ -44,7 +44,7 @@
         <button data-page="programs" data-title="Programs"><span class="nav-icon">📅</span><span>Programs</span></button>
         <button data-page="forecasting" data-title="Forecasting"><span class="nav-icon">🌤️</span><span>Forecasting</span></button>
         <button data-page="aiops" data-title="Daily Briefing"><span class="nav-icon">📝</span><span>Daily Briefing</span></button>
-        <button data-page="aiops" data-title="Forecast Drivers"><span class="nav-icon">📈</span><span>Forecast Drivers</span></button>
+        <button data-page="forecastdrivers" data-title="Forecast Drivers"><span class="nav-icon">📈</span><span>Forecast Drivers</span></button>
         <button data-page="operations" data-title="Operations Center"><span class="nav-icon">🎛️</span><span>Operations Center</span></button>
         <button data-page="scenario" data-title="Scenario Planner"><span class="nav-icon">🧪</span><span>Scenario Planner</span></button>
       </div>
@@ -274,7 +274,16 @@
   </div>
 </section>
 
-<section id="aiops" class="section"><div class="notice"><b>How AquaIQ works:</b> forecasts and recommendations use manager-entered data, live Lakeland weather data or manual fallback values, scheduled programs, staffing rules, water-quality thresholds, inventory levels, maintenance status, and capacity policies. Managers remain responsible for final decisions.</div><div class="notice"><b>Daily Briefing:</b> explains why AquaIQPro is making each recommendation.</div><div class="grid two"><div class="card ai-card"><h3>Today’s Briefing</h3><div id="aiOpsBriefing"></div></div><div class="card"><h3>Forecast Drivers</h3><div id="aiExplainPanel"></div></div></div><div class="card" style="margin-top:18px"><h3>Why This Changed</h3><div id="explainabilityList"></div></div></section>
+<section id="aiops" class="section">
+  <div class="notice"><b>Daily Briefing:</b> a manager-ready narrative describing today’s expected attendance, staffing position, operational readiness, and highest-priority action.</div>
+  <div class="card ai-card"><h3>Today’s Briefing</h3><div id="aiOpsBriefing"></div></div>
+</section>
+
+<section id="forecastdrivers" class="section">
+  <div class="notice"><b>Forecast Drivers:</b> the measurable inputs that changed the attendance forecast and recommendations, including weather, programs, staffing, water, inventory, and maintenance.</div>
+  <div class="card"><h3>Current Forecast Inputs</h3><div id="aiExplainPanel"></div></div>
+  <div class="card" style="margin-top:18px"><h3>Recommendation Drivers</h3><div id="explainabilityList"></div></div>
+</section>
 
   <section id="operations" class="section"><div id="operationsFacilityContext" class="facility-data-badge"></div>
     <div class="notice"><b>Manager Control Panel:</b> update operating assumptions. AquaIQPro recalculates demand, staffing, inventory, water quality, reports, and recommendations.</div>
@@ -950,7 +959,7 @@
 
 </main>
 </div>
-<div id="saveIndicator" class="save-indicator">Autosave ready</div><div id="toast" class="toast">Saved</div>
+<div id="toast" class="toast">Saved</div>
 <button class="chat-fab" title="Ask AquaIQ">💬</button><div id="chatPop" class="chat-pop"><div class="chat-head"><b>Ask AquaIQ</b><button class="chat-close" onclick="toggleChat()">×</button></div><div class="chat-body"><textarea id="popupAsk" placeholder="Ask about staffing, water quality, purchasing, reports, or maintenance..."></textarea><div class="quickchips"><button onclick="q('popupAsk').value='Should I add another lifeguard today?';askAIPopup()">Staffing</button><button onclick="q('popupAsk').value='What chemicals should I buy?';askAIPopup()">Purchasing</button><button onclick="q('popupAsk').value='Is water quality safe?';askAIPopup()">Water</button></div><button class="btn" style="margin-top:10px" onclick="askAIPopup()">Ask</button><div id="popupAnswer" class="chat-answer">Ask a question to receive a short operational answer.</div></div></div>
 
 
