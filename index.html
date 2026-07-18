@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AquaIQPro v5.7.6 Incidents & Reports</title>
+<title>AquaIQPro v5.7.7 Role-Based Operations</title>
 
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.0.0/jspdf.umd.min.js"></script>
 
-<link rel="stylesheet" href="css/styles.css?v=5.7.5">
+<link rel="stylesheet" href="css/styles.css?v=5.7.7">
 </head>
 <body>
 <div class="app">
@@ -60,10 +60,10 @@
 
     <button data-page="assistant">Ask AquaIQ</button>
   </nav>
-  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.7.6 adds Incident Safety Trends, report intelligence, and consolidated data controls while preserving existing workflows.</span></div>
+  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.7.7 adds Manager, Lifeguard, Deck, and Lobby modes plus persistent dark mode.</span></div>
 </aside>
 <main>
-  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.7.6 Incidents & Reports</b> • <span class="good">System Ready</span></div></div>
+  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div id="modeSubtitle" class="sub">A priority-first operations platform for public pool managers.</div></div><div class="topbar-actions"><label class="mode-control" for="roleModeSelect"><span>View</span><select id="roleModeSelect"><option value="manager">🖥️ Manager</option><option value="lifeguard">🛟 Lifeguard</option><option value="deck">🏊 Deck</option><option value="lobby">📺 Lobby</option></select></label><button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button><div class="pill">Build: <b>v5.7.7 Role-Based Operations</b> • <span class="good">System Ready</span></div></div></div>
 
   <section id="dashboard" class="section active">
   <div class="ops-hero shift-ops-hero">
@@ -893,6 +893,24 @@
 </section>
 
 <section id="assistant" class="section"><div class="grid two"><div class="card"><h3>Ask AquaIQ</h3><textarea id="askInput" placeholder="Try: Should I add another lifeguard? What chemicals should I buy? Is water quality safe?"></textarea><div class="quickchips"><button onclick="quickAsk('Should I add another lifeguard today?')">Staffing</button><button onclick="quickAsk('What chemicals should I buy?')">Purchasing</button><button onclick="quickAsk('Is water quality safe?')">Water Safety</button><button onclick="quickAsk('What maintenance should I prioritize?')">Maintenance</button><button onclick="quickAsk('Generate an executive summary.')">Executive Summary</button></div><button class="btn" style="margin-top:10px" onclick="askAI()">Ask Ask AquaIQ</button></div><div class="card ai-card"><h3>Ask AquaIQ Response</h3><div id="assistantAnswer">Ask a question about staffing, capacity, water quality, purchasing, maintenance, or reports.</div></div></div></section>
+
+<section id="lifeguardmode" class="section role-mode-section">
+  <div class="role-hero lifeguard-hero"><div><span class="role-eyebrow">🛟 LIFEGUARD MODE</span><h2 id="lgWelcome">Today’s Shift</h2><p>Quick access to assignments, water checks, inspections, cleaning, and incident entry.</p></div><div class="role-clock"><b id="lgClock">--:--</b><span id="lgDate"></span></div></div>
+  <div id="lgMetrics" class="metric-grid role-metrics"></div>
+  <div class="role-grid" style="margin-top:18px"><div class="card"><h3>Current Assignment & Rotation</h3><div id="lgAssignment"></div></div><div class="card"><h3>Shift Actions</h3><div class="role-action-grid"><button data-role-target="water" data-role-focus="lifeguardWaterPanel">Record Water Check</button><button data-role-target="incidentcenter">Report Incident</button><button data-role-target="maintenance" data-role-focus="cleaningPanel57D">Complete Cleaning</button><button data-role-target="maintenance" data-role-focus="inspectionPanel57D">Inspect Equipment</button><button data-role-target="capacity" data-role-focus="rotationPanel">View Rotations</button><button data-role-target="staffing">View Schedule</button></div></div></div>
+  <div class="role-grid" style="margin-top:18px"><div class="card"><h3>Safety & Operations Notices</h3><div id="lgNotices"></div></div><div class="card"><h3>My Credentials</h3><div id="lgCredentials"></div></div></div>
+</section>
+<section id="deckmode" class="section role-mode-section immersive-mode">
+  <div class="display-header"><div><span class="role-eyebrow">🏊 DECK MODE</span><h2 id="deckFacility">Pool Deck</h2></div><div class="display-time"><b id="deckClock">--:--</b><span id="deckDate"></span></div></div>
+  <div class="deck-status" id="deckOpenStatus">OPEN</div><div class="deck-display-grid"><div class="display-tile emphasis"><span>Current Occupancy</span><b id="deckOccupancy">--</b><small id="deckCapacityNote">of -- capacity</small></div><div class="display-tile"><span>Staff Coverage</span><b id="deckStaffing">--</b><small id="deckStaffingNote"></small></div><div class="display-tile"><span>Water Status</span><b id="deckWater">--</b><small id="deckWaterNote"></small></div><div class="display-tile"><span>Water Temperature</span><b id="deckTemp">--°F</b><small>Latest reading</small></div></div>
+  <div class="role-grid" style="margin-top:20px"><div class="card display-card"><h3>Next Rotations</h3><div id="deckRotations"></div></div><div class="card display-card"><h3>Weather & Safety</h3><div id="deckWeather"></div></div></div><div class="deck-actions"><button data-role-target="incidentcenter">🚨 INCIDENT</button><button data-role-target="water" data-role-focus="lifeguardWaterPanel">💧 WATER CHECK</button><button data-role-target="capacity">👥 CAPACITY</button></div>
+</section>
+<section id="lobbymode" class="section role-mode-section immersive-mode lobby-mode">
+  <div class="lobby-brand"><div class="mark">AQ</div><div><span>WELCOME TO</span><h2 id="lobbyFacility">AquaIQPro Aquatics</h2></div><div class="display-time"><b id="lobbyClock">--:--</b><span id="lobbyDate"></span></div></div>
+  <div class="lobby-open" id="lobbyOpenStatus">WE’RE OPEN</div><div class="lobby-grid"><div class="lobby-primary"><span>Current Pool Use</span><b id="lobbyOccupancy">--%</b><div class="occupancy-track"><i id="lobbyOccupancyBar"></i></div><small id="lobbyOccupancyNote"></small></div><div class="lobby-tile"><span>Water Temperature</span><b id="lobbyTemp">--°F</b></div><div class="lobby-tile"><span>Weather</span><b id="lobbyWeather">--</b></div><div class="lobby-tile"><span>Today’s Programs</span><div id="lobbyPrograms"></div></div></div>
+  <div class="lobby-footer"><div><b>Safety Reminder</b><span>Children must remain within arm’s reach of a responsible adult.</span></div><div id="lobbyAnnouncement"><b>Today’s Message</b><span>Welcome! Please check in at the front desk.</span></div></div>
+</section>
+
 </main>
 </div>
 <div id="saveIndicator" class="save-indicator">Autosave ready</div><div id="toast" class="toast">Saved</div>

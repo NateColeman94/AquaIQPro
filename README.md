@@ -1,34 +1,15 @@
-# AquaIQPro v5.7.2 — Workforce & Rotation Workflows
+# AquaIQPro v5.7.7 — Role-Based Operations Release Candidate
 
-This sprint completes the Staffing and Rotations work areas while preserving all existing AquaIQPro functionality.
+This build adds four persistent operating modes and a persistent dark theme while preserving the full v5.7E operational system.
 
-## Added
-- Time-off, shift-swap, and availability-change request workflow
-- Manager approval and denial queue
-- Weekly lifeguard availability editor
-- Certification tracking with expiration warnings
-- Lightweight operational staff directory
-- Manual rotation assignment controls
-- Rotation conflict and unfilled-position detection
-- Publish and reset controls for rotation schedules
+## Modes
+- Manager: full application access
+- Lifeguard: shift, rotations, water checks, cleaning, inspections, and incident entry
+- Deck: large high-visibility operational display and emergency actions
+- Lobby: public-safe occupancy, programs, weather, temperature, and announcements
 
-## Safety
-- Existing storage key and current feature set remain intact
-- Workforce information is stored by facility
-- Capacity remains a separate sibling work area under Staffing & Rotations
+## Theme
+Use the moon/sun control in the header to switch between light and dark mode. The selection is saved in browser storage.
 
-
-## Sprint 5.7C
-- Added Critical Alerts, Today's Operations, and an AI Operations Brief to Dashboard.
-- Enhanced Manager Inbox with workforce and credential items.
-- Fixed workforce metric-card spacing.
-- Simplified Facilities navigation to Overview and Comparison; the global facility selector controls the selected pool.
-
-
-## v5.7.4 — Sprint 5.7E Navigation Cleanup
-
-- Places Capacity above Rotations in the Staffing & Rotations workspace.
-- Groups Programs, Forecasting, Daily Briefing, Forecast Drivers, Operations Center, and Scenario Planner under Programs & Forecasting.
-- Groups Reports and Data Center under Reports & Data.
-- Preserves Daily Tasks as a visible workflow until its module-level replacements are implemented.
-- Removes no calculations, controls, saved data, or pages.
+## Deployment
+Upload all files and folders in this package to the root of the GitHub Pages repository.
