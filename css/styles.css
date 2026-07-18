@@ -956,3 +956,24 @@ html[data-theme="dark"] .chart div b{color:#eaf8fa!important}
 html[data-theme="dark"] .facility-difference b,
 html[data-theme="dark"] .selected-planning-focus b,
 html[data-theme="dark"] .selected-planning-focus li{color:#f4fbfc!important}
+
+/* Dark-mode readability correction: dashboard readiness values and labels. */
+html[data-theme="dark"] .readiness-factor,
+html[data-theme="dark"] .readiness-factor b,
+html[data-theme="dark"] .readiness-factor strong,
+html[data-theme="dark"] .readiness-gauge .gauge-content,
+html[data-theme="dark"] .readiness-gauge .gauge-content b,
+html[data-theme="dark"] .readiness-gauge .gauge-content strong {
+  color:#f4fbfc !important;
+}
+html[data-theme="dark"] .readiness-factor span,
+html[data-theme="dark"] .readiness-gauge .gauge-content span {
+  color:#c8dde2 !important;
+}
+html[data-theme="dark"] .readiness-factor {
+  background:#173640 !important;
+  border-color:#4b707b !important;
+}
+html[data-theme="dark"] .readiness-gauge::after {
+  background:#173640 !important;
+}
