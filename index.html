@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AquaIQPro v5.7.3 Dashboard & UX Polish</title>
+<title>AquaIQPro v5.7.4 Navigation Cleanup</title>
 
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.0.0/jspdf.umd.min.js"></script>
 
-<link rel="stylesheet" href="css/styles.css?v=5.7.3">
+<link rel="stylesheet" href="css/styles.css?v=5.7.4">
 </head>
 <body>
 <div class="app">
@@ -27,15 +27,6 @@
       </div>
     </details>
 
-    <button data-page="aiops">Daily Briefing</button>
-    <button data-page="operations">Operations Center</button>
-    <button data-page="incidentcenter">Incident Center</button>
-    <button data-page="scenario">Scenario Planner</button>
-    <button data-page="forecasting">Forecasting</button>
-    <button data-page="aiops" data-title="Forecast Drivers">Forecast Drivers</button>
-    <button data-page="data">Data Center</button>
-    <button data-page="water">Water Quality</button>
-
     <details class="nav-group" open>
       <summary>👥 Staffing &amp; Rotations</summary>
       <div class="nav-group-items">
@@ -45,18 +36,40 @@
       </div>
     </details>
 
-    <button data-page="programs">Programs</button>
+    <button data-page="water">Water Quality</button>
+
+    <details class="nav-group">
+      <summary>📅 Programs &amp; Forecasting</summary>
+      <div class="nav-group-items">
+        <button data-page="programs" data-title="Programs">Programs</button>
+        <button data-page="forecasting" data-title="Forecasting">Forecasting</button>
+        <button data-page="aiops" data-title="Daily Briefing">Daily Briefing</button>
+        <button data-page="aiops" data-title="Forecast Drivers">Forecast Drivers</button>
+        <button data-page="operations" data-title="Operations Center">Operations Center</button>
+        <button data-page="scenario" data-title="Scenario Planner">Scenario Planner</button>
+      </div>
+    </details>
+
     <button data-page="inventory">Inventory</button>
     <button data-page="maintenance">Maintenance</button>
+    <button data-page="incidentcenter">Incident Center</button>
     <button data-page="tasks">Daily Tasks</button>
     <button data-page="decisions">Manager Review</button>
-    <button data-page="reports">Reports</button>
+
+    <details class="nav-group">
+      <summary>📊 Reports &amp; Data</summary>
+      <div class="nav-group-items">
+        <button data-page="reports" data-title="Reports">Reports</button>
+        <button data-page="data" data-title="Data Center">Data Center</button>
+      </div>
+    </details>
+
     <button data-page="assistant">Ask AquaIQ</button>
   </nav>
-  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.7.3 adds priority alerts, an operations summary, an AI operations brief, and a cleaner facility navigation while preserving all workforce and rotation workflows.</span></div>
+  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.7.4 groups related planning and data tools, places Capacity before Rotations, and preserves every existing workflow while reducing top-level navigation clutter.</span></div>
 </aside>
 <main>
-  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.7.3 Dashboard & UX Polish</b> • <span class="good">System Ready</span></div></div>
+  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.7.4 Navigation Cleanup</b> • <span class="good">System Ready</span></div></div>
 
   <section id="dashboard" class="section active">
   <div class="ops-hero shift-ops-hero">
@@ -383,18 +396,6 @@
 
   <div class="facility-data-badge" id="rotationFacilityContext">Showing staffing operations for Gandy Pool</div>
   <div class="module-intro"><div><span class="eyebrow">Coverage and deck operations</span><h2>Capacity & Rotations</h2><p>Capacity and rotations remain connected, but are separated into sibling work areas because managers use them for different decisions.</p></div></div>
-  <details class="module-panel" id="rotationPanel" open>
-    <summary><span>Rotations</span><small>30-minute assignments, relief coverage, positions, and breaks</small></summary>
-    <div class="module-panel-body">
-  <div class="rotation-hero"><div><span class="eyebrow">30-minute deck coverage</span><h2>Capacity & Rotation Center</h2><p>Build and monitor position assignments, relief coverage, and scheduled breaks throughout the shift.</p></div><div class="rotation-controls"><label>Rotation start<select id="rotationStartTime"><option value="8">8:00 AM</option><option value="9">9:00 AM</option><option value="10">10:00 AM</option><option value="11">11:00 AM</option><option value="12">12:00 PM</option></select></label><label>Rotation blocks<select id="rotationBlockCount"><option value="6">3 hours</option><option value="8" selected>4 hours</option><option value="10">5 hours</option><option value="12">6 hours</option></select></label><button class="btn" id="generateRotationButton" type="button">Generate Rotation</button></div></div>
-  <div class="rotation-summary-grid"><div class="metric-card"><span>Guards available</span><b class="viz-stat-value" id="rotationGuardCount">--</b><small>Scheduled and available</small></div><div class="metric-card"><span>Active positions</span><b class="viz-stat-value" id="rotationPositionCount">--</b><small>Deck and pool assignments</small></div><div class="metric-card"><span>Rotation interval</span><b class="viz-stat-value">30 min</b><small>Automatic schedule blocks</small></div><div class="metric-card"><span>Coverage status</span><b class="viz-stat-value" id="rotationCoverageStatus">--</b><small id="rotationCoverageNote">Checking schedule</small></div></div>
-  <div class="card rotation-alert-card"><div><h3 id="rotationAlertTitle">Rotation check</h3><p id="rotationAlertText">Generate a schedule to review coverage.</p></div><span class="tag info" id="rotationAlertBadge">Pending</span></div>
-  <div class="rotation-legend"><span><i class="rotation-key active"></i> Active position</span><span><i class="rotation-key relief"></i> Relief / roaming</span><span><i class="rotation-key break"></i> Scheduled break</span><span><i class="rotation-key unavailable"></i> Unavailable</span></div>
-  <div class="rotation-board-actions"><button class="btn" id="publishRotationButton" type="button">Publish Rotation</button><button class="btn secondary" id="resetRotationButton" type="button">Reset Automatic Assignments</button><span class="small" id="rotationPublishStatus">Draft schedule</span></div><div class="rotation-board-wrap"><div id="rotationBoard" class="rotation-board" aria-live="polite"></div></div>
-  <div class="grid two" style="margin-top:18px"><div class="card"><h3>Position Configuration</h3><div id="rotationPositionsEditor"></div><button class="btn secondary" id="addRotationPositionButton" type="button">Add Position</button></div><div class="card"><h3>Rotation Notes</h3><textarea id="rotationNotes" placeholder="Document substitutions, heat precautions, training assignments, or changes made during the shift."></textarea><button class="btn" id="saveRotationNotesButton" type="button">Save Rotation Notes</button><div id="rotationNotesStatus" class="small" style="margin-top:8px"></div></div></div>
-
-    </div>
-  </details>
   <details class="module-panel" id="capacityPanel">
     <summary><span>Capacity</span><small>Forecast demand, staffing-controlled limit, and facility limit</small></summary>
     <div class="module-panel-body">
@@ -411,6 +412,18 @@
     <div id="rotationPlan" class="rotation-note"></div>
     <p class="small">The 300-person facility limit is a configurable planning assumption. The posted permit/approved bathing load remains the controlling facility limit when available.</p>
   </div>
+    </div>
+  </details>
+  <details class="module-panel" id="rotationPanel" open>
+    <summary><span>Rotations</span><small>30-minute assignments, relief coverage, positions, and breaks</small></summary>
+    <div class="module-panel-body">
+  <div class="rotation-hero"><div><span class="eyebrow">30-minute deck coverage</span><h2>Capacity & Rotation Center</h2><p>Build and monitor position assignments, relief coverage, and scheduled breaks throughout the shift.</p></div><div class="rotation-controls"><label>Rotation start<select id="rotationStartTime"><option value="8">8:00 AM</option><option value="9">9:00 AM</option><option value="10">10:00 AM</option><option value="11">11:00 AM</option><option value="12">12:00 PM</option></select></label><label>Rotation blocks<select id="rotationBlockCount"><option value="6">3 hours</option><option value="8" selected>4 hours</option><option value="10">5 hours</option><option value="12">6 hours</option></select></label><button class="btn" id="generateRotationButton" type="button">Generate Rotation</button></div></div>
+  <div class="rotation-summary-grid"><div class="metric-card"><span>Guards available</span><b class="viz-stat-value" id="rotationGuardCount">--</b><small>Scheduled and available</small></div><div class="metric-card"><span>Active positions</span><b class="viz-stat-value" id="rotationPositionCount">--</b><small>Deck and pool assignments</small></div><div class="metric-card"><span>Rotation interval</span><b class="viz-stat-value">30 min</b><small>Automatic schedule blocks</small></div><div class="metric-card"><span>Coverage status</span><b class="viz-stat-value" id="rotationCoverageStatus">--</b><small id="rotationCoverageNote">Checking schedule</small></div></div>
+  <div class="card rotation-alert-card"><div><h3 id="rotationAlertTitle">Rotation check</h3><p id="rotationAlertText">Generate a schedule to review coverage.</p></div><span class="tag info" id="rotationAlertBadge">Pending</span></div>
+  <div class="rotation-legend"><span><i class="rotation-key active"></i> Active position</span><span><i class="rotation-key relief"></i> Relief / roaming</span><span><i class="rotation-key break"></i> Scheduled break</span><span><i class="rotation-key unavailable"></i> Unavailable</span></div>
+  <div class="rotation-board-actions"><button class="btn" id="publishRotationButton" type="button">Publish Rotation</button><button class="btn secondary" id="resetRotationButton" type="button">Reset Automatic Assignments</button><span class="small" id="rotationPublishStatus">Draft schedule</span></div><div class="rotation-board-wrap"><div id="rotationBoard" class="rotation-board" aria-live="polite"></div></div>
+  <div class="grid two" style="margin-top:18px"><div class="card"><h3>Position Configuration</h3><div id="rotationPositionsEditor"></div><button class="btn secondary" id="addRotationPositionButton" type="button">Add Position</button></div><div class="card"><h3>Rotation Notes</h3><textarea id="rotationNotes" placeholder="Document substitutions, heat precautions, training assignments, or changes made during the shift."></textarea><button class="btn" id="saveRotationNotesButton" type="button">Save Rotation Notes</button><div id="rotationNotesStatus" class="small" style="margin-top:8px"></div></div></div>
+
     </div>
   </details>
 </section>
@@ -813,6 +826,6 @@
 <button class="chat-fab" title="Ask AquaIQ">💬</button><div id="chatPop" class="chat-pop"><div class="chat-head"><b>Ask AquaIQ</b><button class="chat-close" onclick="toggleChat()">×</button></div><div class="chat-body"><textarea id="popupAsk" placeholder="Ask about staffing, water quality, purchasing, reports, or maintenance..."></textarea><div class="quickchips"><button onclick="q('popupAsk').value='Should I add another lifeguard today?';askAIPopup()">Staffing</button><button onclick="q('popupAsk').value='What chemicals should I buy?';askAIPopup()">Purchasing</button><button onclick="q('popupAsk').value='Is water quality safe?';askAIPopup()">Water</button></div><button class="btn" style="margin-top:10px" onclick="askAIPopup()">Ask</button><div id="popupAnswer" class="chat-answer">Ask a question to receive a short operational answer.</div></div></div>
 
 
-<script src="js/app.js?v=5.7.3"></script>
+<script src="js/app.js?v=5.7.4"></script>
 </body>
 </html>
