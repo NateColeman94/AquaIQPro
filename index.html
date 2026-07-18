@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AquaIQPro v5.7.4 Navigation Cleanup</title>
+<title>AquaIQPro v5.7.5 Operational Modules</title>
 
 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/4.0.0/jspdf.umd.min.js"></script>
 
-<link rel="stylesheet" href="css/styles.css?v=5.7.4">
+<link rel="stylesheet" href="css/styles.css?v=5.7.5">
 </head>
 <body>
 <div class="app">
@@ -51,7 +51,7 @@
     </details>
 
     <button data-page="inventory">Inventory</button>
-    <button data-page="maintenance">Maintenance</button>
+    <button data-page="maintenance">Maintenance &amp; Cleaning</button>
     <button data-page="incidentcenter">Incident Center</button>
     <button data-page="tasks">Daily Tasks</button>
     <button data-page="decisions">Manager Review</button>
@@ -66,10 +66,10 @@
 
     <button data-page="assistant">Ask AquaIQ</button>
   </nav>
-  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.7.4 groups related planning and data tools, places Capacity before Rotations, and preserves every existing workflow while reducing top-level navigation clutter.</span></div>
+  <div class="side-card"><b>Pilot Facility</b><br>Gandy Pool demo profile<br><br><span class="small">v5.7.5 completes the Water Quality, Inventory, and Maintenance &amp; Cleaning operational modules while preserving all existing workflows.</span></div>
 </aside>
 <main>
-  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.7.4 Navigation Cleanup</b> • <span class="good">System Ready</span></div></div>
+  <div class="topbar"><div><h2 id="pageTitle">Dashboard</h2><div class="sub">A priority-first operations platform for public pool managers.</div></div><div class="pill">Build: <b>v5.7.5 Operational Modules</b> • <span class="good">System Ready</span></div></div>
 
   <section id="dashboard" class="section active">
   <div class="ops-hero shift-ops-hero">
@@ -302,7 +302,24 @@
   <div class="card" style="margin-top:18px"><h3>Forecast Table</h3><table><thead><tr><th>Day</th><th>Temp</th><th>Rain</th><th>Program Load</th><th>Forecast Demand</th><th>Staff Needed</th></tr></thead><tbody id="forecastTable"></tbody></table></div>
 </section>
 
-<section id="water" class="section"><div id="waterFacilityContext" class="facility-data-badge"></div><div class="grid two"><div class="card"><h3>Editable Water Test Readings</h3><div class="form-grid three"><label>Free Chlorine ppm<input id="chlorineInput" type="number" step=".1"></label><label>pH<input id="phInput" type="number" step=".1"></label><label>Alkalinity ppm<input id="alkInput" type="number"></label></div><button class="btn" style="margin-top:14px" onclick="updateInputs('Manager updated water chemistry')">Update Water Quality</button></div><div class="card"><h3>Target Chemical Ranges</h3><table><thead><tr><th>Chemical</th><th>Target</th><th>Current</th><th>Status</th></tr></thead><tbody id="chemicalRanges"></tbody></table><p class="small">Targets are demo values and should be verified against local policy and certified pool operator guidance.</p></div></div><div class="card" style="margin-top:18px"><h3>Water Quality Guidance</h3><div id="waterGuidance"></div></div></section>
+<section id="water" class="section">
+  <div id="waterFacilityContext" class="facility-data-badge"></div>
+  <div class="notice"><b>Water Quality Center:</b> record chemistry checks, review trends, and document corrective action for the selected facility.</div>
+  <div class="module-stack">
+    <details class="module-panel" open><summary>Current Readings &amp; Target Ranges</summary><div class="module-panel-body">
+      <div class="grid two">
+        <div class="card"><h3>Current Chemical Readings</h3><div class="form-grid three"><label>Free Chlorine ppm<input id="chlorineInput" type="number" step=".1"></label><label>pH<input id="phInput" type="number" step=".1"></label><label>Alkalinity ppm<input id="alkInput" type="number"></label></div><div class="form-grid two" style="margin-top:12px"><label>Water Temperature °F<input id="waterTempInput" type="number" step=".1"></label><label>Test Location<select id="waterLocationInput"><option>Main Pool</option><option>Lap Pool</option><option>Recreation Pool</option><option>Shallow End</option></select></label></div><button class="btn" style="margin-top:14px" onclick="saveWaterCheck('Manager')">Save Water Check</button></div>
+        <div class="card"><h3>Target Chemical Ranges</h3><table><thead><tr><th>Chemical</th><th>Target</th><th>Current</th><th>Status</th></tr></thead><tbody id="chemicalRanges"></tbody></table><p class="small">Targets are demo values and should be verified against local policy and certified pool operator guidance.</p></div>
+      </div>
+    </div></details>
+    <details class="module-panel" open><summary>Testing Schedule &amp; Lifeguard Entry</summary><div class="module-panel-body grid two">
+      <div class="card"><h3>Testing Schedule</h3><div id="waterTestingSchedule"></div><div class="form-grid three" style="margin-top:12px"><input id="waterScheduleTime" type="time"><select id="waterScheduleLocation"><option>Main Pool</option><option>Lap Pool</option><option>Recreation Pool</option></select><button class="btn" type="button" onclick="addWaterTestSchedule()">Add Test Time</button></div></div>
+      <div class="card"><h3>🛟 Lifeguard Chemical-Check Entry</h3><div class="form-grid two"><label>Lifeguard<select id="waterGuardInput"></select></label><label>Location<select id="waterGuardLocation"><option>Main Pool</option><option>Lap Pool</option><option>Recreation Pool</option><option>Shallow End</option></select></label><label>Chlorine ppm<input id="waterGuardChlorine" type="number" step=".1"></label><label>pH<input id="waterGuardPh" type="number" step=".1"></label><label>Alkalinity ppm<input id="waterGuardAlk" type="number"></label><label>Temperature °F<input id="waterGuardTemp" type="number" step=".1"></label></div><textarea id="waterGuardNotes" placeholder="Notes or corrective action taken" style="margin-top:10px"></textarea><button class="btn" style="margin-top:10px" type="button" onclick="saveLifeguardWaterCheck()">Submit Chemical Check</button></div>
+    </div></details>
+    <details class="module-panel" open><summary>Guidance, Corrective Actions &amp; Alerts</summary><div class="module-panel-body grid two"><div class="card"><h3>Water Quality Guidance</h3><div id="waterGuidance"></div></div><div class="card"><h3>Water Alerts</h3><div id="waterAlerts"></div></div></div></details>
+    <details class="module-panel"><summary>Reading History &amp; Trends</summary><div class="module-panel-body"><div class="metric-grid" id="waterTrendMetrics"></div><div class="card" style="margin-top:14px"><h3>Recent Water Checks</h3><div class="table-wrap"><table><thead><tr><th>Date &amp; Time</th><th>Recorded By</th><th>Location</th><th>Chlorine</th><th>pH</th><th>Alkalinity</th><th>Temp</th><th>Status</th></tr></thead><tbody id="waterHistoryTable"></tbody></table></div></div></div></details>
+  </div>
+</section>
 
   <section id="staffing" class="section">
     <div id="facilityRosterNote" class="facility-context-note"></div>
@@ -459,9 +476,27 @@
   </div>
 </section>
 
-  <section id="inventory" class="section"><div id="inventoryFacilityContext" class="facility-data-badge"></div><div class="card"><h3>Inventory & Purchase Recommendations</h3><table><thead><tr><th>Item</th><th>On Hand</th><th>Minimum</th><th>Days Left</th><th>AI Recommendation</th></tr></thead><tbody id="inventoryTable"></tbody></table></div></section>
+  <section id="inventory" class="section">
+  <div id="inventoryFacilityContext" class="facility-data-badge"></div>
+  <div class="notice"><b>Inventory Center:</b> manage operational supplies by category and review demand-adjusted ordering recommendations.</div>
+  <div class="metric-grid" id="inventorySummaryMetrics"></div>
+  <div class="module-stack" id="inventoryCategoryPanels"></div>
+  <details class="module-panel" open><summary>Add Inventory Item</summary><div class="module-panel-body"><div class="form-grid three"><input id="inventoryItemName" placeholder="Item name"><select id="inventoryItemCategory"><option>Chemicals</option><option>Cleaning Supplies</option><option>First Aid</option><option>Rescue Equipment</option><option>PPE</option><option>Other</option></select><input id="inventoryItemUnit" placeholder="Unit (gal, kits, units)"><input id="inventoryItemOnHand" type="number" step=".1" placeholder="On hand"><input id="inventoryItemMinimum" type="number" step=".1" placeholder="Minimum"><input id="inventoryItemDailyUse" type="number" step=".01" placeholder="Daily use"></div><button class="btn" style="margin-top:12px" type="button" onclick="addInventoryItem57D()">Add Inventory Item</button></div></details>
+  <details class="module-panel" open><summary>AI Purchase Recommendations</summary><div class="module-panel-body"><div id="inventoryRecommendations57D"></div></div></details>
+</section>
 
-  <section id="maintenance" class="section"><div id="maintenanceFacilityContext" class="facility-data-badge"></div><div class="notice"><b>Maintenance Center:</b> create work orders and let AquaIQPro prioritize safety-sensitive maintenance.</div><div class="grid two"><div class="card"><h3>Work Orders</h3><div id="workOrders"></div></div><div class="card"><h3>Create Work Order</h3><div class="form-grid three"><input id="woAsset" placeholder="Asset"><select id="woPriority"><option>Low</option><option selected>Medium</option><option>High</option></select><select id="woStatus"><option selected>Open</option><option>In Progress</option><option>Completed</option></select></div><textarea id="woDesc" placeholder="Description" style="margin-top:10px"></textarea><button class="btn" style="margin-top:10px" onclick="addWorkOrder()">Add Work Order</button></div></div><div class="card" style="margin-top:18px"><h3>Maintenance Priorities</h3><div id="maintenanceAI"></div></div></section>
+  <section id="maintenance" class="section">
+  <div id="maintenanceFacilityContext" class="facility-data-badge"></div>
+  <div class="notice"><b>Maintenance &amp; Cleaning:</b> manage work orders, daily sanitation, inspections, preventive maintenance, and completed-history records.</div>
+  <div class="metric-grid" id="maintenanceSummaryMetrics"></div>
+  <div class="module-stack">
+    <details class="module-panel" open><summary>Work Orders</summary><div class="module-panel-body"><div class="grid two"><div class="card"><h3>Open Work Orders</h3><div id="workOrders"></div></div><div class="card"><h3>Create Work Order</h3><div class="form-grid three"><input id="woAsset" placeholder="Asset"><select id="woPriority"><option>Low</option><option selected>Medium</option><option>High</option></select><select id="woStatus"><option selected>Open</option><option>In Progress</option><option>Completed</option></select></div><textarea id="woDesc" placeholder="Description" style="margin-top:10px"></textarea><button class="btn" style="margin-top:10px" onclick="addWorkOrder()">Add Work Order</button></div></div><div class="card" style="margin-top:18px"><h3>Maintenance Priorities</h3><div id="maintenanceAI"></div></div></div></details>
+    <details class="module-panel" open><summary>Daily Cleaning</summary><div class="module-panel-body"><div id="cleaningTaskList"></div><div class="form-grid three" style="margin-top:12px"><input id="cleaningTaskName" placeholder="Cleaning task"><select id="cleaningTaskArea"><option>Pool Deck</option><option>Bathrooms</option><option>Locker Rooms</option><option>Office</option><option>Equipment Room</option></select><select id="cleaningTaskFrequency"><option>Opening</option><option>Midday</option><option>Closing</option></select></div><button class="btn" style="margin-top:10px" type="button" onclick="addCleaningTask57D()">Add Cleaning Task</button></div></details>
+    <details class="module-panel"><summary>Facility &amp; Equipment Inspections</summary><div class="module-panel-body"><div id="inspectionList57D"></div><div class="form-grid three" style="margin-top:12px"><input id="inspectionAsset57D" placeholder="Area or equipment"><select id="inspectionType57D"><option>Safety</option><option>Equipment</option><option>Facility</option></select><select id="inspectionStatus57D"><option>Pass</option><option>Needs Attention</option><option>Out of Service</option></select></div><textarea id="inspectionNotes57D" placeholder="Inspection notes" style="margin-top:10px"></textarea><button class="btn" style="margin-top:10px" type="button" onclick="addInspection57D()">Record Inspection</button></div></details>
+    <details class="module-panel"><summary>Preventive Maintenance</summary><div class="module-panel-body"><div id="preventiveList57D"></div><div class="form-grid three" style="margin-top:12px"><input id="preventiveAsset57D" placeholder="Asset"><input id="preventiveDue57D" type="date"><select id="preventiveFrequency57D"><option>Weekly</option><option>Monthly</option><option>Quarterly</option><option>Annual</option></select></div><button class="btn" style="margin-top:10px" type="button" onclick="addPreventive57D()">Add Preventive Item</button></div></details>
+    <details class="module-panel"><summary>Maintenance History</summary><div class="module-panel-body"><div id="maintenanceHistory57D"></div></div></details>
+  </div>
+</section>
 
   <section id="tasks" class="section"><div id="tasksFacilityContext" class="facility-data-badge"></div><div class="notice"><b>Daily Task Board:</b> complete high-priority tasks before opening and peak periods.</div><div class="grid two"><div class="card"><h3>Today’s Task Board</h3><div id="taskBoard"></div></div><div class="card"><h3>Add Manager Task</h3><div class="form-grid three"><input id="taskName" placeholder="Task name"><select id="taskPriority"><option>Low</option><option selected>Medium</option><option>High</option></select><select id="taskOwner"><option>Pool Manager</option><option>Lifeguard Supervisor</option><option>Maintenance</option><option>Front Desk</option></select></div><button class="btn" style="margin-top:12px" onclick="addTask()">Add Task</button></div></div></section>
 
@@ -826,6 +861,6 @@
 <button class="chat-fab" title="Ask AquaIQ">💬</button><div id="chatPop" class="chat-pop"><div class="chat-head"><b>Ask AquaIQ</b><button class="chat-close" onclick="toggleChat()">×</button></div><div class="chat-body"><textarea id="popupAsk" placeholder="Ask about staffing, water quality, purchasing, reports, or maintenance..."></textarea><div class="quickchips"><button onclick="q('popupAsk').value='Should I add another lifeguard today?';askAIPopup()">Staffing</button><button onclick="q('popupAsk').value='What chemicals should I buy?';askAIPopup()">Purchasing</button><button onclick="q('popupAsk').value='Is water quality safe?';askAIPopup()">Water</button></div><button class="btn" style="margin-top:10px" onclick="askAIPopup()">Ask</button><div id="popupAnswer" class="chat-answer">Ask a question to receive a short operational answer.</div></div></div>
 
 
-<script src="js/app.js?v=5.7.4"></script>
+<script src="js/app.js?v=5.7.5"></script>
 </body>
 </html>
