@@ -745,3 +745,63 @@ html[data-theme="dark"] .display-alert-strip{background:#0b2c28;border-color:#1f
 @media(max-width:1250px){.deck-command-grid{grid-template-columns:1.25fr 1fr}.quick-command-panel{grid-column:1/-1}.quick-command-panel .deck-actions{grid-template-columns:repeat(3,1fr)}.lobby-desktop-grid{grid-template-columns:1.2fr 1fr}.programs-card{grid-column:1/-1}.deck-kpi-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:820px){body.role-deck main,body.role-lobby main{padding:0 14px 20px}.display-command-header,.lobby-command-header{align-items:flex-start}.display-header-right{align-items:flex-end}.deck-command-grid,.lobby-desktop-grid,.lobby-lower-grid{grid-template-columns:1fr}.deck-kpi-grid{grid-template-columns:1fr 1fr}.quick-command-panel{grid-column:auto}.quick-command-panel .deck-actions{grid-template-columns:1fr}.lobby-status-banner{grid-template-columns:1fr}.lobby-open{min-width:0}.rotation-command-row{grid-template-columns:1fr auto}.rotation-command-row span{grid-column:1/-1}.lobby-display-footer{flex-direction:column;gap:4px}}
 @media(max-width:560px){.deck-kpi-grid{grid-template-columns:1fr}.display-command-header,.lobby-command-header{flex-direction:column}.display-header-right{width:100%;justify-content:space-between}.lobby-identity{align-items:flex-start}.lobby-command-header .display-time{display:flex}.display-command-header p,.lobby-command-header p{display:none}}
+
+
+/* v5.7.9 desktop display, readability, and navigation polish */
+#nav button{display:flex;align-items:center;gap:10px;line-height:1.25}
+#nav .nav-icon{display:inline-grid;place-items:center;width:22px;min-width:22px;font-size:15px}
+.nav-group-items button{padding-left:18px!important}
+.nav-group-items .nav-icon{font-size:13px;opacity:.95}
+
+/* Keep trend metrics readable instead of compressing into phone-width columns. */
+.incident-trend-grid{grid-template-columns:repeat(4,minmax(155px,1fr))}
+.incident-trend-grid .metric-card{min-width:0;overflow-wrap:anywhere}
+.incident-trend-grid .metric-card span,.incident-trend-grid .metric-card small{display:block;line-height:1.3}
+.incident-trend-grid .metric-card b{display:block;margin:2px 0;font-size:1.7rem}
+.historical-empty{display:flex;gap:12px;align-items:flex-start;padding:15px;border:1px dashed var(--line);border-radius:14px;background:color-mix(in srgb,var(--panel) 92%,var(--brand2) 8%)}
+.historical-empty>span{font-size:1.5rem}.historical-empty b{display:block;margin-bottom:5px}.historical-empty p{margin:0;color:var(--muted);line-height:1.45}
+.report-history-help{margin:12px 0 0;padding-top:10px;border-top:1px solid var(--line)}
+
+/* Dark mode uses lighter surfaces and stronger text contrast for long-form readability. */
+html[data-theme="dark"]{--bg:#102229;--panel:#17333d;--card:#17333d;--ink:#f4fbfc;--muted:#c0d4da;--line:#3a5d68;--border:#416874;--accent:#67d8ff;--brand:#1494bd;--brand2:#2ec9d8;--shadow:0 14px 34px rgba(0,0,0,.24)}
+html[data-theme="dark"] body{background:linear-gradient(180deg,#102229,#0d1c22);color:var(--ink)}
+html[data-theme="dark"] .card,html[data-theme="dark"] .metric-card,html[data-theme="dark"] .rowbox,html[data-theme="dark"] .report-input-card,html[data-theme="dark"] .compact-section,html[data-theme="dark"] .compact-kpi,html[data-theme="dark"] .status-tile,html[data-theme="dark"] .priority-item,html[data-theme="dark"] .facility-fact,html[data-theme="dark"] .weather-card,html[data-theme="dark"] .weather-day,html[data-theme="dark"] .shift-event,html[data-theme="dark"] .inbox-item,html[data-theme="dark"] .report-history-item,html[data-theme="dark"] .data-tool-card{background:#17333d;color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] .pill,html[data-theme="dark"] .chat-pop{background:#17333d;color:var(--ink);border-color:var(--line)}
+html[data-theme="dark"] th{color:#d5e9ee;background:#1a3943}html[data-theme="dark"] td{color:#edf8fa}
+html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea{background:#10262e;color:#f5fcfd;border-color:#527581}
+html[data-theme="dark"] input::placeholder,html[data-theme="dark"] textarea::placeholder{color:#9fb8c0}
+html[data-theme="dark"] .notice{background:#123b43;border-color:#3f7d87;color:#dffbff}
+html[data-theme="dark"] .tag.info{background:#16485a;color:#c5f1ff}
+html[data-theme="dark"] .tag.low{background:#174637;color:#bdf7d8}
+html[data-theme="dark"] .tag.med{background:#4a3716;color:#ffe5a8}
+html[data-theme="dark"] .tag.high{background:#4a2028;color:#ffd0d7}
+html[data-theme="dark"] .btn.secondary{background:#28505c;color:#f1fbfd;border:1px solid #4b7380}
+html[data-theme="dark"] .quickchips button{background:#183d48;color:#dff8fc;border-color:#416874}
+html[data-theme="dark"] .chart{background:linear-gradient(#17333d,#122a32)}
+html[data-theme="dark"] .chart div b{color:#eaf9fb}
+html[data-theme="dark"] .historical-empty{background:#153842;border-color:#527681}
+
+/* Deck and lobby are desktop/tablet canvases, not narrow phone pages. */
+body.role-deck .app,body.role-lobby .app{display:block;min-height:100vh}
+body.role-deck main,body.role-lobby main{width:100%;max-width:none;margin:0;padding:18px 24px 30px;overflow-x:auto}
+body.role-deck .desktop-display,body.role-lobby .desktop-display{width:100%;max-width:1440px;min-width:860px;margin:0 auto}
+body.role-deck .display-shell,body.role-lobby .display-shell{width:100%;border-radius:28px;padding:18px;background:color-mix(in srgb,var(--panel) 94%,var(--brand2) 6%);border:1px solid var(--line);box-shadow:0 24px 60px rgba(7,35,53,.16)}
+body.role-deck .topbar,body.role-lobby .topbar{max-width:1440px;min-width:860px;margin:0 auto 12px}
+.deck-kpi-grid{grid-template-columns:1.25fr repeat(3,minmax(180px,1fr))}
+.deck-command-grid{grid-template-columns:minmax(430px,1.45fr) minmax(300px,1fr) minmax(230px,.82fr)}
+.lobby-desktop-grid{grid-template-columns:minmax(360px,1.35fr) minmax(280px,.9fr) minmax(340px,1.15fr)}
+.display-command-header,.lobby-command-header{min-height:126px}
+.command-kpi,.lobby-feature-card,.lobby-info-card,.display-panel{overflow:hidden}
+.rotation-command-row{grid-template-columns:minmax(130px,1fr) minmax(150px,1.2fr) auto}
+.lobby-info-row b,.lobby-program-item time{white-space:nowrap}
+
+@media(max-width:1100px){
+  body.role-deck .desktop-display,body.role-lobby .desktop-display,body.role-deck .topbar,body.role-lobby .topbar{min-width:760px}
+  .deck-command-grid{grid-template-columns:1fr 1fr}.quick-command-panel{grid-column:1/-1}.quick-command-panel .deck-actions{grid-template-columns:repeat(3,1fr)}
+  .lobby-desktop-grid{grid-template-columns:1fr 1fr}.programs-card{grid-column:1/-1}
+}
+@media(max-width:760px){
+  .incident-trend-grid{grid-template-columns:repeat(2,minmax(145px,1fr))}
+  body.role-deck main,body.role-lobby main{padding:12px;overflow-x:auto}
+  body.role-deck .desktop-display,body.role-lobby .desktop-display,body.role-deck .topbar,body.role-lobby .topbar{min-width:720px}
+}
