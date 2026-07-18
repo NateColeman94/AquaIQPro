@@ -1164,6 +1164,15 @@ function showPage(pageId,sourceButton){
   }
   var title=btn&&(btn.dataset.title||btn.textContent.trim());
   if(q("pageTitle"))q("pageTitle").textContent=title||pageId;
+  var focusId=btn&&btn.dataset.focus;
+  if(focusId){
+    var focusPanel=q(focusId);
+    if(focusPanel){
+      if(focusPanel.tagName&&focusPanel.tagName.toLowerCase()==="details")focusPanel.open=true;
+      window.setTimeout(function(){focusPanel.scrollIntoView({behavior:"smooth",block:"start"})},60);
+      return;
+    }
+  }
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function init(){loadState();ensureExtendedState();hydrateInputs();document.querySelectorAll("#nav button").forEach(function(btn){
