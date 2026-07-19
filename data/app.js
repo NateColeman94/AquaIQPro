@@ -326,7 +326,84 @@ function renderMaintenance(){q("workOrders").innerHTML=state.workOrders.map((w,i
 function renderTasks(){q("taskBoard").innerHTML=state.tasks.map((t,i)=>"<div class='rowbox rowflex "+(t.done?"done":"")+"'><div><b>"+t.name+"</b><br><span class='small'>"+t.owner+" • "+t.priority+"</span></div><button class='btn "+(t.done?"secondary":"good")+"' onclick='toggleTask("+i+")'>"+(t.done?"Undo":"Done")+"</button></div>").join("")}
 function renderDecisions(){var recs=recommendations();q("approvalQueue").innerHTML=recs.map(r=>"<div class='rowbox rowflex'><div><p>"+tag(r.p)+" <b>"+r.t+"</b></p><p class='small'>Why: "+r.why+"</p><p class='small'>Status: "+(state.decisions[r.id]||"Pending")+"</p></div><div class='actions'><button class='btn good' onclick='decide(\""+r.id+"\",\"Approved\")'>Approve</button><button class='btn warn' onclick='decide(\""+r.id+"\",\"Deferred\")'>Defer</button><button class='btn bad' onclick='decide(\""+r.id+"\",\"Overridden\")'>Override</button></div></div>").join("");q("auditTrail").innerHTML=state.audit.slice(0,12).map(a=>"<p class='small'>"+a+"</p>").join("")}
 function renderDataSummary(){if(!q("dataSummary"))return;q("dataSummary").innerHTML="<p><b>Facility:</b> "+state.facility+"</p><p><b>Staff records:</b> "+state.staff.length+"</p><p><b>Program records:</b> "+(state.programs.lessons.length+state.programs.parties.length+state.programs.team.length+(state.programs.aquaticClass||[]).length)+"</p><p><b>Inventory items:</b> "+state.inventory.length+"</p><p><b>Open work orders:</b> "+state.workOrders.filter(w=>w.status!=='Completed').length+"</p><p><b>Decisions recorded:</b> "+Object.keys(state.decisions||{}).length+"</p>"}
-function renderAIOps(){if(!q("aiOpsBriefing"))return;var recs=recommendations();q("aiOpsBriefing").innerHTML="<p><b>Good morning.</b> AquaIQPro estimates "+state.demand.adjusted+" visitors today and recommends "+staffNeeded()+" lifeguards. Current active coverage is "+staffAvailable()+".</p><p>"+(healthScore()>=90?"Today appears stable.":"Manager review is recommended.")+"</p><p><b>Top recommendation:</b> "+recs[0].t+"</p>";q("aiExplainPanel").innerHTML='<div class="status-strip"><div class="status-box"><b>Weather</b>'+state.weather.temp+'°F and '+state.weather.rain+'% rain</div><div class="status-box"><b>Programs</b>'+state.programs.lessons.length+' lessons, '+state.programs.parties.length+' parties</div><div class="status-box"><b>Operations</b>Staffing, water, inventory, maintenance</div><div class="status-box"><b>Saved Data</b>Browser autosave enabled</div></div>';q("explainabilityList").innerHTML=recs.map(r=>"<div class='rowbox'><b>"+r.p+" priority:</b> "+r.t+"<br><span class='small'>Why AquaIQPro recommended this: "+r.why+"</span></div>").join("")}
+function renderAIOps(){
+  if(!q("aiOpsBriefing"))return;
+  calcDemand();
+  var now=new Date();
+  var parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",weekday:"short",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(now),time={};
+  parts.forEach(function(p){time[p.type]=p.value});
+  var hour=Number(time.hour),minute=Number(time.minute),minuteNow=hour*60+minute;
+  var greeting=hour<12?"Good morning":hour<17?"Good afternoon":"Good evening";
+  var manager=(state.managerName||"").trim();
+  var facilityId=(typeof activeFacilityId!=="undefined"&&activeFacilityId)||state.activeFacilityId||"gandy";
+  var profile=(typeof FACILITY_PROFILES!=="undefined"&&FACILITY_PROFILES[facilityId])||{name:state.facility||"Selected facility",capacity:300};
+  var weekend=time.weekday==="Sat"||time.weekday==="Sun",start,end,seasonalClosed=false;
+  if(facilityId==="simpson"){
+    var dateKey=Number(time.month)*100+Number(time.day);
+    seasonalClosed=dateKey<501||dateKey>930;
+    start=10*60;end=17*60;
+  }else{
+    start=weekend?10*60:5*60+30;
+    end=weekend?17*60:19*60;
+  }
+  function fmt(total){var h=Math.floor(total/60),m=total%60,ap=h>=12?"PM":"AM";return(h%12||12)+":"+String(m).padStart(2,"0")+" "+ap}
+  function duration(total){var h=Math.floor(total/60),m=total%60;if(h&&m)return h+" hour"+(h===1?"":"s")+" and "+m+" minute"+(m===1?"":"s");if(h)return h+" hour"+(h===1?"":"s");return m+" minute"+(m===1?"":"s")}
+  var phase,statusSentence;
+  if(seasonalClosed){phase="seasonal-closed";statusSentence=profile.name+" is currently <b>closed for the season</b>."}
+  else if(minuteNow<start){phase="before-open";statusSentence=profile.name+" is currently closed and is scheduled to open at <b>"+fmt(start)+"</b>, approximately <b>"+duration(start-minuteNow)+"</b> from now."}
+  else if(minuteNow<end-60){phase="open";statusSentence=profile.name+" is currently open and is scheduled to close at <b>"+fmt(end)+"</b>."}
+  else if(minuteNow<end){phase="closing-soon";statusSentence=profile.name+" is currently open and is scheduled to close in <b>"+duration(end-minuteNow)+"</b>."}
+  else{phase="closed";statusSentence=profile.name+" is <b>closed for the day</b>. The next scheduled opening is tomorrow at <b>"+fmt(start)+"</b>."}
+
+  var forecast=state.demand.adjusted,available=staffAvailable(),needed=staffNeeded(),score=healthScore(),gap=needed-available;
+  var staffingSentence=gap>0
+    ?"Current active coverage is <b>"+available+" lifeguard"+(available===1?"":"s")+"</b>, which is <b>"+gap+" below</b> the recommended minimum of <b>"+needed+"</b>."
+    :"Current active coverage is <b>"+available+" lifeguard"+(available===1?"":"s")+"</b>, "+(available===needed?"meeting":"exceeding")+" the recommended minimum of <b>"+needed+"</b>.";
+  var readiness=score>=90?"indicating the facility is ready with routine monitoring":score>=75?"indicating operations are manageable with attention":"indicating manager action is required";
+  var ws=waterStatus();
+  var waterSentence=ws==="Good"?"Water chemistry is within recommended operating ranges.":ws==="Watch"?"Water chemistry is near the edge of the target range and should be retested more frequently.":"Water chemistry requires corrective action and a documented retest before normal operations continue.";
+  var inv=inventoryAlerts();
+  var inventorySentence=inv.length?"Inventory attention is required for <b>"+inv.map(function(i){return i.item}).join(", ")+"</b>.":"Critical chemical and safety inventory is adequately stocked.";
+  var openWork=state.workOrders.filter(function(w){return w.status!=="Completed"}),highWork=highOpenWorkOrders();
+  var maintenanceSentence=highWork.length?"<b>"+highWork.length+" high-priority maintenance item"+(highWork.length===1?"":"s")+"</b> require attention.":openWork.length?openWork.length+" routine maintenance item"+(openWork.length===1?" remains":"s remain")+" open.":"No active maintenance issues are reported.";
+  var programNames=[];
+  if(state.programs.lessons.length)programNames.push(state.programs.lessons.length+" swim lesson block"+(state.programs.lessons.length===1?"":"s"));
+  if(state.programs.parties.length)programNames.push(state.programs.parties.length+" pool part"+(state.programs.parties.length===1?"y":"ies"));
+  if((state.programs.team||[]).length)programNames.push("swim team activity");
+  if((state.programs.aquaticClass||[]).length)programNames.push((state.programs.aquaticClass||[]).length+" aquatic class"+((state.programs.aquaticClass||[]).length===1?"":"es"));
+  var programsSentence=programNames.length?"Today’s schedule includes "+programNames.join(", ")+".":"No special aquatic programs are scheduled today.";
+
+  var priority;
+  if(ws==="Action")priority="Correct water chemistry and document a successful retest before admitting or continuing patron activity.";
+  else if(state.incidents&&state.incidents.length)priority="Review active incident documentation, confirm follow-up actions, and escalate any unresolved safety concern.";
+  else if(gap>0)priority="Secure "+gap+" additional lifeguard"+(gap===1?"":"s")+" before the next demand period.";
+  else if(forecast>=Number(profile.capacity||9999))priority="Apply controlled admission procedures because projected attendance meets or exceeds facility capacity.";
+  else if(highWork.length)priority="Resolve or formally control the highest-priority maintenance hazard before peak operations.";
+  else if(inv.length)priority="Replenish critical inventory before projected stock falls below the operating minimum.";
+  else if(state.weather.rain>=65)priority="Review severe-weather procedures and communicate any operating changes to staff and patrons.";
+  else if(phase==="before-open")priority="Complete opening water checks, confirm lifeguard coverage, and clear critical maintenance items before opening.";
+  else if(phase==="closing-soon")priority="Begin closing announcements, final water testing, deck inspection, inventory review, and end-of-day documentation.";
+  else if(phase==="closed")priority="Confirm closing documentation and prepare unresolved staffing, maintenance, inventory, and water-quality items for the next operating day.";
+  else if(phase==="seasonal-closed")priority="Focus on seasonal maintenance, inventory controls, certification readiness, and preparation for the next operating period.";
+  else priority="No critical operational issues are detected. Continue routine monitoring throughout the day.";
+
+  var operationalNarrative;
+  if(phase==="closed"||phase==="seasonal-closed"){
+    operationalNarrative="Today’s forecast was <b>"+forecast+" visitors</b>. "+staffingSentence+" Operational Readiness is <b>"+score+"%</b>, "+readiness+".";
+  }else{
+    operationalNarrative=profile.name+" is expected to welcome approximately <b>"+forecast+" visitors today</b>. "+staffingSentence+" Operational Readiness is <b>"+score+"%</b>, "+readiness+".";
+  }
+  var generated=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",year:"numeric",month:"long",day:"numeric",hour:"numeric",minute:"2-digit",timeZoneName:"short"}).format(now);
+  q("aiOpsBriefing").innerHTML=
+    "<p><b>"+greeting+(manager?", "+manager:"")+".</b> "+statusSentence+"</p>"+
+    "<p>"+operationalNarrative+"</p>"+
+    "<p>"+waterSentence+" "+inventorySentence+" "+maintenanceSentence+" "+programsSentence+"</p>"+
+    "<p><b>Highest Priority:</b> "+priority+"</p>"+
+    "<p class='small'><i>Briefing generated "+generated+".</i></p>";
+  var recs=recommendations();
+  if(q("aiExplainPanel"))q("aiExplainPanel").innerHTML='<div class="status-strip"><div class="status-box"><b>Weather</b>'+state.weather.temp+'°F and '+state.weather.rain+'% rain</div><div class="status-box"><b>Programs</b>'+state.programs.lessons.length+' lessons, '+state.programs.parties.length+' parties</div><div class="status-box"><b>Operations</b>Staffing, water, inventory, maintenance</div><div class="status-box"><b>Facility Status</b>'+statusSentence.replace(/<[^>]+>/g,"")+'</div></div>';
+  if(q("explainabilityList"))q("explainabilityList").innerHTML=recs.map(function(r){return"<div class='rowbox'><b>"+r.p+" priority:</b> "+r.t+"<br><span class='small'>Why AquaIQPro recommended this: "+r.why+"</span></div>"}).join("");
+}
 function addIncident(){if(q("incidentInput").value.trim()){state.incidents.unshift(q("incidentInput").value.trim());q("incidentInput").value="";updateInputs("Incident added")}}function addStaff(){if(q("newStaffName").value.trim()){state.staff.push({name:q("newStaffName").value,shift:q("newStaffShift").value||"TBD",area:q("newStaffArea").value,status:"Scheduled"});q("newStaffName").value="";q("newStaffShift").value="";updateInputs("Staff member added");if(typeof renderWorkforce==="function")renderWorkforce()}}function removeStaff(i){state.staff.splice(i,1);updateInputs("Staff member removed");if(typeof renderWorkforce==="function")renderWorkforce()}function addProgram(type){
   if(type==="lessons")state.programs.lessons.push({name:"New Lesson Block",time:"11:00 AM",count:12});
   else if(type==="parties")state.programs.parties.push({name:"New Pool Party",time:"3:00 PM",count:20});
@@ -2265,6 +2342,7 @@ function renderMaintenance(){ensureSprint57DState();q("workOrders").innerHTML=st
     var fs=el("facilitySelect");if(fs)fs.addEventListener("change",function(){setTimeout(renderModes,100)});setMode(localStorage.getItem(MODE_KEY)||"manager");setInterval(renderModes,60000);
   }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init57F,{once:true});else init57F();
+  setInterval(function(){if(typeof renderAIOps==="function")renderAIOps()},60000);
 })();
 
 /* Final polish: facility-aware role views, live hours, operations snapshot, and build-label cleanup */
